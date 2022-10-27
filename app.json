@@ -1,33 +1,48 @@
 {
-  "expo": {
-    "name": "app",
-    "slug": "app",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
-      }
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
+    "expo": {
+        "name": "app",
+        "slug": "app",
+        "version": "1.0.0",
+        "orientation": "landscape",
+        "icon": "./assets/logo.png",
+        "userInterfaceStyle": "light",
+        "splash": {
+            "image": "./assets/logo.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+        },
+        "updates": { "fallbackToCacheTimeout": 0 },
+        "assetBundlePatterns": ["**/*"],
+        "ios": {
+            "supportsTablet": true,
+            "bundleIdentifier": "com.zunohan.app",
+            "googleServicesFile": "./GoogleService-Info.plist",
+            "requireFullScreen": true
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/adaptive-icon.png",
+                "backgroundColor": "#FFFFFF"
+            },
+            "package": "com.zunohan.app"
+        },
+        "web": {
+            "favicon": "./assets/favicon.png"
+        },
+        "extra": {
+            "eas": {
+                "projectId": "ff5e884e-f42b-4e34-b50c-c3fc148d7123"
+            }
+        },
+        "plugins": [
+            [
+                "react-native-fbsdk-next",
+                {
+                    "appID": "779406933155030",
+                    "clientToken": "9164945cba43644143c77c9062deca77",
+                    "displayName": "FB Login"
+                }
+            ]
+        ]
     }
-  }
 }

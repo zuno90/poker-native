@@ -1,0 +1,24 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -workspace /Users/zuno/Desktop/ZUNO/react-native/app/ios/app.xcworkspace -configuration Debug -scheme app -destination id=448CCB35-3B1F-46A6-917D-D64E1D2EB4D2
+
+User defaults from command line:
+    IDEPackageSupportUseBuiltinSCM = YES
+
+Prepare packages
+
+Computing target dependency graph and provisioning inputs
+
+Create build description
+Build description signature: 639f9322e2e01e22869e2d0ef44ed11e
+Build description path: /Users/zuno/Library/Developer/Xcode/DerivedData/app-dxwnwkgbhuznijgpyxhrsaxwzyaq/Build/Intermediates.noindex/XCBuildData/639f9322e2e01e22869e2d0ef44ed11e-desc.xcbuild
+
+note: Building targets in dependency order
+error: Multiple commands produce '/Users/zuno/Library/Developer/Xcode/DerivedData/app-dxwnwkgbhuznijgpyxhrsaxwzyaq/Build/Products/Debug-iphonesimulator/app.app/GoogleService-Info.plist'
+    note: Target 'app' (project 'app') has copy command from '/Users/zuno/Desktop/ZUNO/react-native/app/ios/GoogleService-Info.plist' to '/Users/zuno/Library/Developer/Xcode/DerivedData/app-dxwnwkgbhuznijgpyxhrsaxwzyaq/Build/Products/Debug-iphonesimulator/app.app/GoogleService-Info.plist'
+    note: Target 'app' (project 'app') has copy command from '/Users/zuno/Desktop/ZUNO/react-native/app/ios/app/GoogleService-Info.plist' to '/Users/zuno/Library/Developer/Xcode/DerivedData/app-dxwnwkgbhuznijgpyxhrsaxwzyaq/Build/Products/Debug-iphonesimulator/app.app/GoogleService-Info.plist'
+warning: Run script build phase '[CP-User] Generate app.manifest for expo-updates' will be run during every build because it does not specify any outputs. To address this warning, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'EXUpdates' from project 'Pods')
+warning: Run script build phase 'Start Packager' will be run during every build because it does not specify any outputs. To address this warning, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'app' from project 'app')
+warning: Run script build phase 'Bundle React Native code and images' will be run during every build because it does not specify any outputs. To address this warning, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'app' from project 'app')
+warning: Run script build phase '[CP-User] [RNFB] Core Configuration' will be run during every build because it does not specify any outputs. To address this warning, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'app' from project 'app')
+warning: duplicate output file '/Users/zuno/Library/Developer/Xcode/DerivedData/app-dxwnwkgbhuznijgpyxhrsaxwzyaq/Build/Products/Debug-iphonesimulator/app.app/GoogleService-Info.plist' on task: CopyPlistFile /Users/zuno/Library/Developer/Xcode/DerivedData/app-dxwnwkgbhuznijgpyxhrsaxwzyaq/Build/Products/Debug-iphonesimulator/app.app/GoogleService-Info.plist /Users/zuno/Desktop/ZUNO/react-native/app/ios/app/GoogleService-Info.plist (in target 'app' from project 'app')
+warning: Run script build phase '[CP-User] Generate app.config for prebuilt Constants.manifest' will be run during every build because it does not specify any outputs. To address this warning, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'EXConstants' from project 'Pods')
