@@ -8,7 +8,7 @@ const Home: React.FC = ({ route, navigation }: any) => {
     const {
         authState: { user },
     } = useAuth()
-    const client = new Colyseus.Client("ws://localhost:9000")
+    const client = new Colyseus.Client("ws://175.41.154.239")
     const [rooms, setRooms] = useState<Colyseus.RoomAvailable[]>()
 
     const getAvailableRooms = async () => {
@@ -56,7 +56,7 @@ const Home: React.FC = ({ route, navigation }: any) => {
                     </HStack>
                     <Stack width="full">
                         <SimpleGrid columns={3} space={2}>
-                            {rooms && rooms.map((item: any, index: number) => <Box>{item.roomId}</Box>)}
+                            {rooms && rooms.map((item: any, index: number) => <Box key={index}>{item.roomId}</Box>)}
                         </SimpleGrid>
                     </Stack>
                 </Box>

@@ -1,5 +1,6 @@
 $FirebaseSDKVersion = '10.0.0'
 pod 'Firebase', :modular_headers => true
+pod 'FirebaseCore', :modular_headers => true
 pod 'FirebaseCoreInternal', :modular_headers => true
 pod 'GoogleUtilities', :modular_headers => true
 

@@ -1,4 +1,5 @@
 import { useEffect } from "react"
+import { Platform } from "react-native"
 import { Box, Button, Input, VStack, HStack, FormControl, Stack, Icon, Image, Text, useToast } from "native-base"
 import { Feather, MaterialCommunityIcons, Entypo, AntDesign } from "@expo/vector-icons"
 import { useForm, Controller } from "react-hook-form"
@@ -8,7 +9,14 @@ import * as Google from "expo-auth-session/providers/google"
 import { useAuth } from "../context/AuthContext"
 import { TCredential } from "../__types__/credential.type"
 import axios from "axios"
-import { API_URL, GOOGLE_EXPO_CLIENT_ID, GOOGLE_IOS_CLIENT_ID, GOOGLE_ANDROID_CLIENT_ID } from "react-native-dotenv"
+import {
+    API_ANDROID_URL,
+    API_IOS_URL,
+    API_URL,
+    GOOGLE_EXPO_CLIENT_ID,
+    GOOGLE_IOS_CLIENT_ID,
+    GOOGLE_ANDROID_CLIENT_ID,
+} from "react-native-dotenv"
 
 const Signin: React.FC = ({ route, navigation }: any) => {
     const { authState, signIn } = useAuth()
@@ -24,7 +32,14 @@ const Signin: React.FC = ({ route, navigation }: any) => {
     const onSubmit = async (data: TCredential) => {
         try {
             console.log("data sign in", data)
-            const res = await axios.post(API_URL + "/auth/signin", { type: "normal", payload: data })
+            const res = await axios.post(
+                // Platform.OS === "android" ? API_ANDROID_URL : API_IOS_URL + "/auth/signin",
+                API_URL + "/auth/signin",
+                {
+                    type: "normal",
+                    payload: data,
+                }
+            )
             console.log(res.data)
             const { success, msg, accessToken } = res.data
             if (!success) throw new Error("Bad request!")
@@ -49,7 +64,11 @@ const Signin: React.FC = ({ route, navigation }: any) => {
                 type: "facebook",
                 payload: { fbEmail: user.user.email, fbName: user.user.displayName, fbAvatar: user.user.photoURL },
             }
-            const res = await axios.post(API_URL + "/auth/signin", data)
+            const res = await axios.post(
+                // Platform.OS === "android" ? API_ANDROID_URL : API_IOS_URL + "/auth/signin",
+                API_URL + "/auth/signin",
+                data
+            )
             const { success, msg, accessToken } = res.data
             if (!success) throw new Error("Bad request!")
             toast.show({
@@ -91,9 +110,12 @@ const Signin: React.FC = ({ route, navigation }: any) => {
                 type: "google",
                 payload: { ggEmail: ggUser.email, ggName: ggUser.name, ggAvatar: ggUser.picture },
             }
-            const res = await axios.post("http://192.168.0.101:9000/auth/signin", data)
+            const res = await axios.post(
+                // Platform.OS === "android" ? API_ANDROID_URL : API_IOS_URL + "/auth/signin",
+                API_URL + "/auth/signin",
+                data
+            )
             const { success, msg, accessToken } = res.data
-            console.log("data tu google", accessToken)
             if (!success) throw new Error("Bad request!")
             toast.show({
                 title: "Login status",
@@ -182,19 +204,20 @@ const Signin: React.FC = ({ route, navigation }: any) => {
                 </HStack>
                 <VStack space="4">
                     <Button
-                        onPress={() => promptAsync({ showInRecents: true })}
-                        leftIcon={<AntDesign name="google" size={24} color="white" />}
-                        colorScheme="red"
-                    >
-                        Google
-                    </Button>
-                    <LoginButton />
-                    <Button
                         onPress={handleFacebookLogin}
                         leftIcon={<Entypo name="facebook" size={24} color="white" />}
                         colorScheme="blue"
                     >
                         Facebook
+                    </Button>
+                    <Button
+                        onPress={() => {
+                            promptAsync({ showInRecents: true })
+                        }}
+                        leftIcon={<AntDesign name="google" size={24} color="white" />}
+                        colorScheme="red"
+                    >
+                        Google
                     </Button>
                     <Button onPress={handleSubmit(onSubmit)} colorScheme="green">
                         SIGN IN

@@ -63,6 +63,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         checkAuth()
+        console.log("check authhhhhh")
     }, [])
 
     const signIn = async (token: string) => {
