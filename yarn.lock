@@ -2811,6 +2811,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-firebase/auth/-/auth-15.7.1.tgz#6bfc3be0f1bc3503382593a9c9dbd08b4e21e07e"
   integrity sha512-KtxVcoIpZX5aT0rNaHWo733dP8cCZUBNV90FboapyvasQ5qZdMu+xS2yYe8FdimUlMlzGhMmLyXTxghGmVIZjw==
 
+"@react-native-google-signin/google-signin@^8.0.1":
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/@react-native-google-signin/google-signin/-/google-signin-8.0.1.tgz#b03e7fa07013800ec4cff47881e7704a9d8d917f"
+  integrity sha512-ZsHzul3FWM/En3Upx7++KNPVMJxPuzX1H6LWMDiwxlgMmJxpvKpq7UsW4vE3O8x6E6gLfbCFKpjRZXojwXaI+g==
+
 "@react-native/assets@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@react-native/assets/-/assets-1.0.0.tgz#c6f9bf63d274bafc8e970628de24986b30a55c8e"
@@ -6450,7 +6455,7 @@ expo-web-browser@~11.0.0:
   dependencies:
     compare-urls "^2.0.0"
 
-expo@~46.0.16:
+expo@^46.0.16:
   version "46.0.16"
   resolved "https://registry.yarnpkg.com/expo/-/expo-46.0.16.tgz#8fe6d10207dabda34a684efac2c45c3c1c089f11"
   integrity sha512-lZETkf3t+gbZjKjSceIpU7I8Rmm5nZ0ZG1WPzNBBbm+k64/+kKV96s6RqS37W1TTDpIbd+AucT9kKpvtv0JB2A==
@@ -13170,10 +13175,8 @@ watchpack@^1.6.1:
   resolved "https://registry.yarnpkg.com/watchpack/-/watchpack-1.7.5.tgz#1267e6c55e0b9b5be44c2023aed5437a2c26c453"
   integrity sha512-9P3MWk6SrKjHsGkLT2KHXdQ/9SNkyoJbabxnKOoJepsvJjJG8uYTR3yTPxPQvNDI3w4Nz1xnE0TLHK4RIVe/MQ==
   dependencies:
-    chokidar "^3.4.1"
     graceful-fs "^4.1.2"
     neo-async "^2.5.0"
-    watchpack-chokidar2 "^2.0.1"
   optionalDependencies:
     chokidar "^3.4.1"
     watchpack-chokidar2 "^2.0.1"
