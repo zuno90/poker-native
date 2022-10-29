@@ -71,10 +71,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signOut = async () => {
-    setAuthState({
-      isAuth: false,
-      user: null
-    });
+    try {
+      await AsyncStorage.removeItem("accessToken");
+      return setAuthState({
+        isAuth: false,
+        user: null
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const authContextValue = { authState, signIn, signOut };

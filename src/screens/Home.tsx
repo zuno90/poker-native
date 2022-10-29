@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Box, Button, Text, Container, Heading, SimpleGrid, Center, Stack, HStack, Image } from "native-base";
+import { Box, Button, Text, Container, SimpleGrid, Center, Stack, HStack, Image } from "native-base";
 import { useAuth } from "../context/AuthContext";
 import * as Colyseus from "colyseus.js"; // not necessary if included via <script> tag.
 import { useEffect, useState } from "react";
@@ -37,14 +37,7 @@ const Home: React.FC = ({ route, navigation }: any) => {
             <Text>{user.username ?? user.email}</Text>
             <Image source={{ uri: user.avatar }} alt="Alternate Text" size="sm" />
             <Text>Chips: {user.chips}</Text>
-            <Button
-              onPress={() => {
-                navigation.navigate("ROOM");
-                AsyncStorage.removeItem("accessToken");
-              }}
-            >
-              LOG OUT
-            </Button>
+            <Button onPress={signOut}>LOG OUT</Button>
           </HStack>
 
           <HStack space="4">

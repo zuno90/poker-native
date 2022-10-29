@@ -5,7 +5,6 @@ import { Feather, MaterialCommunityIcons, Entypo, AntDesign } from "@expo/vector
 import { useForm, Controller } from "react-hook-form";
 import { signInWithFb } from "../utils/firebaseLogin";
 import { LoginButton } from "react-native-fbsdk-next";
-import * as Google from "expo-auth-session/providers/google";
 import { useAuth } from "../context/AuthContext";
 import { TCredential } from "../__types__/credential.type";
 import axios from "axios";
@@ -15,16 +14,15 @@ import {
   API_URL,
   GOOGLE_EXPO_CLIENT_ID,
   GOOGLE_IOS_CLIENT_ID,
-  GOOGLE_ANDROID_CLIENT_ID
+  GOOGLE_ANDROID_CLIENT_ID,
+  GOOGLE_FIREBASE_WEBCLIENT_ID
 } from "react-native-dotenv";
 import { GoogleSignin, GoogleSigninButton, statusCodes } from "@react-native-google-signin/google-signin";
 import * as WebBrowser from "expo-web-browser";
-import { async } from "@firebase/util";
 
 GoogleSignin.configure({
   webClientId: "346689803663-cqemermkk3fk8rnlvcfg5vksf9n463pk.apps.googleusercontent.com"
 });
-
 WebBrowser.maybeCompleteAuthSession();
 
 const Signin: React.FC = ({ route, navigation }: any) => {
@@ -49,7 +47,6 @@ const Signin: React.FC = ({ route, navigation }: any) => {
           payload: data
         }
       );
-      console.log(res.data);
       const { success, msg, accessToken } = res.data;
       if (!success) throw new Error("Bad request!");
       toast.show({
@@ -58,7 +55,7 @@ const Signin: React.FC = ({ route, navigation }: any) => {
         variant: "solid",
         placement: "top"
       });
-      return signIn(accessToken);
+      // return signIn(accessToken);
     } catch (error) {
       console.error(error);
       toast.show({
@@ -69,6 +66,7 @@ const Signin: React.FC = ({ route, navigation }: any) => {
     }
   };
 
+  // handle facebook signin
   const handleFacebookLogin = async () => {
     try {
       const user = await signInWithFb();
@@ -105,68 +103,18 @@ const Signin: React.FC = ({ route, navigation }: any) => {
     }
   };
 
-  // GG login
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    // expoClientId: GOOGLE_EXPO_CLIENT_ID,
-    clientId: "346689803663-cqemermkk3fk8rnlvcfg5vksf9n463pk.apps.googleusercontent.com",
-    iosClientId: GOOGLE_IOS_CLIENT_ID,
-    androidClientId: GOOGLE_ANDROID_CLIENT_ID
-  });
-  // useEffect(() => {
-  //   const getGgUser = async () => {
-  //     if (response?.type === "success") {
-  //       const accessToken = response.authentication.accessToken;
-  //       const res = await axios.get("https://www.googleapis.com/userinfo/v2/me", {
-  //         headers: { Authorization: `Bearer ${accessToken}` }
-  //       });
-  //       await handleGoogleLogin(res.data);
-  //     }
-  //   };
-  //   getGgUser();
-  // }, [response]);
-
   // handle google sign in
-  // const handleGoogleLogin = async (ggUser: any) => {
-  //   try {
-  //     const data = {
-  //       type: "google",
-  //       payload: {
-  //         ggEmail: ggUser.email,
-  //         ggName: ggUser.name,
-  //         ggAvatar: ggUser.picture
-  //       }
-  //     };
-  //     const res = await axios.post(
-  //       // Platform.OS === "android" ? API_ANDROID_URL : API_IOS_URL + "/auth/signin",
-  //       API_URL + "/auth/signin",
-  //       data
-  //     );
-  //     const { success, msg, accessToken } = res.data;
-  //     if (!success) throw new Error("Bad request!");
-  //     toast.show({
-  //       title: "Login status",
-  //       description: msg,
-  //       variant: "solid",
-  //       placement: "top"
-  //     });
-  //     return signIn(accessToken);
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.show({
-  //       title: "Login status",
-  //       description: error.message,
-  //       placement: "top"
-  //     });
-  //   }
-  // };
-  const handleGoogleLogin = async (ggUser: any) => {
+  const handleGoogleLogin = async (user: any) => {
     try {
+      // const user = await signInWithGg()
+      // console.log("user google is", user)
+      if (!user) return;
       const data = {
         type: "google",
         payload: {
-          ggEmail: ggUser.email,
-          ggName: ggUser.name,
-          ggAvatar: ggUser.photo
+          ggEmail: user.email,
+          ggName: user.name,
+          ggAvatar: user.photo
         }
       };
       const res = await axios.post(
@@ -192,39 +140,6 @@ const Signin: React.FC = ({ route, navigation }: any) => {
       });
     }
   };
-  // const handleGoogleLogin = async (ggUser: any) => {
-  //   try {
-  //     const data = {
-  //       type: "google",
-  //       payload: {
-  //         ggEmail: ggUser.email,
-  //         ggName: ggUser.name,
-  //         ggAvatar: ggUser.picture
-  //       }
-  //     };
-  //     const res = await axios.post(
-  //       // Platform.OS === "android" ? API_ANDROID_URL : API_IOS_URL + "/auth/signin",
-  //       API_URL + "/auth/signin",
-  //       data
-  //     );
-  //     const { success, msg, accessToken } = res.data;
-  //     if (!success) throw new Error("Bad request!");
-  //     toast.show({
-  //       title: "Login status",
-  //       description: msg,
-  //       variant: "solid",
-  //       placement: "top"
-  //     });
-  //     return signIn(accessToken);
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.show({
-  //       title: "Login status",
-  //       description: error.message,
-  //       placement: "top"
-  //     });
-  //   }
-  // };
 
   const ggSignIn = async () => {
     GoogleSignin.hasPlayServices().then((value) => {
@@ -314,22 +229,9 @@ const Signin: React.FC = ({ route, navigation }: any) => {
           >
             Facebook
           </Button>
-          <Button
-            // onPress={() => {
-            //   promptAsync({ showInRecents: true });
-            // }}
-            // onPress={ggSignIn}
-            leftIcon={<AntDesign name="google" size={24} color="white" />}
-            colorScheme="red"
-          >
+          <Button onPress={ggSignIn} leftIcon={<AntDesign name="google" size={24} color="white" />} colorScheme="red">
             Google
           </Button>
-          <GoogleSigninButton
-            style={{ width: 192, height: 48 }}
-            size={GoogleSigninButton.Size.Wide}
-            color={GoogleSigninButton.Color.Dark}
-            onPress={ggSignIn}
-          />
           <Button onPress={handleSubmit(onSubmit)} colorScheme="green">
             SIGN IN
           </Button>

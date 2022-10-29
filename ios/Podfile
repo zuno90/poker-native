@@ -1,3 +1,5 @@
+use_frameworks!
+$RNFirebaseAsStaticFramework = true
 $FirebaseSDKVersion = '10.0.0'
 pod 'Firebase', :modular_headers => true
 pod 'FirebaseCore', :modular_headers => true
