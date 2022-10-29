@@ -100,7 +100,6 @@ const Signin: React.FC = ({ route, navigation }: any) => {
     const handleGoogleLogin = async () => {
         try {
             const user = await signInWithGg()
-            console.log("user google is", user)
             if (!user) return
             const data = {
                 type: "google",

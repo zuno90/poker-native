@@ -16,7 +16,6 @@ export const signInWithFb = async () => {
         if (!data) throw new Error("Something wrong obtaining access token!")
         const credential = auth.FacebookAuthProvider.credential(data.accessToken)
         const user = await auth().signInWithCredential(credential)
-        console.log(user)
         return user
     } catch (error) {
         console.error(error)
@@ -24,16 +23,10 @@ export const signInWithFb = async () => {
     }
 }
 
-export const fbSignin = async () => {
-    try {
-    } catch (error) {
-        console.error(error)
-    }
-}
-
 export const signInWithGg = async () => {
     try {
         await GoogleSignin.hasPlayServices()
+        console.log(await GoogleSignin.hasPlayServices())
         await GoogleSignin.signOut()
         const userInfo = await GoogleSignin.signIn()
         return userInfo
