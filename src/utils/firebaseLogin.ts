@@ -9,44 +9,19 @@ GoogleSignin.configure({
 });
 
 export const signInWithFb = async () => {
-  //   LoginManager.logOut();
-  LoginManager.logInWithPermissions([]).then((value) => {
-    console.log("hihi");
-  });
-  AccessToken.getCurrentAccessToken().then((value) => {
-    console.log("hadfsas", value);
-  });
-  //   const credential = auth.FacebookAuthProvider.credential(data.accessToken);
-  //   console.log("safdafds", auth.FacebookAuthProvider);
-
-  //   const {FacebookAuthProvider} = auth;
-
-  //   console.log(test.PROVIDER_ID);
-
-  //   LoginManager.logInWithPermissions(["email"]).then((value) => {
-  //     console.log("fsa", value);
-  //   });
-
-  //   LoginManager.logInWithPermissions(["public_profile", "email"]).then((value) => {
-  //     console.log("checkon value", value);
-  //   });
-
-  //   try {
-  //     const result = await LoginManager.logInWithPermissions(["public_profile", "email"]);
-
-  //     console.log("hello", result);
-
-  //     if (result.isCancelled) throw new Error("User cancelled login!");
-  //     const data = await AccessToken.getCurrentAccessToken();
-  //     if (!data) throw new Error("Something wrong obtaining access token!");
-  //     const credential = auth.FacebookAuthProvider.credential(data.accessToken);
-  //     const user = await auth().signInWithCredential(credential);
-  //     console.log(user);
-  //     return user;
-  //   } catch (error) {
-  //     console.error(error);
-  //     LoginManager.logOut();
-  //   }
+  try {
+    const result = await LoginManager.logInWithPermissions(["public_profile", "email"]);
+    if (result.isCancelled) throw new Error("User cancelled login!");
+    const data = await AccessToken.getCurrentAccessToken();
+    if (!data) throw new Error("Something wrong obtaining access token!");
+    const credential = auth.FacebookAuthProvider.credential(data.accessToken);
+    const user = await auth().signInWithCredential(credential);
+    console.log(user);
+    return user;
+  } catch (error) {
+    console.error(error);
+    LoginManager.logOut();
+  }
 };
 
 export const fbSignin = async () => {
