@@ -9,6 +9,7 @@ const Stack = createNativeStackNavigator()
 
 const Protected: React.FC = () => {
     const { authState } = useAuth()
+    console.log(authState.isAuth)
     return (
         <Stack.Navigator>
             {!authState.isAuth ? (

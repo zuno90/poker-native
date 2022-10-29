@@ -63,7 +63,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         checkAuth()
-        console.log("check authhhhhh")
     }, [])
 
     const signIn = async (token: string) => {
@@ -71,7 +70,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         await checkAuth()
     }
 
-    const signOut = async () => {}
+    const signOut = async () => {
+        try {
+            await AsyncStorage.removeItem("accessToken")
+            return setAuthState({
+                isAuth: false,
+                user: null,
+            })
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     const authContextValue = { authState, signIn, signOut }
     return <AuthContext.Provider value={authContextValue}>{children}</AuthContext.Provider>
