@@ -2,12 +2,19 @@ import { useEffect, useState } from "react"
 import { Box, Button, Input, VStack, FormControl, Stack, Icon, Image, Text, HStack, useToast } from "native-base"
 import { Feather, MaterialCommunityIcons, Entypo, AntDesign } from "@expo/vector-icons"
 import { useForm, Controller } from "react-hook-form"
-import { signInWithFb } from "../utils/firebaseLogin"
-import * as Google from "expo-auth-session/providers/google"
+import { useAuth } from "../context/AuthContext"
+import { signInWithFb, signInWithGg } from "../utils/firebaseLogin"
 import axios from "axios"
 import { TCredential } from "../__types__/credential.type"
-import { API_URL, GOOGLE_EXPO_CLIENT_ID, GOOGLE_IOS_CLIENT_ID, GOOGLE_ANDROID_CLIENT_ID } from "react-native-dotenv"
-import { useAuth } from "../context/AuthContext"
+import {
+    API_ANDROID_URL,
+    API_IOS_URL,
+    API_URL,
+    GOOGLE_EXPO_CLIENT_ID,
+    GOOGLE_IOS_CLIENT_ID,
+    GOOGLE_ANDROID_CLIENT_ID,
+    GOOGLE_FIREBASE_WEBCLIENT_ID,
+} from "react-native-dotenv"
 
 const Signup: React.FC = ({ route, navigation }: any) => {
     const { authState, signIn } = useAuth()
@@ -29,56 +36,78 @@ const Signup: React.FC = ({ route, navigation }: any) => {
         }
     }
 
-    // login facebook
+    // handle facebook signin
     const handleFacebookLogin = async () => {
         try {
             const user = await signInWithFb()
             if (!user) return
             const data = {
                 type: "facebook",
-                payload: { fbEmail: user.user.email, fbName: user.user.displayName, fbAvatar: user.user.photoURL },
+                payload: {
+                    fbEmail: user.user.email,
+                    fbName: user.user.displayName,
+                    fbAvatar: user.user.photoURL,
+                },
             }
-            const res = await axios.post("http://localhost:9000/auth/signin", data)
-            const { accessToken } = res.data
-            await signIn(accessToken)
+            const res = await axios.post(
+                // Platform.OS === "android" ? API_ANDROID_URL : API_IOS_URL + "/auth/signin",
+                API_URL + "/auth/signin",
+                data
+            )
+            const { success, msg, accessToken } = res.data
+            if (!success) throw new Error("Bad request!")
+            toast.show({
+                title: "Login status",
+                description: msg,
+                variant: "solid",
+                placement: "top",
+            })
+            return signIn(accessToken)
         } catch (error) {
             console.error(error)
+            toast.show({
+                title: "Login status",
+                description: error.message,
+                placement: "top",
+            })
         }
     }
 
-    // GG signin
-    const [ggUser, setGgUser] = useState<any>()
-    const [request, response, promptAsync] = Google.useAuthRequest({
-        expoClientId: GOOGLE_EXPO_CLIENT_ID,
-        iosClientId: GOOGLE_IOS_CLIENT_ID,
-        androidClientId: GOOGLE_ANDROID_CLIENT_ID,
-    })
-    useEffect(() => {
-        const getGgUser = async () => {
-            if (response?.type === "success") {
-                const accessToken = response.authentication.accessToken
-                const user = await axios.get("https://www.googleapis.com/userinfo/v2/me", {
-                    headers: { Authorization: `Bearer ${accessToken}` },
-                })
-                setGgUser(user.data)
-                await handleGoogleLogin(user.data)
-            }
-        }
-        getGgUser()
-    }, [response])
-
     // handle google sign in
-    const handleGoogleLogin = async (ggUser: any) => {
+    const handleGoogleLogin = async () => {
         try {
+            const user = await signInWithGg()
+            console.log("user google is", user)
+            if (!user) return
             const data = {
                 type: "google",
-                payload: { ggEmail: ggUser.email, ggName: ggUser.name, ggAvatar: ggUser.picture },
+                payload: {
+                    ggEmail: user.user.email,
+                    ggName: user.user.name,
+                    ggAvatar: user.user.photo,
+                },
             }
-            const res = await axios.post("http://localhost:9000/auth/signin", data)
-            const { accessToken } = res.data
-            await signIn(accessToken)
+            const res = await axios.post(
+                // Platform.OS === "android" ? API_ANDROID_URL : API_IOS_URL + "/auth/signin",
+                API_URL + "/auth/signin",
+                data
+            )
+            const { success, msg, accessToken } = res.data
+            if (!success) throw new Error("Bad request!")
+            toast.show({
+                title: "Login status",
+                description: msg,
+                variant: "solid",
+                placement: "top",
+            })
+            return signIn(accessToken)
         } catch (error) {
             console.error(error)
+            toast.show({
+                title: "Login status",
+                description: error.message,
+                placement: "top",
+            })
         }
     }
 
@@ -167,19 +196,12 @@ const Signup: React.FC = ({ route, navigation }: any) => {
                         Facebook
                     </Button>
                     <Button
-                        onPress={() => promptAsync({ showInRecents: true })}
+                        onPress={handleGoogleLogin}
                         leftIcon={<AntDesign name="google" size={24} color="white" />}
                         colorScheme="red"
                     >
                         Google
                     </Button>
-                    {ggUser && (
-                        <Stack>
-                            <Text>email: {ggUser.email}</Text>
-                            <Text>name: {ggUser.name}</Text>
-                            <Image src={ggUser.picture} size="150" />
-                        </Stack>
-                    )}
                 </VStack>
             </VStack>
         </Box>
