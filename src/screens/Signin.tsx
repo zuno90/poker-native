@@ -1,22 +1,51 @@
 import { useEffect } from "react";
-import { Image, Text, Icon, useToast, View } from "native-base";
-
-// import { StyleSheet, Image, TextInput, TouchableOpacity, Alert, View, Text } from "react-native";
-
+import { Platform } from "react-native";
+import {
+  Box,
+  Button,
+  Input,
+  VStack,
+  HStack,
+  FormControl,
+  Stack,
+  Icon,
+  Image,
+  Text,
+  useToast,
+} from "native-base";
+import {
+  Feather,
+  MaterialCommunityIcons,
+  Entypo,
+  AntDesign,
+} from "@expo/vector-icons";
 import { useForm, Controller } from "react-hook-form";
 import { signInWithFb } from "../utils/firebaseLogin";
 import { LoginButton } from "react-native-fbsdk-next";
-import * as Google from "expo-auth-session/providers/google";
 import { useAuth } from "../context/AuthContext";
 import { TCredential } from "../__types__/credential.type";
 import axios from "axios";
 import {
+  API_ANDROID_URL,
+  API_IOS_URL,
   API_URL,
   GOOGLE_EXPO_CLIENT_ID,
   GOOGLE_IOS_CLIENT_ID,
   GOOGLE_ANDROID_CLIENT_ID,
+  GOOGLE_FIREBASE_WEBCLIENT_ID,
 } from "react-native-dotenv";
-import { ImageBackground, TouchableOpacity, TextInput } from "react-native";
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+} from "@react-native-google-signin/google-signin";
+import * as WebBrowser from "expo-web-browser";
+
+GoogleSignin.configure({
+  webClientId:
+    "346689803663-cqemermkk3fk8rnlvcfg5vksf9n463pk.apps.googleusercontent.com",
+});
+WebBrowser.maybeCompleteAuthSession();
 
 const Signin: React.FC = ({ route, navigation }: any) => {
   const { authState, signIn } = useAuth();
@@ -32,98 +61,15 @@ const Signin: React.FC = ({ route, navigation }: any) => {
   const onSubmit = async (data: TCredential) => {
     try {
       console.log("data sign in", data);
-      const res = await axios.post("http://175.41.154.239/auth/signin", {
-        type: "normal",
-        payload: data,
-      });
-      console.log(res.data);
+      const res = await axios.post(
+        // Platform.OS === "android" ? API_ANDROID_URL : API_IOS_URL + "/auth/signin",
+        API_URL + "/auth/signin",
+        {
+          type: "normal",
+          payload: data,
+        }
+      );
       const { success, msg, accessToken } = res.data;
-      if (!success) throw new Error("Bad request!");
-      toast.show({
-        title: "Login status",
-        description: res.data,
-        variant: "solid",
-        placement: "top",
-      });
-      return signIn(accessToken);
-    } catch (error) {
-      console.error(error);
-      toast.show({
-        title: "Login status",
-        description: error.message,
-        placement: "top",
-      });
-    }
-  };
-
-  const handleFacebookLogin = async () => {
-    try {
-      const user = await signInWithFb();
-      if (!user) return;
-      const data = {
-        type: "facebook",
-        payload: {
-          fbEmail: user.user.email,
-          fbName: user.user.displayName,
-          fbAvatar: user.user.photoURL,
-        },
-      };
-      const res = await axios.post("http://175.41.154.239/auth/signin", data);
-      const { success, msg, accessToken } = res.data;
-      if (!success) throw new Error("Bad request!");
-      //   toast.show({
-      //     title: "Login status",
-      //     description: msg,
-      //     variant: "solid",
-      //     placement: "top",
-      //   });
-      return signIn(accessToken);
-    } catch (error) {
-      console.error(error);
-      toast.show({
-        title: "Login status",
-        description: error.message,
-        placement: "top",
-      });
-    }
-  };
-
-  // GG login
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId: GOOGLE_EXPO_CLIENT_ID,
-    iosClientId: GOOGLE_IOS_CLIENT_ID,
-    androidClientId: GOOGLE_ANDROID_CLIENT_ID,
-  });
-  useEffect(() => {
-    const getGgUser = async () => {
-      if (response?.type === "success") {
-        const accessToken = response.authentication.accessToken;
-        const res = await axios.get(
-          "https://www.googleapis.com/userinfo/v2/me",
-          {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          }
-        );
-        await handleGoogleLogin(res.data);
-      }
-    };
-    getGgUser();
-  }, [response]);
-
-  // handle google sign in
-  const handleGoogleLogin = async (ggUser: any) => {
-    try {
-      const data = {
-        type: "google",
-        payload: {
-          ggEmail: ggUser.email,
-          ggName: ggUser.name,
-          ggAvatar: ggUser.picture,
-        },
-      };
-      const res = await axios.post("http://175.41.154.239/auth/signin", data);
-      const { success, msg, accessToken } = res.data;
-      console.log("data tu google", authState);
       if (!success) throw new Error("Bad request!");
       toast.show({
         title: "Login status",
@@ -131,7 +77,82 @@ const Signin: React.FC = ({ route, navigation }: any) => {
         variant: "solid",
         placement: "top",
       });
-      if (success) navigation.navigate("HOME");
+      // return signIn(accessToken);
+    } catch (error) {
+      console.error(error);
+      toast.show({
+        title: "Login status",
+        description: error.message,
+        placement: "top",
+      });
+    }
+  };
+
+  // handle facebook signin
+  const handleFacebookLogin = async () => {
+    signInWithFb();
+    // try {
+    //   const user = await signInWithFb();
+    //   if (!user) return;
+    //   const data = {
+    //     type: "facebook",
+    //     payload: {
+    //       fbEmail: user.user.email,
+    //       fbName: user.user.displayName,
+    //       fbAvatar: user.user.photoURL
+    //     }
+    //   };
+    //   const res = await axios.post(
+    //     // Platform.OS === "android" ? API_ANDROID_URL : API_IOS_URL + "/auth/signin",
+    //     API_URL + "/auth/signin",
+    //     data
+    //   );
+    //   const { success, msg, accessToken } = res.data;
+    //   if (!success) throw new Error("Bad request!");
+    //   toast.show({
+    //     title: "Login status",
+    //     description: msg,
+    //     variant: "solid",
+    //     placement: "top"
+    //   });
+    //   return signIn(accessToken);
+    // } catch (error) {
+    //   console.error(error);
+    //   toast.show({
+    //     title: "Login status",
+    //     description: error.message,
+    //     placement: "top"
+    //   });
+    // }
+  };
+
+  // handle google sign in
+  const handleGoogleLogin = async (user: any) => {
+    try {
+      // const user = await signInWithGg()
+      // console.log("user google is", user)
+      if (!user) return;
+      const data = {
+        type: "google",
+        payload: {
+          ggEmail: user.email,
+          ggName: user.name,
+          ggAvatar: user.photo,
+        },
+      };
+      const res = await axios.post(
+        // Platform.OS === "android" ? API_ANDROID_URL : API_IOS_URL + "/auth/signin",
+        API_URL + "/auth/signin",
+        data
+      );
+      const { success, msg, accessToken } = res.data;
+      if (!success) throw new Error("Bad request!");
+      toast.show({
+        title: "Login status",
+        description: msg,
+        variant: "solid",
+        placement: "top",
+      });
       return signIn(accessToken);
     } catch (error) {
       console.error(error);
@@ -143,266 +164,138 @@ const Signin: React.FC = ({ route, navigation }: any) => {
     }
   };
 
+  const ggSignIn = async () => {
+    GoogleSignin.hasPlayServices().then((value) => {
+      if (value) {
+        GoogleSignin.signIn().then((valuee) => {
+          if (valuee && valuee.user) {
+            handleGoogleLogin(valuee.user);
+          }
+        });
+      }
+    });
+  };
+
   return (
-    // <Box
-    //   w="full"
-    //   h="full"
-    //   top="0"
-    //   px="6"
-    //   position="absolute"
-    //   justifyContent="center"
-    //   bgColor="muted.50"
-    // >
-    //   <Image
-    //     alignSelf="center"
-    //     source={require("../../assets/logo.png")}
-    //     size="150"
-    //     alt="logo"
-    //   />
-    //   <VStack space="5">
-    //     <Stack space="2">
-    //       <FormControl isRequired isInvalid={"username" in errors}>
-    //         <FormControl.Label>User name </FormControl.Label>
-    //         <Controller
-    //           control={control}
-    //           render={({ field: { onChange, onBlur, value } }) => (
-    //             <Input
-    //               onBlur={onBlur}
-    //               onChangeText={onChange}
-    //               value={value}
-    //               placeholder="zuno"
-    //               InputLeftElement={
-    //                 <Icon as={Feather} name="user" ml="2" color="purple.500" />
-    //               }
-    //             />
-    //           )}
-    //           name="username"
-    //           rules={{
-    //             required: "User name is required",
-    //             minLength: {
-    //               value: 6,
-    //               message: "User name is min 6 character",
-    //             },
-    //             maxLength: {
-    //               value: 50,
-    //               message: "User name is max 50 character",
-    //             },
-    //           }}
-    //           defaultValue=""
-    //         />
-    //         <FormControl.ErrorMessage>
-    //           {errors.username?.message}
-    //         </FormControl.ErrorMessage>
-    //       </FormControl>
-    //       <FormControl isRequired isInvalid={"password" in errors}>
-    //         <FormControl.Label>Password </FormControl.Label>
-    //         <Controller
-    //           control={control}
-    //           render={({ field: { onChange, onBlur, value } }) => (
-    //             <Input
-    //               onBlur={onBlur}
-    //               onChangeText={onChange}
-    //               value={value}
-    //               type="password"
-    //               placeholder="******"
-    //               InputLeftElement={
-    //                 <Icon
-    //                   as={MaterialCommunityIcons}
-    //                   name="onepassword"
-    //                   ml="2"
-    //                   color="purple.500"
-    //                 />
-    //               }
-    //             />
-    //           )}
-    //           name="password"
-    //           rules={{
-    //             required: "Password is required",
-    //             minLength: { value: 6, message: "Password is min 6 character" },
-    //             maxLength: {
-    //               value: 50,
-    //               message: "Password is max 50 character",
-    //             },
-    //           }}
-    //           defaultValue=""
-    //         />
-    //         <FormControl.ErrorMessage>
-    //           {errors.password?.message}
-    //         </FormControl.ErrorMessage>
-    //       </FormControl>
-    //     </Stack>
-    //     <HStack alignItems="center" justifyContent="space-between">
-    //       <Text>Do not have an account?</Text>
-    //       <Button
-    //         onPress={() => navigation.navigate("SIGN UP")}
-    //         variant="ghost"
-    //         colorScheme="success"
-    //       >
-    //         Sign Up
-    //       </Button>
-    //     </HStack>
-    //     <VStack space="4">
-    //       <Button
-    //         onPress={() => promptAsync({ showInRecents: true })}
-    //         leftIcon={<AntDesign name="google" size={24} color="white" />}
-    //         colorScheme="red"
-    //       >
-    //         Google
-    //       </Button>
-    //       {/* <LoginButton /> */}
-    //       <Button
-    //         onPress={handleFacebookLogin}
-    //         leftIcon={<Entypo name="facebook" size={24} color="white" />}
-    //         colorScheme="blue"
-    //       >
-    //         Facebook
-    //       </Button>
-    //       <Button onPress={handleSubmit(onSubmit)} colorScheme="green">
-    //         SIGN IN
-    //       </Button>
-    //     </VStack>
-    //   </VStack>
-    <View>
+    <Box
+      w="full"
+      h="full"
+      top="0"
+      px="6"
+      position="absolute"
+      justifyContent="center"
+      bgColor="muted.50"
+    >
       <Image
-        alt="No image"
-        source={require("../../assets/BackgroundGame.png")}
-        style={{ width: "100%", height: "100%", zIndex: -2 }}
+        alignSelf="center"
+        source={require("../../assets/logo.png")}
+        size="150"
+        alt="logo"
       />
-      <Image
-        alt="No image"
-        source={require("../../assets/GirlLogin.png")}
-        style={{
-          position: "absolute",
-          width: "38%",
-          height: "94%",
-          zIndex: 2,
-          bottom: 0,
-          left: -6,
-        }}
-      />
-      <TouchableOpacity style={{ position: "absolute", top: 30, left: "32%" }}>
-        <Image
-          alt="No image"
-          source={require("../../assets/LoginTitle.png")}
-          style={{ width: 280, height: 60 }}
-        />
-      </TouchableOpacity>
-      <View
-        style={{
-          position: "absolute",
-          backgroundColor: "transparent",
-          flex: 1,
-          flexDirection: "column",
-          top: "30%",
-          left: "35%",
-        }}
-      >
-        <Text style={{ color: "white", top: "-5%" }}>
-          Don’t have an account?{"  "}
-          <Text
-            style={{ textDecorationLine: "underline", color: "white" }}
-            onPress={() => {
-              navigation.navigate("SIGNUP");
-            }}
-          >
-            Signup now!
-          </Text>
-        </Text>
-        <View style={{ backgroundColor: "transparent", padding: 10 }}>
-          <Text style={{ color: "white", marginBottom: 10 }}> Account</Text>
-          <TextInput
-            placeholder="User name"
-            // secureTextEntry={true}
-            style={{
-              height: 30,
-              backgroundColor: "white",
-              fontSize: 12,
-              borderRadius: 6,
-              paddingLeft: 20,
-              paddingRight: 30,
-            }}
-          />
-          <Text style={{ color: "white", marginTop: 10, marginBottom: 10 }}>
-            Password
-          </Text>
-          <TextInput
-            placeholder="Password"
-            secureTextEntry={true}
-            style={{
-              height: 30,
-              backgroundColor: "white",
-              fontSize: 12,
-              borderRadius: 6,
-              paddingLeft: 20,
-              paddingRight: 30,
-              position: "relative",
-            }}
-          />
-          <TouchableOpacity
-            style={{ position: "absolute", bottom: 9, right: 10 }}
-          >
-            <Image
-              alt="No image"
-              source={require("../../assets/ButtonLogin.png")}
-              style={{ width: 30, height: 31 }}
+      <VStack space="5">
+        <Stack space="2">
+          <FormControl isRequired isInvalid={"username" in errors}>
+            <FormControl.Label>User name </FormControl.Label>
+            <Controller
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  placeholder="zuno"
+                  InputLeftElement={
+                    <Icon as={Feather} name="user" ml="2" color="purple.500" />
+                  }
+                />
+              )}
+              name="username"
+              rules={{
+                required: "User name is required",
+                minLength: {
+                  value: 6,
+                  message: "User name is min 6 character",
+                },
+                maxLength: {
+                  value: 50,
+                  message: "User name is max 50 character",
+                },
+              }}
+              defaultValue=""
             />
-          </TouchableOpacity>
-        </View>
-
-        <View
-          style={{
-            paddingLeft: 10,
-            flexDirection: "row",
-            justifyContent: "space-around",
-            alignItems: "center",
-            backgroundColor: "transparent",
-            marginTop: "20%",
-          }}
-        >
-          {/* <LoginButton /> */}
-          <TouchableOpacity
-            style={{ bottom: 9, right: 10 }}
-            onPress={handleGoogleLogin}
-          >
-            <Image
-              alt="No image"
-              source={require("../../assets/Google.png")}
-              style={{ width: 36, height: 36 }}
+            <FormControl.ErrorMessage>
+              {errors.username?.message}
+            </FormControl.ErrorMessage>
+          </FormControl>
+          <FormControl isRequired isInvalid={"password" in errors}>
+            <FormControl.Label>Password </FormControl.Label>
+            <Controller
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  type="password"
+                  placeholder="******"
+                  InputLeftElement={
+                    <Icon
+                      as={MaterialCommunityIcons}
+                      name="onepassword"
+                      ml="2"
+                      color="purple.500"
+                    />
+                  }
+                />
+              )}
+              name="password"
+              rules={{
+                required: "Password is required",
+                minLength: { value: 6, message: "Password is min 6 character" },
+                maxLength: {
+                  value: 50,
+                  message: "Password is max 50 character",
+                },
+              }}
+              defaultValue=""
             />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{ bottom: 9, right: 10 }}
+            <FormControl.ErrorMessage>
+              {errors.password?.message}
+            </FormControl.ErrorMessage>
+          </FormControl>
+        </Stack>
+        <HStack alignItems="center" justifyContent="space-between">
+          <Text>Do not have an account?</Text>
+          <Button
+            onPress={() => navigation.navigate("SIGN UP")}
+            variant="ghost"
+            colorScheme="success"
+          >
+            Sign Up
+          </Button>
+        </HStack>
+        <VStack space="4">
+          <Button
             onPress={handleFacebookLogin}
+            leftIcon={<Entypo name="facebook" size={24} color="white" />}
+            colorScheme="blue"
           >
-            <Image
-              alt="No image"
-              source={require("../../assets/Facebook.png")}
-              style={{ width: 36, height: 36 }}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={{ bottom: 9, right: 10 }}>
-            <Image
-              alt="No image"
-              source={require("../../assets/Apple.png")}
-              style={{ width: 36, height: 36 }}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <Icon
-        onPress={() => {
-          navigation.navigate("Root");
-        }}
-        name="arrow-back        "
-        size={30}
-        color="#900"
-        style={{ position: "absolute", top: "5%", left: "2%" }}
-      />
-    </View>
+            Facebook
+          </Button>
+          <Button
+            onPress={ggSignIn}
+            leftIcon={<AntDesign name="google" size={24} color="white" />}
+            colorScheme="red"
+          >
+            Google
+          </Button>
+          <Button onPress={handleSubmit(onSubmit)} colorScheme="green">
+            SIGN IN
+          </Button>
+        </VStack>
+      </VStack>
+    </Box>
   );
-  // </Box>
-  //   );
 };
 
 export default Signin;

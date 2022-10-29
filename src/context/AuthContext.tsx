@@ -2,6 +2,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "react-native-dotenv";
+<<<<<<< HEAD
+=======
+import { GoogleSignin, GoogleSigninButton, statusCodes } from "@react-native-google-signin/google-signin";
+>>>>>>> 8d9bd1d51e9b883e8d7dfbbd1fbd367d4d69f586
 
 type TUserInfo = {
   id: string;
@@ -28,13 +32,18 @@ const AuthContext = createContext<TAuthContext | null>(null);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [authState, setAuthState] = useState<TAuthState>({
     isAuth: false,
+<<<<<<< HEAD
     user: null,
+=======
+    user: null
+>>>>>>> 8d9bd1d51e9b883e8d7dfbbd1fbd367d4d69f586
   });
 
   const checkAuth = async () => {
     const accessToken = await AsyncStorage.getItem("accessToken");
     if (!accessToken) return;
     try {
+<<<<<<< HEAD
       const res = await axios.get(`http://175.41.154.239/user/info`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -44,6 +53,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const { success, data } = res.data;
       if (!success) throw new Error("Bad request!");
       console.log(data);
+=======
+      const res = await axios.get(`${API_URL}/user/info`, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+      const { success, data } = res.data;
+      if (!success) throw new Error("Bad request!");
+>>>>>>> 8d9bd1d51e9b883e8d7dfbbd1fbd367d4d69f586
       return setAuthState({
         isAuth: true,
         user: {
@@ -52,15 +68,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           username: data.username,
           name: data.name,
           avatar: data.avatar,
+<<<<<<< HEAD
           chips: data.chips,
         },
+=======
+          chips: data.chips
+        }
+>>>>>>> 8d9bd1d51e9b883e8d7dfbbd1fbd367d4d69f586
       });
     } catch (error) {
       await AsyncStorage.removeItem("accessToken");
       console.error(error);
       return setAuthState({
         isAuth: false,
+<<<<<<< HEAD
         user: null,
+=======
+        user: null
+>>>>>>> 8d9bd1d51e9b883e8d7dfbbd1fbd367d4d69f586
       });
     }
   };
@@ -71,6 +96,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signIn = async (token: string) => {
     await AsyncStorage.setItem("accessToken", token);
+<<<<<<< HEAD
     console.log(token, "asdasdj");
     await checkAuth();
   };
@@ -83,6 +109,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
     </AuthContext.Provider>
   );
+=======
+    await checkAuth();
+  };
+
+  const signOut = async () => {
+    try {
+      await AsyncStorage.removeItem("accessToken");
+      GoogleSignin.signOut();
+      return setAuthState({
+        isAuth: false,
+        user: null
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const authContextValue = { authState, signIn, signOut };
+  return <AuthContext.Provider value={authContextValue}>{children}</AuthContext.Provider>;
+>>>>>>> 8d9bd1d51e9b883e8d7dfbbd1fbd367d4d69f586
 };
 
 export const useAuth = () => {

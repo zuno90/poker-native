@@ -4,7 +4,6 @@ import {
   Button,
   Text,
   Container,
-  Heading,
   SimpleGrid,
   Center,
   Stack,
@@ -17,9 +16,10 @@ import { useEffect, useState } from "react";
 
 const Home: React.FC = ({ route, navigation }: any) => {
   const {
-    authState: { user, isAuth },
+    authState: { user },
+    signOut,
   } = useAuth();
-  const client = new Colyseus.Client("ws://localhost:9000");
+  const client = new Colyseus.Client("ws://175.41.154.239");
   const [rooms, setRooms] = useState<Colyseus.RoomAvailable[]>();
 
   const getAvailableRooms = async () => {
@@ -51,14 +51,7 @@ const Home: React.FC = ({ route, navigation }: any) => {
               size="sm"
             />
             <Text>Chips: {user.chips}</Text>
-            <Button
-              onPress={() => {
-                navigation.navigate("ROOT");
-                AsyncStorage.removeItem("accessToken");
-              }}
-            >
-              LOG OUT
-            </Button>
+            <Button onPress={signOut}>LOG OUT</Button>
           </HStack>
 
           <HStack space="4">
@@ -68,12 +61,15 @@ const Home: React.FC = ({ route, navigation }: any) => {
             <Button mt="2" colorScheme="red">
               Join
             </Button>
+            <Button mt="2" colorScheme="red" onPress={signOut}>
+              logout
+            </Button>
           </HStack>
           <Stack width="full">
             <SimpleGrid columns={3} space={2}>
               {rooms &&
                 rooms.map((item: any, index: number) => (
-                  <Box>{item.roomId}</Box>
+                  <Box key={index}>{item.roomId}</Box>
                 ))}
             </SimpleGrid>
           </Stack>
