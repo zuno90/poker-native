@@ -5,6 +5,6 @@
   "minify": false,
   "urlRandomness": null,
   "https": false,
-  "devClient": true,
-  "scheme": "fb779406933155030"
+  "scheme": "fb779406933155030",
+  "devClient": false
 }

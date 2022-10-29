@@ -30,6 +30,7 @@
     "expo-splash-screen": "~0.16.2",
     "expo-status-bar": "~1.4.0",
     "expo-updates": "~0.14.6",
+    "expo-web-browser": "~11.0.0",
     "firebase": "9.1.0",
     "install": "^0.13.0",
     "native-base": "^3.4.13",
