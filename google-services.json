@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "346689803663",
+    "project_id": "poker-game-17764",
+    "storage_bucket": "poker-game-17764.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:346689803663:android:cfce033808f131b84d67fa",
+        "android_client_info": {
+          "package_name": "com.zunohan.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "346689803663-q3poae1ce4uh47k7p7cia5tdaaj9ci41.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zunohan.app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "346689803663-cqemermkk3fk8rnlvcfg5vksf9n463pk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfFNH2Zw-vClF71_ExwCIpzAoZeNfNs0s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "346689803663-cqemermkk3fk8rnlvcfg5vksf9n463pk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "346689803663-an670usg273uv4ec6i5i794kcroedr96.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "zuno.poker"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

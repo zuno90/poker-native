@@ -3,7 +3,7 @@
         "name": "app",
         "slug": "app",
         "version": "1.0.0",
-        "orientation": "landscape",
+        "orientation": "default",
         "icon": "./assets/logo.png",
         "userInterfaceStyle": "light",
         "splash": {
@@ -24,6 +24,7 @@
                 "foregroundImage": "./assets/adaptive-icon.png",
                 "backgroundColor": "#FFFFFF"
             },
+            "googleServicesFile": "./google-services.json",
             "package": "com.zunohan.app"
         },
         "web": {
@@ -42,7 +43,8 @@
                     "clientToken": "9164945cba43644143c77c9062deca77",
                     "displayName": "FB Login"
                 }
-            ]
+            ],
+            "@react-native-google-signin/google-signin"
         ]
     }
 }
