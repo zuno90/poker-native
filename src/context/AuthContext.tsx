@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "react-native-dotenv";
+import { GoogleSignin, GoogleSigninButton, statusCodes } from "@react-native-google-signin/google-signin";
 
 type TUserInfo = {
   id: string;
@@ -73,6 +74,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     try {
       await AsyncStorage.removeItem("accessToken");
+      GoogleSignin.signOut();
       return setAuthState({
         isAuth: false,
         user: null

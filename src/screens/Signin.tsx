@@ -68,39 +68,40 @@ const Signin: React.FC = ({ route, navigation }: any) => {
 
   // handle facebook signin
   const handleFacebookLogin = async () => {
-    try {
-      const user = await signInWithFb();
-      if (!user) return;
-      const data = {
-        type: "facebook",
-        payload: {
-          fbEmail: user.user.email,
-          fbName: user.user.displayName,
-          fbAvatar: user.user.photoURL
-        }
-      };
-      const res = await axios.post(
-        // Platform.OS === "android" ? API_ANDROID_URL : API_IOS_URL + "/auth/signin",
-        API_URL + "/auth/signin",
-        data
-      );
-      const { success, msg, accessToken } = res.data;
-      if (!success) throw new Error("Bad request!");
-      toast.show({
-        title: "Login status",
-        description: msg,
-        variant: "solid",
-        placement: "top"
-      });
-      return signIn(accessToken);
-    } catch (error) {
-      console.error(error);
-      toast.show({
-        title: "Login status",
-        description: error.message,
-        placement: "top"
-      });
-    }
+    signInWithFb();
+    // try {
+    //   const user = await signInWithFb();
+    //   if (!user) return;
+    //   const data = {
+    //     type: "facebook",
+    //     payload: {
+    //       fbEmail: user.user.email,
+    //       fbName: user.user.displayName,
+    //       fbAvatar: user.user.photoURL
+    //     }
+    //   };
+    //   const res = await axios.post(
+    //     // Platform.OS === "android" ? API_ANDROID_URL : API_IOS_URL + "/auth/signin",
+    //     API_URL + "/auth/signin",
+    //     data
+    //   );
+    //   const { success, msg, accessToken } = res.data;
+    //   if (!success) throw new Error("Bad request!");
+    //   toast.show({
+    //     title: "Login status",
+    //     description: msg,
+    //     variant: "solid",
+    //     placement: "top"
+    //   });
+    //   return signIn(accessToken);
+    // } catch (error) {
+    //   console.error(error);
+    //   toast.show({
+    //     title: "Login status",
+    //     description: error.message,
+    //     placement: "top"
+    //   });
+    // }
   };
 
   // handle google sign in
