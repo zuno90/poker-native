@@ -26,7 +26,6 @@ export const signInWithFb = async () => {
 export const signInWithGg = async () => {
     try {
         await GoogleSignin.hasPlayServices()
-        console.log(await GoogleSignin.hasPlayServices())
         await GoogleSignin.signOut()
         const userInfo = await GoogleSignin.signIn()
         return userInfo

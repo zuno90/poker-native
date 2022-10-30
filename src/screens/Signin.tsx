@@ -2,6 +2,9 @@ import { useEffect } from "react"
 import { Platform } from "react-native"
 import { Box, Button, Input, VStack, HStack, FormControl, Stack, Icon, Image, Text, useToast } from "native-base"
 import { Feather, MaterialCommunityIcons, Entypo, AntDesign } from "@expo/vector-icons"
+import { StyleSheet, Alert, ImageBackground, TouchableOpacity, View, TextInput } from "react-native"
+import * as ScreenOrientation from "expo-screen-orientation"
+
 import { useForm, Controller } from "react-hook-form"
 import { signInWithFb, signInWithGg } from "../utils/firebaseLogin"
 import { LoginButton } from "react-native-fbsdk-next"
@@ -28,10 +31,18 @@ const Signin: React.FC = ({ route, navigation }: any) => {
     const toast = useToast()
 
     // console.log(authState)
+    useEffect(() => {
+        const concac = async () => {
+            if (Platform.OS === "android")
+                return ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT)
+        }
+        concac()
+    }, [])
 
     const onSubmit = async (data: TCredential) => {
         try {
             console.log("data sign in", data)
+            console.log(API_URL + "/auth/signin")
             const res = await axios.post(
                 // Platform.OS === "android" ? API_ANDROID_URL : API_IOS_URL + "/auth/signin",
                 API_URL + "/auth/signin",
@@ -50,7 +61,7 @@ const Signin: React.FC = ({ route, navigation }: any) => {
             })
             return signIn(accessToken)
         } catch (error) {
-            console.error(error)
+            // console.error(error)
             toast.show({
                 title: "Login status",
                 description: error.message,
@@ -133,102 +144,227 @@ const Signin: React.FC = ({ route, navigation }: any) => {
         }
     }
 
+    // return (
+    //     <Box w="full" h="full" top="0" px="6" position="absolute" justifyContent="center" bgColor="muted.50">
+    //         <Image alignSelf="center" source={require("../../assets/logo.png")} size="150" alt="logo" />
+    //         <VStack space="5">
+    //             <Stack space="2">
+    //                 <FormControl isRequired isInvalid={"username" in errors}>
+    //                     <FormControl.Label>User name </FormControl.Label>
+
+    //                     <FormControl.ErrorMessage>{errors.username?.message}</FormControl.ErrorMessage>
+    //                 </FormControl>
+    //                 <FormControl isRequired isInvalid={"password" in errors}>
+    //                     <FormControl.Label>Password </FormControl.Label>
+
+    //                     <FormControl.ErrorMessage>{errors.password?.message}</FormControl.ErrorMessage>
+    //                 </FormControl>
+    //             </Stack>
+    //             <HStack alignItems="center" justifyContent="space-between">
+    //                 <Text>Do not have an account?</Text>
+    //                 <Button onPress={() => navigation.navigate("SIGN UP")} variant="ghost" colorScheme="success">
+    //                     Sign Up
+    //                 </Button>
+    //             </HStack>
+    //             <VStack space="4">
+    //                 <Button
+    //                     onPress={handleFacebookLogin}
+    //                     leftIcon={<Entypo name="facebook" size={24} color="white" />}
+    //                     colorScheme="blue"
+    //                 >
+    //                     Facebook
+    //                 </Button>
+    //                 <Button
+    //                     onPress={handleGoogleLogin}
+    //                     leftIcon={<AntDesign name="google" size={24} color="white" />}
+    //                     colorScheme="red"
+    //                 >
+    //                     Google
+    //                 </Button>
+    //                 <Button onPress={handleSubmit(onSubmit)} colorScheme="green">
+    //                     SIGN IN
+    //                 </Button>
+    //             </VStack>
+    //         </VStack>
+    //     </Box>
+    // )
     return (
-        <Box w="full" h="full" top="0" px="6" position="absolute" justifyContent="center" bgColor="muted.50">
-            <Image alignSelf="center" source={require("../../assets/logo.png")} size="150" alt="logo" />
-            <VStack space="5">
-                <Stack space="2">
-                    <FormControl isRequired isInvalid={"username" in errors}>
-                        <FormControl.Label>User name </FormControl.Label>
-                        <Controller
-                            control={control}
-                            render={({ field: { onChange, onBlur, value } }) => (
+        <View>
+            <Image
+                alt="No image"
+                source={require("../../assets/BackgroundGame.png")}
+                style={{ width: "100%", height: "100%", zIndex: -2 }}
+            />
+            <Image
+                alt="No image"
+                source={require("../../assets/GirlLogin.png")}
+                style={{
+                    position: "absolute",
+                    width: "38%",
+                    height: "100%",
+                    zIndex: 2,
+                    bottom: 0,
+                    left: -6,
+                    backgroundColor: "transparent",
+                }}
+            />
+            <TouchableOpacity style={{ position: "absolute", top: 30, left: "32%" }}>
+                <Image
+                    alt="No image"
+                    source={require("../../assets/LoginTitle.png")}
+                    style={{ width: 280, height: 60 }}
+                />
+            </TouchableOpacity>
+            <View
+                style={{
+                    position: "absolute",
+                    backgroundColor: "transparent",
+                    flex: 1,
+                    flexDirection: "column",
+                    top: "30%",
+                    left: "35%",
+                }}
+            >
+                <Text style={{ color: "white", top: "-5%" }}>
+                    Don’t have an account?{"  "}
+                    <Text
+                        style={{ textDecorationLine: "underline", color: "white" }}
+                        onPress={() => {
+                            navigation.navigate("SIGN UP")
+                        }}
+                    >
+                        Signup now!
+                    </Text>
+                </Text>
+                <View style={{ backgroundColor: "transparent", padding: 10 }}>
+                    <Text style={{ color: "white", marginBottom: 10 }}> Account</Text>
+                    <Controller
+                        control={control}
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <Input
+                                style={{
+                                    height: 30,
+                                    backgroundColor: "white",
+                                    fontSize: 12,
+                                    borderRadius: 4,
+                                    paddingLeft: 20,
+                                    paddingRight: 30,
+                                }}
+                                onBlur={onBlur}
+                                onChangeText={onChange}
+                                value={value}
+                            />
+                        )}
+                        name="username"
+                        rules={{
+                            required: "Username is required",
+                            minLength: { value: 6, message: "username is min 6 character" },
+                            maxLength: {
+                                value: 50,
+                                message: "username is max 50 character",
+                            },
+                        }}
+                        defaultValue=""
+                    />
+                    <Text style={{ color: "white" }}>{errors.username?.message}</Text>
+                    <Text style={{ color: "white", marginBottom: 10 }}> Password</Text>
+                    <Controller
+                        control={control}
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <View style={{ position: "relative" }}>
                                 <Input
-                                    onBlur={onBlur}
-                                    onChangeText={onChange}
-                                    value={value}
-                                    placeholder="zuno"
-                                    InputLeftElement={<Icon as={Feather} name="user" ml="2" color="purple.500" />}
-                                />
-                            )}
-                            name="username"
-                            rules={{
-                                required: "User name is required",
-                                minLength: {
-                                    value: 6,
-                                    message: "User name is min 6 character",
-                                },
-                                maxLength: {
-                                    value: 50,
-                                    message: "User name is max 50 character",
-                                },
-                            }}
-                            defaultValue=""
-                        />
-                        <FormControl.ErrorMessage>{errors.username?.message}</FormControl.ErrorMessage>
-                    </FormControl>
-                    <FormControl isRequired isInvalid={"password" in errors}>
-                        <FormControl.Label>Password </FormControl.Label>
-                        <Controller
-                            control={control}
-                            render={({ field: { onChange, onBlur, value } }) => (
-                                <Input
+                                    style={{
+                                        height: 30,
+                                        backgroundColor: "white",
+                                        fontSize: 12,
+                                        borderRadius: 4,
+                                        paddingLeft: 20,
+                                        paddingRight: 30,
+                                        position: "relative",
+                                    }}
                                     onBlur={onBlur}
                                     onChangeText={onChange}
                                     value={value}
                                     type="password"
                                     placeholder="******"
-                                    InputLeftElement={
-                                        <Icon
-                                            as={MaterialCommunityIcons}
-                                            name="onepassword"
-                                            ml="2"
-                                            color="purple.500"
-                                        />
-                                    }
                                 />
-                            )}
-                            name="password"
-                            rules={{
-                                required: "Password is required",
-                                minLength: { value: 6, message: "Password is min 6 character" },
-                                maxLength: {
-                                    value: 50,
-                                    message: "Password is max 50 character",
-                                },
-                            }}
-                            defaultValue=""
+                                <TouchableOpacity
+                                    style={{ position: "absolute", bottom: 0, right: 0 }}
+                                    onPress={handleSubmit(onSubmit)}
+                                >
+                                    <Image
+                                        alt="No image"
+                                        source={require("../../assets/Button.png")}
+                                        style={{ width: 36, height: 32 }}
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                        name="password"
+                        rules={{
+                            required: "Password is required",
+                            minLength: { value: 6, message: "Password is min 6 character" },
+                            maxLength: {
+                                value: 50,
+                                message: "Password is max 50 character",
+                            },
+                        }}
+                        defaultValue=""
+                    />
+                    <Text style={{ color: "white" }}>{errors.password?.message}</Text>
+                </View>
+
+                <View
+                    style={{
+                        // position: "absolute",
+                        paddingLeft: 10,
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-around",
+                        alignItems: "center",
+                        backgroundColor: "transparent",
+                        marginTop: "-10%",
+                        bottom: -20,
+                    }}
+                >
+                    <TouchableOpacity style={{ bottom: 9, right: 10 }} onPress={handleGoogleLogin}>
+                        <Image
+                            alt="No image"
+                            source={require("../../assets/Google.png")}
+                            style={{ width: 36, height: 36 }}
                         />
-                        <FormControl.ErrorMessage>{errors.password?.message}</FormControl.ErrorMessage>
-                    </FormControl>
-                </Stack>
-                <HStack alignItems="center" justifyContent="space-between">
-                    <Text>Do not have an account?</Text>
-                    <Button onPress={() => navigation.navigate("SIGN UP")} variant="ghost" colorScheme="success">
-                        Sign Up
-                    </Button>
-                </HStack>
-                <VStack space="4">
-                    <Button
-                        onPress={handleFacebookLogin}
-                        leftIcon={<Entypo name="facebook" size={24} color="white" />}
-                        colorScheme="blue"
-                    >
-                        Facebook
-                    </Button>
-                    <Button
-                        onPress={handleGoogleLogin}
-                        leftIcon={<AntDesign name="google" size={24} color="white" />}
-                        colorScheme="red"
-                    >
-                        Google
-                    </Button>
-                    <Button onPress={handleSubmit(onSubmit)} colorScheme="green">
-                        SIGN IN
-                    </Button>
-                </VStack>
-            </VStack>
-        </Box>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{ bottom: 9, right: 10 }} onPress={handleFacebookLogin}>
+                        <Image
+                            alt="No image"
+                            source={require("../../assets/Facebook.png")}
+                            style={{ width: 36, height: 36 }}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{ bottom: 9, right: 10 }}>
+                        <Image
+                            alt="No image"
+                            source={require("../../assets/Apple.png")}
+                            style={{ width: 36, height: 36 }}
+                        />
+                    </TouchableOpacity>
+                </View>
+                {/* <AntDesign size={30} color="#900" /> */}
+            </View>
+            <TouchableOpacity
+                style={{ position: "absolute", top: "5%", left: "4%", zIndex: 10 }}
+                onPress={() => {
+                    navigation.navigate("ROOT")
+                }}
+            >
+                <AntDesign
+                    name="arrowleft"
+                    size={30}
+                    color="white"
+                    style={{ position: "absolute", top: "5%", left: "4%" }}
+                />
+            </TouchableOpacity>
+        </View>
     )
 }
 

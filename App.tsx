@@ -9,7 +9,7 @@ import { useEffect } from "react"
 
 const App: React.FC = () => {
     async function changeScreenOrientation() {
-        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP)
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT)
     }
     useEffect(() => {
         changeScreenOrientation()

@@ -33,6 +33,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const checkAuth = async () => {
         const accessToken = await AsyncStorage.getItem("accessToken")
+        console.log("check auth context", accessToken)
         if (!accessToken) return
         try {
             const res = await axios.get(`${API_URL}/user/info`, {
