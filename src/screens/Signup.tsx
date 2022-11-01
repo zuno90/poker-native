@@ -1,35 +1,9 @@
-import { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Input,
-  VStack,
-  FormControl,
-  Stack,
-  Icon,
-  Image,
-  Text,
-  HStack,
-  useToast,
-} from "native-base";
-import {
-  Feather,
-  MaterialCommunityIcons,
-  Entypo,
-  AntDesign,
-} from "@expo/vector-icons";
+import { Input, Image, Text, useToast } from "native-base";
+import { AntDesign } from "@expo/vector-icons";
 import { useForm, Controller } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
-import {
-  StyleSheet,
-  Alert,
-  ImageBackground,
-  TouchableOpacity,
-  View,
-  TextInput,
-} from "react-native";
+import { TouchableOpacity, View } from "react-native";
 
-import { signInWithFb, signInWithGg } from "../utils/firebaseLogin";
 import axios from "axios";
 import { TCredential } from "../__types__/credential.type";
 import { API_URL } from "react-native-dotenv";
@@ -80,7 +54,7 @@ const Signup: React.FC = ({ route, navigation }: any) => {
 
       // }
     } catch (error) {
-      // console.error(error)
+      console.error(error);
     }
   };
 

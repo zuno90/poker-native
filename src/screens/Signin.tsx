@@ -1,49 +1,16 @@
 import { useEffect } from "react";
 import { Platform } from "react-native";
-import {
-  Box,
-  Button,
-  Input,
-  VStack,
-  HStack,
-  FormControl,
-  Stack,
-  Icon,
-  Image,
-  Text,
-  useToast,
-} from "native-base";
-import {
-  Feather,
-  MaterialCommunityIcons,
-  Entypo,
-  AntDesign,
-} from "@expo/vector-icons";
-import {
-  StyleSheet,
-  Alert,
-  ImageBackground,
-  TouchableOpacity,
-  View,
-  TextInput,
-} from "react-native";
+import { Input, Image, Text, useToast } from "native-base";
+import { AntDesign } from "@expo/vector-icons";
+import { TouchableOpacity, View } from "react-native";
 import * as ScreenOrientation from "expo-screen-orientation";
 
 import { useForm, Controller } from "react-hook-form";
 import { signInWithFb, signInWithGg } from "../utils/firebaseLogin";
-import { LoginButton } from "react-native-fbsdk-next";
 import { useAuth } from "../context/AuthContext";
 import { TCredential } from "../__types__/credential.type";
 import axios from "axios";
-import {
-  API_ANDROID_URL,
-  API_IOS_URL,
-  API_URL,
-  GOOGLE_EXPO_CLIENT_ID,
-  GOOGLE_IOS_CLIENT_ID,
-  GOOGLE_ANDROID_CLIENT_ID,
-  GOOGLE_FIREBASE_WEBCLIENT_ID,
-} from "react-native-dotenv";
+import { API_URL } from "react-native-dotenv";
 
 const Signin: React.FC = ({ route, navigation }: any) => {
   const { authState, signIn } = useAuth();

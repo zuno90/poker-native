@@ -2,17 +2,7 @@ import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Colyseus from "colyseus.js"; // not necessary if included via <script> tag.
 
-import {
-  Box,
-  Button,
-  Text,
-  Container,
-  SimpleGrid,
-  Center,
-  Stack,
-  HStack,
-  Image,
-} from "native-base";
+import { Text, Image } from "native-base";
 
 import { useAuth } from "../context/AuthContext";
 import { Alert, TouchableOpacity, View } from "react-native";

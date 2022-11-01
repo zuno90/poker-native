@@ -375,4 +375,12 @@ def isNewArchitectureEnabled() {
     return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 }
 
+<<<<<<< HEAD
 apply plugin: 'com.google.gms.google-services'
+=======
+<<<<<<< HEAD
+apply plugin: 'com.google.gms.google-services'
+=======
+apply plugin: 'com.google.gms.google-services' // <--- this should be the last line
+>>>>>>> 8d9bd1d51e9b883e8d7dfbbd1fbd367d4d69f586
+>>>>>>> b33ac7f73b76b8fa00659ef4f371453ceee2ab97
