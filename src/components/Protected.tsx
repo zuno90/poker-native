@@ -21,8 +21,8 @@ const Protected: React.FC = () => {
                 </>
             ) : (
                 <>
-                    <Stack.Screen name="HOME" component={Home} />
-                    <Stack.Screen name="ROOM" component={Room} />
+                    <Stack.Screen name="HOME" component={Home} options={{ headerShown: false }}/>
+                    <Stack.Screen name="ROOM" component={Room} options={{ headerShown: false }}/>
                 </>
             )}
         </Stack.Navigator>

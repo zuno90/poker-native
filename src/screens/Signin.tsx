@@ -144,50 +144,6 @@ const Signin: React.FC = ({ route, navigation }: any) => {
         }
     }
 
-    // return (
-    //     <Box w="full" h="full" top="0" px="6" position="absolute" justifyContent="center" bgColor="muted.50">
-    //         <Image alignSelf="center" source={require("../../assets/logo.png")} size="150" alt="logo" />
-    //         <VStack space="5">
-    //             <Stack space="2">
-    //                 <FormControl isRequired isInvalid={"username" in errors}>
-    //                     <FormControl.Label>User name </FormControl.Label>
-
-    //                     <FormControl.ErrorMessage>{errors.username?.message}</FormControl.ErrorMessage>
-    //                 </FormControl>
-    //                 <FormControl isRequired isInvalid={"password" in errors}>
-    //                     <FormControl.Label>Password </FormControl.Label>
-
-    //                     <FormControl.ErrorMessage>{errors.password?.message}</FormControl.ErrorMessage>
-    //                 </FormControl>
-    //             </Stack>
-    //             <HStack alignItems="center" justifyContent="space-between">
-    //                 <Text>Do not have an account?</Text>
-    //                 <Button onPress={() => navigation.navigate("SIGN UP")} variant="ghost" colorScheme="success">
-    //                     Sign Up
-    //                 </Button>
-    //             </HStack>
-    //             <VStack space="4">
-    //                 <Button
-    //                     onPress={handleFacebookLogin}
-    //                     leftIcon={<Entypo name="facebook" size={24} color="white" />}
-    //                     colorScheme="blue"
-    //                 >
-    //                     Facebook
-    //                 </Button>
-    //                 <Button
-    //                     onPress={handleGoogleLogin}
-    //                     leftIcon={<AntDesign name="google" size={24} color="white" />}
-    //                     colorScheme="red"
-    //                 >
-    //                     Google
-    //                 </Button>
-    //                 <Button onPress={handleSubmit(onSubmit)} colorScheme="green">
-    //                     SIGN IN
-    //                 </Button>
-    //             </VStack>
-    //         </VStack>
-    //     </Box>
-    // )
     return (
         <View>
             <Image

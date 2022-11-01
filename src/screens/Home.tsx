@@ -5,6 +5,7 @@ import * as Colyseus from "colyseus.js"; // not necessary if included via <scrip
 import { Box, Button, Text, Container, SimpleGrid, Center, Stack, HStack, Image } from "native-base";
 
 import { useAuth } from "../context/AuthContext";
+import { View } from "react-native";
 
 const Home: React.FC = ({ route, navigation }: any) => {
   const {
@@ -31,34 +32,43 @@ const Home: React.FC = ({ route, navigation }: any) => {
     console.log(room);
   };
 
-  return (
-    <Center>
-      <Container>
-        <Box w="full" h="full" py="4">
-          <HStack justifyContent="space-between">
-            <Text>{user.username ?? user.email}</Text>
-            <Image source={{ uri: user.avatar }} alt="Alternate Text" size="sm" />
-            <Text>Chips: {user.chips}</Text>
-            <Button onPress={signOut}>LOG OUT</Button>
-          </HStack>
+  // return (
+  //   <Center>
+  //     <Container>
+  //       <Box w="full" h="full" py="4">
+  //         <HStack justifyContent="space-between">
+  //           <Text>{user.username ?? user.email}</Text>
+  //           <Image source={{ uri: user.avatar }} alt="Alternate Text" size="sm" />
+  //           <Text>Chips: {user.chips}</Text>
+  //           <Button onPress={signOut}>LOG OUT</Button>
+  //         </HStack>
 
-          <HStack space="4">
-            <Button onPress={createRoom} mt="2" colorScheme="indigo">
-              Create
-            </Button>
-            <Button mt="2" colorScheme="red">
-              Join
-            </Button>
-          </HStack>
-          <Stack width="full">
-            <SimpleGrid columns={3} space={2}>
-              {rooms && rooms.map((item: any, index: number) => <Box key={index}>{item.roomId}</Box>)}
-            </SimpleGrid>
-          </Stack>
-        </Box>
-      </Container>
-    </Center>
-  );
+  //         <HStack space="4">
+  //           <Button onPress={createRoom} mt="2" colorScheme="indigo">
+  //             Create
+  //           </Button>
+  //           <Button mt="2" colorScheme="red">
+  //             Join
+  //           </Button>
+  //         </HStack>
+  //         <Stack width="full">
+  //           <SimpleGrid columns={3} space={2}>
+  //             {rooms && rooms.map((item: any, index: number) => <Box key={index}>{item.roomId}</Box>)}
+  //           </SimpleGrid>
+  //         </Stack>
+  //       </Box>
+  //     </Container>
+  //   </Center>
+  // );
+  return (
+    <View>
+         <Image
+                alt="No image"
+                source={require("../../assets/BackgroundGame.png")}
+                style={{ width: "100%", height: "100%", zIndex: -2 }}
+            />
+    </View>
+  )
 };
 
 export default Home;
