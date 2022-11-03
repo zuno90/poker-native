@@ -16,9 +16,9 @@ const App: React.FC = () => {
     }, [])
     return (
         <NativeBaseProvider>
-            {/* <StatusBar /> */}
             <AuthProvider>
                 <NavigationContainer>
+            <StatusBar hidden />
                     <Protected />
                 </NavigationContainer>
             </AuthProvider>
