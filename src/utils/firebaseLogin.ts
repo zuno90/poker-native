@@ -16,16 +16,7 @@ export const signInWithFb = async () => {
     if (!data) throw new Error("Something wrong obtaining access token!");
     const credential = auth.FacebookAuthProvider.credential(data.accessToken);
     const user = await auth().signInWithCredential(credential);
-    console.log(user);
     return user;
-  } catch (error) {
-    console.error(error);
-    LoginManager.logOut();
-  }
-};
-
-export const fbSignin = async () => {
-  try {
   } catch (error) {
     console.error(error);
   }
