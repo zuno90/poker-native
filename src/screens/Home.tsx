@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Colyseus from "colyseus.js"; // not necessary if included via <script> tag.
 
-import { Box, Button, Text, Container, SimpleGrid, Center, Stack, HStack, Image } from "native-base";
+import { Box, Button, Text, Container, SimpleGrid, Center, Stack, HStack, Image, useToast } from "native-base";
 
 import { useAuth } from "../context/AuthContext";
+import { Alert } from "react-native";
 
 const Home: React.FC = ({ route, navigation }: any) => {
   const {
@@ -12,24 +13,35 @@ const Home: React.FC = ({ route, navigation }: any) => {
     signOut
   } = useAuth();
   const client = new Colyseus.Client("ws://175.41.154.239");
+  const room = new Colyseus.Room("desk");
   const [rooms, setRooms] = useState<Colyseus.RoomAvailable[]>();
+  const toast = useToast();
 
-  const getAvailableRooms = async () => {
-    try {
-      const r = await client.getAvailableRooms("desk");
-      setRooms(r);
-    } catch (error) {
-      console.error(error);
-    }
-  };
   useEffect(() => {
-    getAvailableRooms();
-  }, [rooms]);
+    // getAvailableRooms();
+    // room.id
+  }, []);
+
+  // const getAvailableRooms = async () => {
+  //   try {
+  //     const r = await client.getAvailableRooms("desk");
+  //     setRooms(r);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   const createRoom = async () => {
-    const room = await client.create("desk", JSON.stringify(user));
-    console.log(room);
+    try {
+      const room = await client.joinOrCreate("desk", JSON.stringify(user));
+
+      console.log("room", room);
+    } catch (error) {
+      console.log("chefck error", error);
+    }
   };
+
+  // const handleJoinRoom = async ()
 
   return (
     <Center>
@@ -52,7 +64,7 @@ const Home: React.FC = ({ route, navigation }: any) => {
           </HStack>
           <Stack width="full">
             <SimpleGrid columns={3} space={2}>
-              {rooms && rooms.map((item: any, index: number) => <Box key={index}>{item.roomId}</Box>)}
+              {rooms && rooms.map((item: any, index: number) => <Box key={index}>{item.roomId}hell</Box>)}
             </SimpleGrid>
           </Stack>
         </Box>
