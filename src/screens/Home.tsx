@@ -1,17 +1,20 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Colyseus from "colyseus.js"; // not necessary if included via <script> tag.
 
+import { Alert, TouchableOpacity, View } from "react-native";
 import { Text, Image } from "native-base";
 
 import { useAuth } from "../context/AuthContext";
-import { Alert, TouchableOpacity, View } from "react-native";
+import { GameContext } from "../context/GameContext";
 
-const Home: React.FC = ({ route, navigation }: any) => {
+const Home: React.FC = (props: any) => {
   const {
     authState: { user },
     signOut
   } = useAuth();
+  const roomContext = useContext(GameContext);
+
   const client = new Colyseus.Client("ws://175.41.154.239");
   // const [rooms, setRooms] = useState<Colyseus.RoomAvailable[]>();
 
@@ -27,8 +30,13 @@ const Home: React.FC = ({ route, navigation }: any) => {
   // }, [rooms]);
 
   const createRoom = async () => {
-    // const room = await client.create("desk", JSON.stringify(user));
-    // console.log(room);
+    const room = await client.joinOrCreate("desk", JSON.stringify(user));
+
+    if (room) {
+      roomContext.handleRoom(room);
+
+      room && props.navigation.navigate("GAME");
+    }
   };
 
   // return (
@@ -102,9 +110,7 @@ const Home: React.FC = ({ route, navigation }: any) => {
           width: "30%",
           height: "20%"
         }}
-        onPress={() => {
-          Alert.alert("Play Now");
-        }}
+        onPress={createRoom}
       >
         <Image
           resizeMode="contain"

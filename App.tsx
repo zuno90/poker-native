@@ -6,6 +6,7 @@ import { AuthProvider } from "./src/context/AuthContext";
 import Protected from "./src/components/Protected";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { useEffect } from "react";
+import GameContextProvider from "./src/context/GameContext";
 
 const App: React.FC = () => {
   async function changeScreenOrientation() {
@@ -18,10 +19,12 @@ const App: React.FC = () => {
   return (
     <NativeBaseProvider>
       <AuthProvider>
-        <NavigationContainer>
-          <StatusBar hidden />
-          <Protected />
-        </NavigationContainer>
+        <GameContextProvider>
+          <NavigationContainer>
+            <StatusBar hidden />
+            <Protected />
+          </NavigationContainer>
+        </GameContextProvider>
       </AuthProvider>
     </NativeBaseProvider>
   );
