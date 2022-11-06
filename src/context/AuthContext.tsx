@@ -28,7 +28,7 @@ const AuthContext = createContext<TAuthContext | null>(null);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [authState, setAuthState] = useState<TAuthState>({
     isAuth: false,
-    user: null
+    user: null,
   });
 
   const checkAuth = async () => {
@@ -38,8 +38,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const res = await axios.get(`http://175.41.154.239/user/info`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "multipart/form-data"
-        }
+          "Content-Type": "multipart/form-data",
+        },
       });
       const { success, data } = res.data;
       if (!success) throw new Error("Bad request!");
@@ -52,15 +52,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           username: data.username,
           name: data.name,
           avatar: data.avatar,
-          chips: data.chips
-        }
+          chips: data.chips,
+        },
       });
     } catch (error) {
       await AsyncStorage.removeItem("accessToken");
       console.error(error);
       return setAuthState({
         isAuth: false,
-        user: null
+        user: null,
       });
 
       // const checkAuth = async () => {
@@ -109,7 +109,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {};
 
   const authContextValue = { authState, signIn, signOut };
-  return <AuthContext.Provider value={authContextValue}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={authContextValue}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {

@@ -11,7 +11,7 @@ import { GameContext } from "../context/GameContext";
 const Home: React.FC = (props: any) => {
   const {
     authState: { user },
-    signOut
+    signOut,
   } = useAuth();
   const roomContext = useContext(GameContext);
 
@@ -39,34 +39,6 @@ const Home: React.FC = (props: any) => {
     }
   };
 
-  // return (
-  //   <Center>
-  //     <Container>
-  //       <Box w="full" h="full" py="4">
-  //         <HStack justifyContent="space-between">
-  //           <Text>{user.username ?? user.email}</Text>
-  //           <Image source={{ uri: user.avatar }} alt="Alternate Text" size="sm" />
-  //           <Text>Chips: {user.chips}</Text>
-  //           <Button onPress={signOut}>LOG OUT</Button>
-  //         </HStack>
-
-  //         <HStack space="4">
-  //           <Button onPress={createRoom} mt="2" colorScheme="indigo">
-  //             Create
-  //           </Button>
-  //           <Button mt="2" colorScheme="red">
-  //             Join
-  //           </Button>
-  //         </HStack>
-  //         <Stack width="full">
-  //           <SimpleGrid columns={3} space={2}>
-  //             {rooms && rooms.map((item: any, index: number) => <Box key={index}>{item.roomId}</Box>)}
-  //           </SimpleGrid>
-  //         </Stack>
-  //       </Box>
-  //     </Container>
-  //   </Center>
-  // );
   return (
     <View style={{ position: "relative" }}>
       <Image
@@ -85,7 +57,7 @@ const Home: React.FC = (props: any) => {
           position: "absolute",
           zIndex: 2,
           top: "0%",
-          right: "32%"
+          right: "32%",
         }}
       />
       <Image
@@ -98,7 +70,7 @@ const Home: React.FC = (props: any) => {
           position: "absolute",
           zIndex: 2,
           top: "10%",
-          right: "7%"
+          right: "7%",
         }}
       />
       <TouchableOpacity
@@ -108,7 +80,7 @@ const Home: React.FC = (props: any) => {
           top: "50%",
           right: "35%",
           width: "30%",
-          height: "20%"
+          height: "20%",
         }}
         onPress={createRoom}
       >
@@ -133,17 +105,31 @@ const Home: React.FC = (props: any) => {
           marginTop: "2%",
           top: 0,
           right: "1%",
-          zIndex: 4
+          zIndex: 4,
         }}
       >
         <TouchableOpacity style={{ bottom: 9, right: 10 }}>
-          <Image alt="No image" source={require("../../assets/SettingButton.png")} style={{ width: 36, height: 36 }} />
+          <Image
+            alt="No image"
+            source={require("../../assets/SettingButton.png")}
+            style={{ width: 36, height: 36 }}
+          />
         </TouchableOpacity>
-        <TouchableOpacity style={{ bottom: 9, right: 10, paddingHorizontal: 12 }}>
-          <Image alt="No image" source={require("../../assets/SettingButton.png")} style={{ width: 36, height: 36 }} />
+        <TouchableOpacity
+          style={{ bottom: 9, right: 10, paddingHorizontal: 12 }}
+        >
+          <Image
+            alt="No image"
+            source={require("../../assets/SettingButton.png")}
+            style={{ width: 36, height: 36 }}
+          />
         </TouchableOpacity>
         <TouchableOpacity style={{ bottom: 9, right: 10 }}>
-          <Image alt="No image" source={require("../../assets/SettingButton.png")} style={{ width: 36, height: 36 }} />
+          <Image
+            alt="No image"
+            source={require("../../assets/SettingButton.png")}
+            style={{ width: 36, height: 36 }}
+          />
         </TouchableOpacity>
       </View>
 
@@ -155,13 +141,18 @@ const Home: React.FC = (props: any) => {
           bottom: "22%",
           right: 0,
           width: 50,
-          height: 50
+          height: 50,
         }}
         onPress={() => {
           Alert.alert("Sup");
         }}
       >
-        <Image resizeMode="contain" alt="No image" source={require("../../assets/Support.png")} style={{}} />
+        <Image
+          resizeMode="contain"
+          alt="No image"
+          source={require("../../assets/Support.png")}
+          style={{}}
+        />
       </TouchableOpacity>
       {/* Building Left */}
       <View
@@ -171,7 +162,7 @@ const Home: React.FC = (props: any) => {
           bottom: 0,
           left: 0,
           width: "50%",
-          height: "25%"
+          height: "25%",
         }}
       >
         <Image
@@ -188,14 +179,14 @@ const Home: React.FC = (props: any) => {
             height: "60%",
             justifyContent: "space-around",
             bottom: 90,
-            left: "110%"
+            left: "110%",
           }}
         >
           <TouchableOpacity
             style={{
               width: "30%",
               height: "100%",
-              zIndex: 5
+              zIndex: 5,
             }}
             onPress={() => {
               Alert.alert("Sup");
@@ -208,7 +199,7 @@ const Home: React.FC = (props: any) => {
               style={{
                 width: "100%",
                 height: "100%",
-                zIndex: 6
+                zIndex: 6,
               }}
             />
           </TouchableOpacity>
@@ -216,7 +207,7 @@ const Home: React.FC = (props: any) => {
             style={{
               width: "30%",
               height: "100%",
-              zIndex: 5
+              zIndex: 5,
             }}
             onPress={() => {
               Alert.alert("Sup");
@@ -229,7 +220,7 @@ const Home: React.FC = (props: any) => {
               style={{
                 width: "100%",
                 height: "100%",
-                zIndex: 6
+                zIndex: 6,
               }}
             />
           </TouchableOpacity>
@@ -237,7 +228,7 @@ const Home: React.FC = (props: any) => {
             style={{
               width: "30%",
               height: "100%",
-              zIndex: 5
+              zIndex: 5,
             }}
             onPress={() => {
               Alert.alert("Sup");
@@ -250,7 +241,7 @@ const Home: React.FC = (props: any) => {
               style={{
                 width: "100%",
                 height: "100%",
-                zIndex: 6
+                zIndex: 6,
               }}
             />
           </TouchableOpacity>
@@ -270,7 +261,7 @@ const Home: React.FC = (props: any) => {
           flexDirection: "row",
           top: "-2%",
           left: "-2%",
-          zIndex: 4
+          zIndex: 4,
         }}
       >
         <TouchableOpacity
@@ -281,7 +272,7 @@ const Home: React.FC = (props: any) => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            marginLeft: "-2%"
+            marginLeft: "-2%",
           }}
         >
           <Image
@@ -298,14 +289,14 @@ const Home: React.FC = (props: any) => {
               width: "60%",
               height: "50%",
               position: "absolute",
-              top: "22%"
+              top: "22%",
             }}
           />
           <Text
             style={{
               position: "absolute",
               color: "white",
-              bottom: 0
+              bottom: 0,
               // left: "25%",
             }}
           >
@@ -324,7 +315,7 @@ const Home: React.FC = (props: any) => {
             marginLeft: "-5%",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
           }}
         >
           <Image
@@ -333,7 +324,7 @@ const Home: React.FC = (props: any) => {
             source={require(`../../assets/FrameCoins.png`)}
             style={{
               width: "110%",
-              height: "100%"
+              height: "100%",
             }}
           />
           <Text
@@ -342,7 +333,7 @@ const Home: React.FC = (props: any) => {
               color: "white",
               fontWeight: "bold",
               fontSize: 18,
-              paddingLeft: 12
+              paddingLeft: 12,
               // fontFamily: "Pricedown",
             }}
           >

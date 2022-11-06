@@ -1,15 +1,38 @@
-import { StyleSheet, Image, Button, Alert, ImageBackground, TouchableOpacity, Text, View } from "react-native";
-import { FacebookAuthProvider, GoogleAuthProvider, signInWithPopup } from "@firebase/auth";
+import {
+  StyleSheet,
+  Image,
+  Button,
+  Alert,
+  ImageBackground,
+  TouchableOpacity,
+  Text,
+  View,
+} from "react-native";
+import {
+  FacebookAuthProvider,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "@firebase/auth";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { useEffect } from "react";
 export default function StartScreen({ navigation }: any) {
   // ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT)
 
   return (
-    <ImageBackground source={require("../../assets/BackgroundGame.png")} style={{ flex: 1 }}>
+    <ImageBackground
+      source={require("../../assets/BackgroundGame.png")}
+      style={{ width: "105%", height: "102%" }}
+    >
       <Image
         source={require("../../assets/GirlScreenStart.png")}
-        style={{ position: "absolute", width: 240, height: 365, zIndex: 3, bottom: 0, left: -10 }}
+        style={{
+          position: "absolute",
+          width: 240,
+          height: 365,
+          zIndex: 3,
+          bottom: 0,
+          left: -10,
+        }}
       />
       <View
         style={{
@@ -20,7 +43,7 @@ export default function StartScreen({ navigation }: any) {
           zIndex: 2,
           backgroundColor: "transparent",
           justifyContent: "space-evenly",
-          alignItems: "center"
+          alignItems: "center",
           // top: -100,
         }}
       >
@@ -29,14 +52,20 @@ export default function StartScreen({ navigation }: any) {
             navigation.navigate("SIGN IN");
           }}
         >
-          <Image source={require("../../assets/LoginButton.png")} style={{ width: 280, height: 78, top: 20 }} />
+          <Image
+            source={require("../../assets/LoginButton.png")}
+            style={{ width: 280, height: 78, top: 20 }}
+          />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             navigation.navigate("SIGN UP");
           }}
         >
-          <Image source={require("../../assets/SignupButton.png")} style={{ width: 280, height: 72, top: 20 }} />
+          <Image
+            source={require("../../assets/SignupButton.png")}
+            style={{ width: 280, height: 72, top: 20 }}
+          />
         </TouchableOpacity>
         {/*
         <button
@@ -56,16 +85,16 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    position: "relative"
+    position: "relative",
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    position: "absolute"
+    position: "absolute",
   },
   separator: {
     marginVertical: 30,
     height: 1,
-    width: "80%"
-  }
+    width: "80%",
+  },
 });
