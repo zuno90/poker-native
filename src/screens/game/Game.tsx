@@ -4,23 +4,25 @@ import { Room } from "colyseus.js";
 import { Text, View, Button } from "native-base";
 
 import { GameContext } from "../../context/GameContext";
-import { Alert, Animated, Image, TouchableOpacity } from "react-native";
+import { Alert, Animated, TouchableOpacity, Image } from "react-native";
+import { GetInterpolate } from "../../utils/getInterpolate";
+import { getImage } from "./get";
 
 const Game = (props: any) => {
   const { room, handleRoom } = useContext(GameContext);
+  const [Card, setCard] = useState(["K♥"]);
+  const [Card2, setCard2] = useState(["2♥"]);
+  const [totalCard, setTotalCard] = useState<any>([]);
   const myroom = room as Room;
   let [count, setCount] = useState(0);
   useEffect(() => {
     if (room && room !== null) {
       myroom.onStateChange((state) => {
-        // console.log("kiem tra state gamessadá", state);
+        for (let i of state.players.values()) {
+          console.log(i.cards, "i");
+          setTotalCard([...totalCard, i.cards]);
+        }
       });
-
-      // room.onMessage("powerup", (message) => {
-      //   console.log("message received from server");
-      //   console.log(message);
-      // });
-
       myroom.onLeave((code) => {
         console.log("we left you idiot");
         handleRoom(null);
@@ -33,15 +35,25 @@ const Game = (props: any) => {
       props.navigation.navigate("HOME");
     }
   }, [room]);
+  useEffect(() => {
+    setCard(totalCard[0]);
+    // setCard2(totalCard[0][0]);
+  }, [totalCard]);
+
+  // console.log(totalCard[0][0], "news2");
 
   const handleReady = () => {
-    myroom.send("onReady", true);
+    myroom.send("START_GAME");
   };
 
   const handleLeaveRoom = () => {
     myroom.leave();
   };
-  // console.log(room.state.banker5Cards, "asdasd");
+  // console.log(room, "totalCasadrd");
+
+  console.log(totalCard[0], "totalCasadrd");
+  const ImgCard1 = getImage(Card);
+  console.log(ImgCard1, "qq");
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionHorizontalCard1 = useRef(new Animated.Value(0)).current;
@@ -219,54 +231,43 @@ const Game = (props: any) => {
       }).start();
     }
   }, [count]);
-  const topPercentCard1 = PositionVerticalCard1.interpolate({
-    inputRange: [-1, 0, 1],
-    outputRange: ["5%", "75%", "5%"],
-  });
-  const rightPercentCard1 = PositionHorizontalCard1.interpolate({
-    inputRange: [-1, 0, 1],
-    outputRange: ["5%", "46%", "50%"],
-  });
-  const topPercentCard2 = PositionVerticalCard2.interpolate({
-    inputRange: [-1, 0, 1],
-    outputRange: ["5%", "75%", "5%"],
-  });
-  const rightPercentCard2 = PositionHorizontalCard2.interpolate({
-    inputRange: [-1, 0, 1],
-    outputRange: ["5%", "46%", "38%"],
-  });
-  const DegCard2 = RotateCard2.interpolate({
-    inputRange: [-1, 0, 1],
-    outputRange: ["0deg", "0deg", "180deg"],
-  });
-  const DegCard1 = RotateCard1.interpolate({
-    inputRange: [-1, 0, 1],
-    outputRange: ["0deg", "0deg", "180deg"],
-  });
-  const UnDegCard1 = UnRotateCard1.interpolate({
-    inputRange: [-1, 0, 1],
-    outputRange: ["0deg", "-180deg", "0deg"],
-  });
-  const UnDegCard2 = UnRotateCard2.interpolate({
-    inputRange: [-1, 0, 1],
-    outputRange: ["0deg", "-180deg", "0deg"],
-  });
-  const OpacityCard2 = Opacity2.interpolate({
-    inputRange: [-1, 0, 1],
-    outputRange: [0, 0, 1],
-  });
-  const OpacityCard1 = Opacity1.interpolate({
-    inputRange: [-1, 0, 1],
-    outputRange: [0, 0, 1],
-  });
-  const UnOpacityCard1 = UnOpacity1.interpolate({
-    inputRange: [-1, 0, 1],
-    outputRange: [0, 0, 1],
-  });
-  const UnOpacityCard2 = UnOpacity2.interpolate({
-    inputRange: [-1, 0, 1],
-    outputRange: [0, 0, 1],
-  });
+
+  const topPercentCard1 = GetInterpolate(PositionVerticalCard1, [
+    "5%",
+    "75%",
+    "5%",
+  ]);
+
+  const rightPercentCard1 = GetInterpolate(PositionHorizontalCard1, [
+    "5%",
+    "46%",
+    "50%",
+  ]);
+  const topPercentCard2 = GetInterpolate(PositionVerticalCard2, [
+    "5%",
+    "75%",
+    "5%",
+  ]);
+
+  const rightPercentCard2 = GetInterpolate(PositionHorizontalCard2, [
+    "5%",
+    "46%",
+    "38%",
+  ]);
+  const DegCard2 = GetInterpolate(RotateCard2, ["0deg", "0deg", "180deg"]);
+
+  const DegCard1 = GetInterpolate(RotateCard1, ["0deg", "0deg", "180deg"]);
+  const UnDegCard1 = GetInterpolate(UnRotateCard1, ["0deg", "-180deg", "0deg"]);
+  const UnDegCard2 = GetInterpolate(UnRotateCard2, ["0deg", "-180deg", "0deg"]);
+
+  const OpacityCard1 = GetInterpolate(Opacity1, [0, 0, 1]);
+  const OpacityCard2 = GetInterpolate(Opacity2, [0, 0, 1]);
+
+  const UnOpacityCard1 = GetInterpolate(UnOpacity1, [0, 0, 1]);
+  const UnOpacityCard2 = GetInterpolate(UnOpacity2, [0, 0, 1]);
+
+  // console.log(ImgCard1, "ac");
+
   return (
     <View
       style={{
@@ -324,7 +325,7 @@ const Game = (props: any) => {
       >
         <Image
           resizeMode="contain"
-          source={require("../../../assets/deckofcard/K♥.png")}
+          source={ImgCard1 ? ImgCard1[0]?.image : ""}
           style={{ width: "100%", height: "100%" }}
         />
       </Animated.View>
@@ -362,7 +363,7 @@ const Game = (props: any) => {
       >
         <Image
           resizeMode="contain"
-          source={require("../../../assets/deckofcard/A♥.png")}
+          source={ImgCard1 ? ImgCard1[1]?.image : ""}
           style={{ width: "100%", height: "100%" }}
         />
       </Animated.View>
@@ -370,22 +371,117 @@ const Game = (props: any) => {
       <View
         style={{
           position: "absolute",
-          left: "38%",
-          bottom: "5%",
+          right: "0%",
+          bottom: "0%",
           display: "flex",
-          flexDirection: "row",
+          // flexDirection: "",
+          justifyContent: "space-between",
+          width: "35%",
+          height: "25%",
         }}
       >
-        {/* <Image
-          resizeMode="contain"
-          source={require("../../../assets/deckofcard/CloseCard.png")}
-          style={{ width: 95, height: 95 }}
-        /> */}
-        {/* <Image
-          resizeMode="contain"
-          source={require("../../../assets/deckofcard/CloseCard.png")}
-          style={{ width: 95, height: 95 }}
-        /> */}
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "flex-end",
+          }}
+        >
+          {/* Raise */}
+          <TouchableOpacity>
+            {/* <Image
+            source={require("../../../assets/bg.png")}
+            
+          /> */}
+            <Text
+              style={{
+                textAlign: "center",
+
+                backgroundColor: "red",
+                height: 40,
+                width: 90,
+                marginRight: "2%",
+              }}
+            >
+              Raise
+            </Text>
+          </TouchableOpacity>
+          {/* Call */}
+          <TouchableOpacity>
+            {/* <Image
+            source={require("../../../assets/bg.png")}
+            
+          /> */}
+
+            <Text
+              style={{
+                backgroundColor: "red",
+                height: 40,
+                width: 90,
+              }}
+            >
+              Call
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
+            // width: "130%",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          {/* Fold */}
+          <TouchableOpacity>
+            {/* <Image
+            source={require("../../../assets/bg.png")}
+            
+          /> */}
+            <Text
+              style={{
+                backgroundColor: "red",
+                height: 40,
+                width: 90,
+              }}
+            >
+              Fold
+            </Text>
+          </TouchableOpacity>
+          {/* Check */}
+          <TouchableOpacity>
+            {/* <Image
+            source={require("../../../assets/bg.png")}
+            
+          /> */}
+            <Text
+              style={{
+                backgroundColor: "red",
+                height: 40,
+                width: 90,
+              }}
+            >
+              Check
+            </Text>
+          </TouchableOpacity>
+          {/* All in */}
+          <TouchableOpacity>
+            {/* <Image
+            source={require("../../../assets/bg.png")}
+            
+          /> */}
+            <Text
+              style={{
+                textAlign: "center",
+                backgroundColor: "red",
+                height: 40,
+                width: 90,
+              }}
+            >
+              All in
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <View
         style={{
@@ -398,8 +494,34 @@ const Game = (props: any) => {
       >
         <TouchableOpacity
           onPress={() => {
+            handleReady();
+            // setCount(count + 1);
+            // Alert.aler t(count.toString());
+          }}
+        >
+          <Image
+            resizeMode="contain"
+            source={require("../../../assets/deckofcard/CloseCard.png")}
+            style={{ width: 95, height: 95 }}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
             setCount(count + 1);
-            // Alert.alert(count.toString());
+            // Alert.aler t(count.toString());
+          }}
+        >
+          <Image
+            resizeMode="contain"
+            source={require("../../../assets/deckofcard/CloseCard.png")}
+            style={{ width: 95, height: 95 }}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            props.navigation.navigate("HOME");
+
+            // Alert.aler t(count.toString());
           }}
         >
           <Image

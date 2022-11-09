@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Colyseus from "colyseus.js"; // not necessary if included via <script> tag.
 
 import { Alert, TouchableOpacity, View } from "react-native";
-import { Text, Image } from "native-base";
+import { Text, Image, Button } from "native-base";
 
 import { useAuth } from "../context/AuthContext";
 import { GameContext } from "../context/GameContext";
@@ -16,11 +16,14 @@ const Home: React.FC = (props: any) => {
   const roomContext = useContext(GameContext);
 
   const client = new Colyseus.Client("ws://175.41.154.239");
-  // const [rooms, setRooms] = useState<Colyseus.RoomAvailable[]>();
+  const [rooms, setRooms] = useState<Colyseus.RoomAvailable[]>([]);
 
   const getAvailableRooms = async () => {
     try {
-      const r = await client.getAvailableRooms("desk");
+      const room = await client.getAvailableRooms("desk");
+      if (room) {
+        setRooms(room);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -30,14 +33,55 @@ const Home: React.FC = (props: any) => {
   // }, [rooms]);
 
   const createRoom = async () => {
-    const room = await client.joinOrCreate("desk", JSON.stringify(user));
+    const params = {
+      id: user.id,
+      chips: user.chips,
+      isHost: true,
+      turn: 1,
+      cards: [],
+    };
+
+    // const room = await client.joinOrCreate("desk", JSON.stringify(params));
+    const room = await client.create("desk", JSON.stringify(params));
 
     if (room) {
+      console.log("kiem tra ham tao value", room);
+
       roomContext.handleRoom(room);
 
       room && props.navigation.navigate("GAME");
     }
   };
+
+  const joinRoom = async (params: any) => {
+    console.log("chsadfafdafdsafdsa", params);
+    const { clients, roomId } = params;
+
+    if (clients <= 5) {
+      const params = {
+        id: user.id,
+        chips: user.chips,
+        isHost: true,
+        turn: clients + 1,
+        cards: [],
+      };
+      try {
+        console.log("afdsafdsafsd", roomId);
+
+        const room = await client.joinById(roomId, params);
+
+        if (room) {
+          roomContext.handleRoom(room);
+
+          room && props.navigation.navigate("GAME");
+        }
+      } catch (error) {
+        console.log("adsf", error);
+      }
+    }
+  };
+
+  // console.log("listtt roommm", rooms);
 
   return (
     <View style={{ position: "relative" }}>
@@ -339,6 +383,49 @@ const Home: React.FC = (props: any) => {
           >
             {user.chips}
           </Text>
+        </View>
+      </View>
+
+      <View
+        style={{
+          width: "100%",
+          height: "100%",
+          zIndex: 10000,
+          backgroundColor: "black",
+          position: "absolute",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text color={"white"} fontSize={30}>
+          TEST SCREEN
+        </Text>
+        <Button marginBottom={6} onPress={getAvailableRooms}>
+          Get Room
+        </Button>
+        <Button marginBottom={6} onPress={createRoom}>
+          Create Room
+        </Button>
+
+        <View>
+          {rooms.length > 0 &&
+            rooms.map((item, index) => (
+              <View
+                key={index}
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "row",
+                  minWidth: 200,
+                }}
+              >
+                <Text fontSize={20} color={"white"}>
+                  {item.roomId}
+                </Text>
+                <Button onPress={() => joinRoom(item)}>Join</Button>
+              </View>
+            ))}
         </View>
       </View>
     </View>
