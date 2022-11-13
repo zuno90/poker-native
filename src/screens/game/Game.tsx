@@ -8,12 +8,14 @@ import { Alert, Animated, TouchableOpacity, Image } from "react-native";
 import { GetInterpolate } from "../../utils/getInterpolate";
 import { getImage } from "./get";
 import { FakeUser1, FakeUser2, FakeUser3, FakeUser4 } from "./index";
+import { BankerCard } from "./BankerCard";
 
 const Game = (props: any) => {
   const { room, handleRoom } = useContext(GameContext);
   const [Card, setCard] = useState(["K♥"]);
   const [Card2, setCard2] = useState(["2♥"]);
   const [totalCard, setTotalCard] = useState<any>([]);
+  const [bankerCard, setBankerCard] = useState<any>([]);
   const myroom = room as Room;
   let [count, setCount] = useState(0);
   useEffect(() => {
@@ -23,6 +25,10 @@ const Game = (props: any) => {
           if (i.cards.length !== 0) {
             setTotalCard([...totalCard, i.cards]);
           }
+        }
+        // console.log(state, "state");
+        if (state.banker5Cards) {
+          setBankerCard(state.banker5Cards);
         }
       });
       myroom.onLeave((code) => {
@@ -36,11 +42,6 @@ const Game = (props: any) => {
       props.navigation.navigate("HOME");
     }
   }, [room]);
-  useEffect(() => {
-    // setCard(totalCard[0][0]);
-  }, [totalCard]);
-
-  // console.log(totalCard[0][0], "news2");
 
   const handleReady = () => {
     myroom.send("START_GAME");
@@ -49,11 +50,8 @@ const Game = (props: any) => {
   const handleLeaveRoom = () => {
     myroom.leave();
   };
-  // console.log(room, "totalCasadrd");
 
-  console.log(totalCard, "totalCasadrd");
   const ImgCard1 = getImage(totalCard[0]);
-  console.log(ImgCard1, "qq");
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionHorizontalCard1 = useRef(new Animated.Value(0)).current;
@@ -265,8 +263,7 @@ const Game = (props: any) => {
 
   const UnOpacityCard1 = GetInterpolate(UnOpacity1, [0, 0, 1]);
   const UnOpacityCard2 = GetInterpolate(UnOpacity2, [0, 0, 1]);
-
-  console.log(count);
+  console.log(room, "state");
 
   return (
     <View
@@ -291,6 +288,7 @@ const Game = (props: any) => {
           style={{ width: 75, height: 75 }}
         />
       </View>
+      <BankerCard StateCard={count} ImageCard={bankerCard} />
       {/* User */}
       {/* Close */}
       <Animated.View
@@ -506,7 +504,7 @@ const Game = (props: any) => {
         >
           <Image
             resizeMode="contain"
-            source={require("../../../assets/deckofcard/CloseCard.png")}
+            source={require("../../../assets/deckofcard/T♦.png")}
             style={{ width: 95, height: 95 }}
           />
         </TouchableOpacity>
@@ -518,20 +516,21 @@ const Game = (props: any) => {
         >
           <Image
             resizeMode="contain"
-            source={require("../../../assets/deckofcard/CloseCard.png")}
+            source={require("../../../assets/deckofcard/A♦.png")}
             style={{ width: 95, height: 95 }}
           />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            props.navigation.navigate("HOME");
+            handleLeaveRoom();
+            // props.navigation.navigate("HOME");
 
             // Alert.aler t(count.toString());
           }}
         >
           <Image
             resizeMode="contain"
-            source={require("../../../assets/deckofcard/CloseCard.png")}
+            source={require("../../../assets/deckofcard/8♦.png")}
             style={{ width: 95, height: 95 }}
           />
         </TouchableOpacity>

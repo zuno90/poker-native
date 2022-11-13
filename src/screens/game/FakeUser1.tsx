@@ -268,7 +268,6 @@ export const FakeUser1 = ({ StateCard, ImageCard }) => {
 
   const UnOpacityCard1 = GetInterpolate(UnOpacity1, [0, 0, 1]);
   const UnOpacityCard2 = GetInterpolate(UnOpacity2, [0, 0, 1]);
-  console.log(OpacityCard1, "sad");
   return (
     <View
       style={{
