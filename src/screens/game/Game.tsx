@@ -15,11 +15,6 @@ const Game = (props: any) => {
         console.log("kiem tra state game", state);
       });
 
-      // room.onMessage("powerup", (message) => {
-      //   console.log("message received from server");
-      //   console.log(message);
-      // });
-
       myroom.onLeave((code) => {
         console.log("we left you idiot");
         handleRoom(null);
@@ -34,7 +29,7 @@ const Game = (props: any) => {
   }, [room]);
 
   const handleReady = () => {
-    myroom.send("onReady", true);
+    myroom.send("START_GAME");
   };
 
   const handleLeaveRoom = () => {
