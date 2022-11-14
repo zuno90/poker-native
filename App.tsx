@@ -15,7 +15,6 @@ const App: React.FC = () => {
   useEffect(() => {
     changeScreenOrientation();
   }, []);
-
   return (
     <NativeBaseProvider>
       <AuthProvider>

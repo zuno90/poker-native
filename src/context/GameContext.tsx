@@ -1,7 +1,7 @@
 import { Room } from "colyseus.js";
 import { createContext, useState } from "react";
 
-export const GameContext = createContext(null);
+export const GameContext = createContext<any>({});
 
 const GameContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [room, setRoom] = useState<Room>(null);

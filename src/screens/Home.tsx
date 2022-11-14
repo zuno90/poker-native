@@ -41,8 +41,8 @@ const Home: React.FC = (props: any) => {
       cards: []
     };
 
-    // const room = await client.joinOrCreate("desk", JSON.stringify(params));
-    const room = await client.create("desk", params);
+    const room = await client.joinOrCreate("desk", params);
+    // const room = await client.create("desk", params);
 
     if (room) {
       console.log("kiem tra ham tao value", room);
@@ -60,12 +60,14 @@ const Home: React.FC = (props: any) => {
       const params = {
         id: user.id,
         chips: user.chips,
-        isHost: false,
+        isHost: true,
         turn: clients + 1,
         cards: []
       };
       try {
-        const room = await client.joinById(roomId, JSON.stringify(params));
+        console.log("afdsafdsafsd", roomId);
+
+        const room = await client.joinById(roomId, params);
 
         if (room) {
           roomContext.handleRoom(room);
@@ -78,9 +80,7 @@ const Home: React.FC = (props: any) => {
     }
   };
 
-  console.log("listtt roommm", rooms);
-
-  return (  
+  return (
     <View style={{ position: "relative" }}>
       <Image
         alt="No image"
@@ -364,43 +364,48 @@ const Home: React.FC = (props: any) => {
         </View>
       </View>
 
-      <View
-        style={{
-          width: "100%",
-          height: "100%",
-          zIndex: 10000,
-          backgroundColor: "black",
-          position: "absolute",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center"
-        }}
-      >
-        <Text color={"white"} fontSize={30}>
-          TEST SCREEN
-        </Text>
-        <Button marginBottom={6} onPress={getAvailableRooms}>
-          Get Room
-        </Button>
-        <Button marginBottom={6} onPress={createRoom}>
-          Create Room
-        </Button>
+      {/* <View
+          style={{
+            width: "100%",
+            height: "100%",
+            zIndex: 10000,
+            backgroundColor: "black",
+            position: "absolute",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text color={"white"} fontSize={30}>
+            TEST SCREEN
+          </Text>
+          <Button marginBottom={6} onPress={getAvailableRooms}>
+            Get Room
+          </Button>
+          <Button marginBottom={6} onPress={createRoom}>
+            Create Room
+          </Button>
 
-        <View>
-          {rooms.length > 0 &&
-            rooms.map((item, index) => (
-              <View
-                key={index}
-                style={{ display: "flex", justifyContent: "center", flexDirection: "row", minWidth: 200 }}
-              >
-                <Text fontSize={20} color={"white"}>
-                  {item.roomId}
-                </Text>
-                <Button onPress={() => joinRoom(item)}>Join</Button>
-              </View>
-            ))}
-        </View>
-      </View>
+          <View>
+            {rooms.length > 0 &&
+              rooms.map((item, index) => (
+                <View
+                  key={index}
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    flexDirection: "row",
+                    minWidth: 200,
+                  }}
+                >
+                  <Text fontSize={20} color={"white"}>
+                    {item.roomId}
+                  </Text>
+                  <Button onPress={() => joinRoom(item)}>Join</Button>
+                </View>
+              ))}
+          </View>
+        </View> */}
     </View>
   );
 };
