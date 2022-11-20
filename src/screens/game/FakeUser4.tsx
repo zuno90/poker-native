@@ -1,7 +1,7 @@
 import { View } from "native-base";
 
 import { useContext, useEffect, useRef, useState } from "react";
-import { Animated, Image } from "react-native";
+import { Animated, Image, Text } from "react-native";
 import { GetInterpolate } from "../../utils/getInterpolate";
 
 export const FakeUser4 = ({ StateCard, ImageCard }) => {
@@ -257,9 +257,9 @@ export const FakeUser4 = ({ StateCard, ImageCard }) => {
   const Opacity2 = useRef(new Animated.Value(1)).current;
   const UnOpacity1 = useRef(new Animated.Value(0)).current;
   const UnOpacity2 = useRef(new Animated.Value(0)).current;
-  const DegCard2 = GetInterpolate(RotateCard2, ["0deg", "0deg", "180deg"]);
+  const DegCard2 = GetInterpolate(RotateCard2, ["0deg", "0deg", "30deg"]);
 
-  const DegCard1 = GetInterpolate(RotateCard1, ["0deg", "0deg", "180deg"]);
+  const DegCard1 = GetInterpolate(RotateCard1, ["0deg", "0deg", "-10deg"]);
   const UnDegCard1 = GetInterpolate(UnRotateCard1, ["0deg", "-180deg", "0deg"]);
   const UnDegCard2 = GetInterpolate(UnRotateCard2, ["0deg", "-180deg", "0deg"]);
 
@@ -270,89 +270,115 @@ export const FakeUser4 = ({ StateCard, ImageCard }) => {
   const UnOpacityCard2 = GetInterpolate(UnOpacity2, [0, 0, 1]);
 
   return (
-    <View
-      style={{
-        position: "absolute",
-        bottom: "40%",
-        right: "15%",
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        width: 30,
-      }}
-    >
-      <View style={{ position: "relative" }}>
-        {/* Close */}
-        <Animated.View
-          style={{
-            position: "absolute",
-            zIndex: 2,
-            width: 40,
-            height: 40,
-            transform: [{ rotateY: DegCard1 }],
-            opacity: OpacityCard1,
-          }}
-        >
-          <Image
-            resizeMode="contain"
-            source={require("../../../assets/deckofcard/CloseCard.png")}
-            style={{ width: "100%", height: "100%" }}
-          />
-        </Animated.View>
-        {/* Open */}
-        <Animated.View
-          style={{
-            zIndex: 2,
-            width: 40,
-            height: 40,
-            transform: [{ rotateY: UnDegCard1 }],
-            opacity: UnOpacityCard1,
-          }}
-        >
-          <Image
-            resizeMode="contain"
-            source={require("../../../assets/deckofcard/4♠.png")}
-            //   source={ImageCard ? ImageCard[0]?.image : ""}
-            style={{ width: "100%", height: "100%" }}
-          />
-        </Animated.View>
+    <View style={{ position: "absolute", bottom: "25%", right: "15%" }}>
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          backgroundColor: "white",
+          width: 50,
+          height: 60,
+          zIndex: 2,
+        }}
+      >
+        <View style={{ position: "relative", marginLeft: 28 }}>
+          {/* Close */}
+          <Animated.View
+            style={{
+              position: "absolute",
+              zIndex: 2,
+              width: 35,
+              height: 35,
+              transform: [{ rotateZ: DegCard1 }],
+              opacity: OpacityCard1,
+            }}
+          >
+            <Image
+              resizeMode="contain"
+              source={require("../../../assets/deckofcard/CloseCard.png")}
+              style={{ width: "100%", height: "100%" }}
+            />
+          </Animated.View>
+          {/* Open */}
+          <Animated.View
+            style={{
+              zIndex: 2,
+              width: 35,
+              height: 35,
+              transform: [{ rotateZ: "45deg" }],
+              opacity: UnOpacityCard1,
+            }}
+          >
+            <Image
+              resizeMode="contain"
+              source={require("../../../assets/deckofcard/A♠.png")}
+              //   source={ImageCard ? ImageCard[0]?.image : ""}
+              style={{ width: "100%", height: "100%" }}
+            />
+          </Animated.View>
+        </View>
+        <View style={{ position: "relative", marginLeft: -20 }}>
+          {/* Close Card2 */}
+          <Animated.View
+            style={{
+              position: "absolute",
+              zIndex: 2,
+              width: 35,
+              height: 35,
+              transform: [{ rotateZ: DegCard2 }],
+              opacity: OpacityCard2,
+            }}
+          >
+            <Image
+              resizeMode="contain"
+              source={require("../../../assets/deckofcard/CloseCard.png")}
+              style={{ width: "100%", height: "100%" }}
+            />
+          </Animated.View>
+          {/* OpenCard2 */}
+          <Animated.View
+            style={{
+              zIndex: 2,
+              width: 30,
+              height: 30,
+              transform: [{ rotateY: UnDegCard2 }],
+              opacity: UnOpacityCard2,
+            }}
+          >
+            <Image
+              resizeMode="contain"
+              source={require("../../../assets/deckofcard/A♠.png")}
+              //   source={ImageCard ? ImageCard[1]?.image : ""}
+              style={{ width: "100%", height: "100%" }}
+            />
+          </Animated.View>
+        </View>
       </View>
-      <View style={{ position: "relative" }}>
-        {/* Close Card2 */}
-        <Animated.View
-          style={{
-            position: "absolute",
-            zIndex: 2,
-            width: 40,
-            height: 40,
-            transform: [{ rotateY: DegCard2 }],
-            opacity: OpacityCard2,
-          }}
-        >
-          <Image
-            resizeMode="contain"
-            source={require("../../../assets/deckofcard/CloseCard.png")}
-            style={{ width: "100%", height: "100%" }}
-          />
-        </Animated.View>
-        {/* OpenCard2 */}
-        <Animated.View
-          style={{
-            zIndex: 2,
-            width: 40,
-            height: 40,
-            transform: [{ rotateY: UnDegCard2 }],
-            opacity: UnOpacityCard2,
-          }}
-        >
-          <Image
-            resizeMode="contain"
-            source={require("../../../assets/deckofcard/6♠.png")}
-            //   source={ImageCard ? ImageCard[1]?.image : ""}
-            style={{ width: "100%", height: "100%" }}
-          />
-        </Animated.View>
-      </View>
+      <Text style={{ color: "white" }}>userName</Text>
+      <Text
+        style={{
+          color: "white",
+          position: "absolute",
+          bottom: 20,
+          width: 70,
+          right: -60,
+
+          zIndex: 10,
+        }}
+      >
+        131.2k
+      </Text>
+      <Text
+        style={{
+          color: "white",
+          position: "absolute",
+          zIndex: 10,
+          bottom: 64,
+          left: -80,
+        }}
+      >
+        5.00k
+      </Text>
     </View>
   );
 };

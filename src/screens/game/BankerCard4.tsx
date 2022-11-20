@@ -69,8 +69,8 @@ export const BankerCard4 = ({ StateCard, ImageBanker4 }) => {
         style={{
           position: "absolute",
           zIndex: 2,
-          width: 100,
-          height: 100,
+          width: 85,
+          height: 85,
           transform: [{ rotateY: DegCard4 }],
           opacity: OpacityCard4,
         }}
@@ -86,8 +86,8 @@ export const BankerCard4 = ({ StateCard, ImageBanker4 }) => {
       <Animated.View
         style={{
           zIndex: 2,
-          width: 100,
-          height: 100,
+          width: 85,
+          height: 85,
           transform: [{ rotateY: UnDegCard4 }],
           opacity: UnOpacityCard4,
         }}

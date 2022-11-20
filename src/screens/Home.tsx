@@ -39,6 +39,7 @@ const Home: React.FC = (props: any) => {
       isHost: true,
       turn: 1,
       cards: [],
+      betChips: 0,
     };
 
     const room = await client.joinOrCreate("desk", params);

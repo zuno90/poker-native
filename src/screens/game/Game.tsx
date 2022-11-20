@@ -1,19 +1,18 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Room } from "colyseus.js";
 
-import { Text, View, Button } from "native-base";
+import { View } from "native-base";
 
 import { GameContext } from "../../context/GameContext";
-import { Alert, Animated, TouchableOpacity, Image } from "react-native";
+import { Animated, TouchableOpacity, Image, Text, Alert } from "react-native";
 import { GetInterpolate } from "../../utils/getInterpolate";
 import { getImage } from "./get";
 import { FakeUser1, FakeUser2, FakeUser3, FakeUser4 } from "./index";
 import { BankerCard } from "./BankerCard";
+import { Action } from "./Action";
 
 const Game = (props: any) => {
   const { room, handleRoom } = useContext(GameContext);
-  const [Card, setCard] = useState(["K♥"]);
-  const [Card2, setCard2] = useState(["2♥"]);
   const [totalCard, setTotalCard] = useState<any>([]);
   const [bankerCard, setBankerCard] = useState<any>([]);
   const myroom = room as Room;
@@ -26,7 +25,6 @@ const Game = (props: any) => {
             setTotalCard([...totalCard, i.cards]);
           }
         }
-        // console.log(state, "state");
         if (state.banker5Cards) {
           setBankerCard(state.banker5Cards);
         }
@@ -52,18 +50,19 @@ const Game = (props: any) => {
   };
 
   const ImgCard1 = getImage(totalCard[0]);
+  // console.log(room);
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionHorizontalCard1 = useRef(new Animated.Value(0)).current;
   const PositionHorizontalCard2 = useRef(new Animated.Value(0)).current;
-  const SizeCard1 = useRef(new Animated.Value(75)).current;
-  const SizeCard2 = useRef(new Animated.Value(75)).current;
-  const RotateCard1 = useRef(new Animated.Value(180)).current;
-  const RotateCard2 = useRef(new Animated.Value(180)).current;
+  const SizeCard1 = useRef(new Animated.Value(0)).current;
+  const SizeCard2 = useRef(new Animated.Value(0)).current;
+  const RotateCard1 = useRef(new Animated.Value(0)).current;
+  const RotateCard2 = useRef(new Animated.Value(0)).current;
   const UnRotateCard1 = useRef(new Animated.Value(0)).current;
   const UnRotateCard2 = useRef(new Animated.Value(0)).current;
-  const Opacity1 = useRef(new Animated.Value(1)).current;
-  const Opacity2 = useRef(new Animated.Value(1)).current;
+  const Opacity1 = useRef(new Animated.Value(0)).current;
+  const Opacity2 = useRef(new Animated.Value(0)).current;
   const UnOpacity1 = useRef(new Animated.Value(0)).current;
   const UnOpacity2 = useRef(new Animated.Value(0)).current;
 
@@ -157,12 +156,12 @@ const Game = (props: any) => {
     } else if (count % 6 == 0) {
       Animated.timing(SizeCard1, {
         useNativeDriver: false,
-        toValue: 75,
+        toValue: 10,
         duration: 300,
       }).start();
       Animated.timing(SizeCard2, {
         useNativeDriver: false,
-        toValue: 75,
+        toValue: 10,
         duration: 300,
       }).start();
       Animated.timing(PositionVerticalCard1, {
@@ -233,7 +232,7 @@ const Game = (props: any) => {
   const bottomPercentCard1 = GetInterpolate(PositionVerticalCard1, [
     "5%",
     "75%",
-    "5%",
+    "10%",
   ]);
 
   const rightPercentCard1 = GetInterpolate(PositionHorizontalCard1, [
@@ -244,7 +243,7 @@ const Game = (props: any) => {
   const bottomPercentCard2 = GetInterpolate(PositionVerticalCard2, [
     "5%",
     "75%",
-    "5%",
+    "10%",
   ]);
 
   const rightPercentCard2 = GetInterpolate(PositionHorizontalCard2, [
@@ -263,31 +262,54 @@ const Game = (props: any) => {
 
   const UnOpacityCard1 = GetInterpolate(UnOpacity1, [0, 0, 1]);
   const UnOpacityCard2 = GetInterpolate(UnOpacity2, [0, 0, 1]);
-  console.log(room, "state");
-
   return (
     <View
       style={{
         position: "relative",
-        justifyContent: "flex-start",
         display: "flex",
         alignItems: "center",
+        justifyContent: "center",
         flex: 1,
       }}
     >
+      {/* Background */}
       <Image
         resizeMode="cover"
         source={require("../../../assets/BackgroundRoom.png")}
         style={{ width: "101%", height: "101%" }}
       />
+      {/* Table */}
+
+      <Image
+        resizeMode="cover"
+        source={require("../../../assets/TableRoom.png")}
+        style={{
+          width: "80%",
+          height: "63%",
+          zIndex: 2,
+          position: "absolute",
+        }}
+      />
       {/* Host */}
-      <View style={{ position: "absolute", right: "46%", bottom: "75%" }}>
+      <View style={{ position: "absolute", bottom: "75%" }}>
         <Image
           resizeMode="contain"
-          source={require("../../../assets/deckofcard/CloseCard.png")}
-          style={{ width: 75, height: 75 }}
+          source={require("../../../assets/GirlBanker.png")}
+          style={{ width: 100, height: 100 }}
         />
       </View>
+      {/* TotalBet */}
+      <Text
+        style={{
+          top: "45%",
+          color: "white",
+          position: "absolute",
+          fontSize: 20,
+          zIndex: 6,
+        }}
+      >
+        70.0k
+      </Text>
       <BankerCard StateCard={count} ImageCard={bankerCard} />
       {/* User */}
       {/* Close */}
@@ -306,18 +328,18 @@ const Game = (props: any) => {
         <Image
           resizeMode="contain"
           source={require("../../../assets/deckofcard/CloseCard.png")}
-          style={{ width: "100%", height: "100%" }}
+          style={{ width: "5%", height: "5%" }}
         />
       </Animated.View>
       {/* Open */}
       <Animated.View
         style={{
           position: "absolute",
-          bottom: "5%",
-          right: "50%",
+          bottom: "25%",
+          right: "48%",
           zIndex: 2,
-          width: 100,
-          height: 100,
+          width: 80,
+          height: 80,
           transform: [{ rotateY: UnDegCard1 }],
           opacity: UnOpacityCard1,
         }}
@@ -351,11 +373,11 @@ const Game = (props: any) => {
       <Animated.View
         style={{
           position: "absolute",
-          bottom: "5%",
-          right: "38%",
+          bottom: "25%",
+          right: "40%",
           zIndex: 2,
-          width: 100,
-          height: 100,
+          width: 80,
+          height: 80,
           transform: [{ rotateY: UnDegCard2 }],
           opacity: UnOpacityCard2,
         }}
@@ -366,6 +388,53 @@ const Game = (props: any) => {
           style={{ width: "100%", height: "100%" }}
         />
       </Animated.View>
+      {/* profile User */}
+      <View
+        style={{
+          position: "absolute",
+          bottom: "5%",
+          backgroundColor: "white",
+          width: 50,
+          height: 60,
+          zIndex: 5,
+          // display: "flex",
+          // justifyContent: "center",
+        }}
+      >
+        <Text
+          style={{
+            color: "white",
+            position: "absolute",
+            top: -20,
+            width: 70,
+            zIndex: 10,
+          }}
+        >
+          5.00k
+        </Text>
+        <Text
+          style={{
+            color: "white",
+            position: "absolute",
+            bottom: 0,
+            right: -80,
+            width: 70,
+            zIndex: 10,
+          }}
+        >
+          5.00k
+        </Text>
+        <Text
+          style={{
+            color: "white",
+            position: "absolute",
+            bottom: -20,
+            width: 70,
+          }}
+        >
+          UserName
+        </Text>
+      </View>
       <FakeUser1 StateCard={count} ImageCard={[""]} />
       <FakeUser2 StateCard={count} ImageCard={[""]} />
       <FakeUser3 StateCard={count} ImageCard={[""]} />
@@ -374,118 +443,57 @@ const Game = (props: any) => {
       <View
         style={{
           position: "absolute",
-          right: "0%",
-          bottom: "0%",
+          right: 0,
+          bottom: "-1%",
           display: "flex",
-          // flexDirection: "",
-          justifyContent: "space-between",
-          width: "35%",
-          height: "25%",
+          width: "40%",
+          height: "17%",
+          flexDirection: "row",
         }}
       >
+        <Image
+          resizeMode="cover"
+          source={require("../../../assets/betFrame.png")}
+          style={{
+            width: "100%",
+            height: "100%",
+            zIndex: 6,
+            position: "absolute",
+          }}
+        />
         <View
           style={{
+            zIndex: 7,
+            width: "100%",
+            height: "100%",
             display: "flex",
             flexDirection: "row",
-            justifyContent: "flex-end",
+            justifyContent: "space-around",
           }}
         >
-          {/* Raise */}
-          <TouchableOpacity>
-            {/* <Image
-            source={require("../../../assets/bg.png")}
-            
-          /> */}
-            <Text
-              style={{
-                textAlign: "center",
-
-                backgroundColor: "red",
-                height: 40,
-                width: 90,
-                marginRight: "2%",
-              }}
-            >
-              Raise
-            </Text>
-          </TouchableOpacity>
           {/* Call */}
-          <TouchableOpacity>
-            {/* <Image
-            source={require("../../../assets/bg.png")}
-            
-          /> */}
-
-            <Text
-              style={{
-                backgroundColor: "red",
-                height: 40,
-                width: 90,
-              }}
-            >
-              Call
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            // width: "130%",
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          {/* Fold */}
-          <TouchableOpacity>
-            {/* <Image
-            source={require("../../../assets/bg.png")}
-            
-          /> */}
-            <Text
-              style={{
-                backgroundColor: "red",
-                height: 40,
-                width: 90,
-              }}
-            >
-              Fold
-            </Text>
-          </TouchableOpacity>
+          <Action
+            ImageAction={require("../../../assets/Call.png")}
+            title="CALL"
+          />
           {/* Check */}
-          <TouchableOpacity>
-            {/* <Image
-            source={require("../../../assets/bg.png")}
-            
-          /> */}
-            <Text
-              style={{
-                backgroundColor: "red",
-                height: 40,
-                width: 90,
-              }}
-            >
-              Check
-            </Text>
-          </TouchableOpacity>
-          {/* All in */}
-          <TouchableOpacity>
-            {/* <Image
-            source={require("../../../assets/bg.png")}
-            
-          /> */}
-            <Text
-              style={{
-                textAlign: "center",
-                backgroundColor: "red",
-                height: 40,
-                width: 90,
-              }}
-            >
-              All in
-            </Text>
-          </TouchableOpacity>
+          <Action
+            ImageAction={require("../../../assets/Check.png")}
+            title="CHECK"
+          />
+          {/* FOLD */}
+          <Action
+            ImageAction={require("../../../assets/Fold.png")}
+            title="FOLD"
+          />
+          {/* ALL In */}
+          <Action
+            ImageAction={require("../../../assets/Allin.png")}
+            title="ALL IN"
+          />
         </View>
       </View>
+
       <View
         style={{
           position: "absolute",
@@ -493,13 +501,12 @@ const Game = (props: any) => {
           bottom: "5%",
           display: "flex",
           flexDirection: "row",
+          marginRight: "10%",
         }}
       >
         <TouchableOpacity
           onPress={() => {
             handleReady();
-            // setCount(count + 1);
-            // Alert.aler t(count.toString());
           }}
         >
           <Image
@@ -511,7 +518,7 @@ const Game = (props: any) => {
         <TouchableOpacity
           onPress={() => {
             setCount(count + 1);
-            // Alert.aler t(count.toString());
+            room.send("RAISE", 5000);
           }}
         >
           <Image
@@ -523,9 +530,6 @@ const Game = (props: any) => {
         <TouchableOpacity
           onPress={() => {
             handleLeaveRoom();
-            // props.navigation.navigate("HOME");
-
-            // Alert.aler t(count.toString());
           }}
         >
           <Image
