@@ -1,36 +1,53 @@
-import React, { useEffect, useRef } from "react";
-import { Animated, View, Image } from "react-native";
+import { Text } from "native-base";
+import React, { useEffect, useRef, useState } from "react";
+import { Animated, View, Image, TouchableOpacity } from "react-native";
 import { GetInterpolate } from "../../utils/getInterpolate";
 
 export const BankerCard4 = ({ StateCard, ImageBanker4 }) => {
-  const RotateCard4 = useRef(new Animated.Value(0)).current;
-  const UnRotateCard4 = useRef(new Animated.Value(0)).current;
-  const Opacity4 = useRef(new Animated.Value(0)).current;
-  const UnOpacity4 = useRef(new Animated.Value(0)).current;
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     if (StateCard % 6 === 3) {
-      Animated.parallel([
-        Animated.timing(RotateCard4, {
-          useNativeDriver: false,
-          toValue: 1,
-          duration: 800,
-        }),
-        Animated.timing(UnRotateCard4, {
-          useNativeDriver: false,
-          toValue: 1,
-          duration: 800,
-        }),
-        Animated.timing(Opacity4, {
-          useNativeDriver: false,
-          toValue: 1,
-          duration: 800,
-        }),
-        Animated.timing(UnOpacity4, {
-          useNativeDriver: false,
-          toValue: 1,
-          duration: 800,
-        }),
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(SizeCard4, {
+            useNativeDriver: false,
+            toValue: 85,
+            duration: 100,
+          }),
+          Animated.timing(PositionVerticalCard4, {
+            useNativeDriver: false,
+            toValue: 1,
+            duration: 100,
+          }),
+          Animated.timing(PositionHorizontalCard4, {
+            useNativeDriver: false,
+            toValue: 1,
+            duration: 100,
+          }),
+        ]),
+        Animated.parallel([
+          Animated.timing(RotateCard4, {
+            useNativeDriver: false,
+            toValue: 1,
+            duration: 800,
+          }),
+          Animated.timing(UnRotateCard4, {
+            useNativeDriver: false,
+            toValue: 1,
+            duration: 800,
+          }),
+          Animated.timing(Opacity4, {
+            useNativeDriver: false,
+            toValue: 1,
+            duration: 800,
+          }),
+          Animated.timing(UnOpacity4, {
+            useNativeDriver: false,
+            toValue: 1,
+            duration: 800,
+          }),
+        ]),
       ]).start();
     } else if (StateCard % 6 == 0) {
       Animated.parallel([
@@ -54,23 +71,63 @@ export const BankerCard4 = ({ StateCard, ImageBanker4 }) => {
           toValue: 0,
           duration: 800,
         }),
+        Animated.timing(SizeCard4, {
+          useNativeDriver: false,
+          toValue: 0,
+          duration: 100,
+        }),
+        Animated.timing(PositionVerticalCard4, {
+          useNativeDriver: false,
+          toValue: 0,
+          duration: 100,
+        }),
+        Animated.timing(PositionHorizontalCard4, {
+          useNativeDriver: false,
+          toValue: 0,
+          duration: 100,
+        }),
       ]).start();
     }
   }, [StateCard]);
-  const OpacityCard4 = GetInterpolate(Opacity4, [0, 0, 1]);
+
+  const RotateCard4 = useRef(new Animated.Value(0)).current;
+  const UnRotateCard4 = useRef(new Animated.Value(0)).current;
+  const Opacity4 = useRef(new Animated.Value(0)).current;
+  const UnOpacity4 = useRef(new Animated.Value(0)).current;
+  const PositionVerticalCard4 = useRef(new Animated.Value(0)).current;
+  const PositionHorizontalCard4 = useRef(new Animated.Value(0)).current;
+  const SizeCard4 = useRef(new Animated.Value(10)).current;
+
+  const OpacityCard4 = GetInterpolate(Opacity4, [0, 1, 0]);
   const UnOpacityCard4 = GetInterpolate(UnOpacity4, [0, 0, 1]);
   const DegCard4 = GetInterpolate(RotateCard4, ["0deg", "0deg", "180deg"]);
   const UnDegCard4 = GetInterpolate(UnRotateCard4, ["0deg", "-180deg", "0deg"]);
-
+  const rightPercentCard4 = GetInterpolate(PositionHorizontalCard4, [
+    "100%",
+    "100%",
+    "0%",
+  ]);
+  const topPercentCard4 = GetInterpolate(PositionVerticalCard4, [
+    "-20%",
+    "-20%",
+    "0%",
+  ]);
+  console.log(count);
   return (
-    <View style={{ position: "relative" }}>
+    <Animated.View
+      style={{
+        position: "relative",
+        top: topPercentCard4,
+        right: rightPercentCard4,
+        zIndex: 4,
+      }}
+    >
       {/* Close */}
       <Animated.View
         style={{
           position: "absolute",
-          zIndex: 2,
-          width: 85,
-          height: 85,
+          width: SizeCard4,
+          height: SizeCard4,
           transform: [{ rotateY: DegCard4 }],
           opacity: OpacityCard4,
         }}
@@ -86,8 +143,8 @@ export const BankerCard4 = ({ StateCard, ImageBanker4 }) => {
       <Animated.View
         style={{
           zIndex: 2,
-          width: 85,
-          height: 85,
+          width: SizeCard4,
+          height: SizeCard4,
           transform: [{ rotateY: UnDegCard4 }],
           opacity: UnOpacityCard4,
         }}
@@ -98,6 +155,6 @@ export const BankerCard4 = ({ StateCard, ImageBanker4 }) => {
           style={{ width: "100%", height: "100%" }}
         />
       </Animated.View>
-    </View>
+    </Animated.View>
   );
 };

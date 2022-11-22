@@ -1,26 +1,32 @@
 import { View } from "native-base";
 
 import { useContext, useEffect, useRef, useState } from "react";
-import { Animated, Image, Text } from "react-native";
+import { Animated, Image, Text, TouchableOpacity } from "react-native";
 import { GetInterpolate } from "../../utils/getInterpolate";
 
 export const FakeUser4 = ({ StateCard, ImageCard }) => {
+  const [count, setCount] = useState(0);
+
   useEffect(() => {
     if (StateCard % 6 == 1) {
       Animated.sequence([
         Animated.sequence([
           Animated.parallel([
             Animated.timing(SizeCard1, {
+              delay: 900,
               useNativeDriver: false,
               toValue: 100,
               duration: 300,
             }),
             Animated.timing(PositionVerticalCard1, {
+              delay: 900,
+
               useNativeDriver: false,
               toValue: 1,
               duration: 300,
             }),
             Animated.timing(PositionHorizontalCard1, {
+              delay: 900,
               useNativeDriver: false,
               toValue: 1,
               duration: 300,
@@ -243,6 +249,7 @@ export const FakeUser4 = ({ StateCard, ImageCard }) => {
       }).start();
     }
   }, [StateCard]);
+
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionHorizontalCard1 = useRef(new Animated.Value(0)).current;
@@ -268,7 +275,26 @@ export const FakeUser4 = ({ StateCard, ImageCard }) => {
 
   const UnOpacityCard1 = GetInterpolate(UnOpacity1, [0, 0, 1]);
   const UnOpacityCard2 = GetInterpolate(UnOpacity2, [0, 0, 1]);
-
+  const topPercentCard1 = GetInterpolate(PositionVerticalCard1, [
+    "5%",
+    "-200%",
+    "0%",
+  ]);
+  const leftPercentCard1 = GetInterpolate(PositionHorizontalCard1, [
+    "5%",
+    "-720%",
+    "0%",
+  ]);
+  const topPercentCard2 = GetInterpolate(PositionVerticalCard2, [
+    "5%",
+    "-200%",
+    "0%",
+  ]);
+  const leftPercentCard2 = GetInterpolate(PositionHorizontalCard2, [
+    "5%",
+    "-900%",
+    "0%",
+  ]);
   return (
     <View style={{ position: "absolute", bottom: "25%", right: "15%" }}>
       <View
@@ -290,7 +316,9 @@ export const FakeUser4 = ({ StateCard, ImageCard }) => {
               width: 35,
               height: 35,
               transform: [{ rotateZ: DegCard1 }],
-              opacity: OpacityCard1,
+              opacity: 1,
+              top: topPercentCard1,
+              left: leftPercentCard1,
             }}
           >
             <Image
@@ -326,7 +354,9 @@ export const FakeUser4 = ({ StateCard, ImageCard }) => {
               width: 35,
               height: 35,
               transform: [{ rotateZ: DegCard2 }],
-              opacity: OpacityCard2,
+              opacity: 1,
+              top: topPercentCard2,
+              left: leftPercentCard2,
             }}
           >
             <Image
@@ -379,6 +409,22 @@ export const FakeUser4 = ({ StateCard, ImageCard }) => {
       >
         5.00k
       </Text>
+      <TouchableOpacity
+        onPress={() => {
+          setCount(count + 1);
+        }}
+        style={{
+          position: "absolute",
+          left: "-500%",
+          top: 0,
+          width: 50,
+          height: 50,
+          // backgroundColor: "black",
+          zIndex: 100,
+        }}
+      >
+        <Text>TouchableOpacity</Text>
+      </TouchableOpacity>
     </View>
   );
 };

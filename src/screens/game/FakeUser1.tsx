@@ -1,46 +1,52 @@
 import { View } from "native-base";
 
 import { useContext, useEffect, useRef, useState } from "react";
-import { Animated, Image, Text } from "react-native";
+import { Animated, Image, Text, TouchableOpacity } from "react-native";
 import { GetInterpolate } from "../../utils/getInterpolate";
 
 export const FakeUser1 = ({ StateCard, ImageCard }) => {
+  const [count, setCount] = useState(0);
   useEffect(() => {
     if (StateCard % 6 == 1) {
       Animated.sequence([
         Animated.sequence([
           Animated.parallel([
             Animated.timing(SizeCard1, {
+              delay: 500,
               useNativeDriver: false,
-              toValue: 100,
-              duration: 300,
+              toValue: 35,
+              duration: 100,
             }),
             Animated.timing(PositionVerticalCard1, {
+              delay: 500,
+
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
             Animated.timing(PositionHorizontalCard1, {
+              delay: 500,
+
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
           ]),
           Animated.parallel([
             Animated.timing(RotateCard1, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
             Animated.timing(UnRotateCard1, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
             Animated.timing(Opacity1, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
           ]),
         ]),
@@ -48,36 +54,36 @@ export const FakeUser1 = ({ StateCard, ImageCard }) => {
           Animated.parallel([
             Animated.timing(SizeCard2, {
               useNativeDriver: false,
-              toValue: 100,
-              duration: 300,
+              toValue: 35,
+              duration: 100,
             }),
             Animated.timing(PositionVerticalCard2, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
 
             Animated.timing(PositionHorizontalCard2, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
           ]),
           Animated.parallel([
             Animated.timing(RotateCard2, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
             Animated.timing(UnRotateCard2, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
             Animated.timing(Opacity2, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
           ]),
         ]),
@@ -88,40 +94,40 @@ export const FakeUser1 = ({ StateCard, ImageCard }) => {
           Animated.parallel([
             Animated.timing(SizeCard1, {
               useNativeDriver: false,
-              toValue: 100,
-              duration: 300,
+              toValue: 70,
+              duration: 100,
             }),
             Animated.timing(PositionVerticalCard1, {
               useNativeDriver: false,
-              toValue: 1,
-              duration: 300,
+              toValue: -1,
+              duration: 100,
             }),
             Animated.timing(PositionHorizontalCard1, {
               useNativeDriver: false,
-              toValue: 1,
-              duration: 300,
+              toValue: -1,
+              duration: 100,
             }),
           ]),
           Animated.parallel([
             Animated.timing(RotateCard1, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
             Animated.timing(UnRotateCard1, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
             Animated.timing(Opacity1, {
               useNativeDriver: false,
               toValue: 0,
-              duration: 300,
+              duration: 100,
             }),
             Animated.timing(UnOpacity1, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
           ]),
         ]),
@@ -129,41 +135,41 @@ export const FakeUser1 = ({ StateCard, ImageCard }) => {
           Animated.parallel([
             Animated.timing(SizeCard2, {
               useNativeDriver: false,
-              toValue: 100,
-              duration: 300,
+              toValue: 70,
+              duration: 100,
             }),
             Animated.timing(PositionVerticalCard2, {
               useNativeDriver: false,
-              toValue: 1,
-              duration: 300,
+              toValue: -1,
+              duration: 100,
             }),
 
             Animated.timing(PositionHorizontalCard2, {
               useNativeDriver: false,
-              toValue: 1,
-              duration: 300,
+              toValue: -1,
+              duration: 100,
             }),
           ]),
           Animated.parallel([
             Animated.timing(RotateCard2, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
             Animated.timing(UnRotateCard2, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
             Animated.timing(Opacity2, {
               useNativeDriver: false,
               toValue: 0,
-              duration: 300,
+              duration: 100,
             }),
             Animated.timing(UnOpacity2, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
           ]),
         ]),
@@ -171,80 +177,82 @@ export const FakeUser1 = ({ StateCard, ImageCard }) => {
     } else if (StateCard % 6 == 0) {
       Animated.timing(SizeCard1, {
         useNativeDriver: false,
-        toValue: 75,
-        duration: 300,
+        toValue: 0,
+        duration: 100,
       }).start();
       Animated.timing(SizeCard2, {
         useNativeDriver: false,
-        toValue: 75,
-        duration: 300,
+        toValue: 0,
+        duration: 100,
       }).start();
       Animated.timing(PositionVerticalCard1, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
       Animated.timing(PositionHorizontalCard1, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
 
       Animated.timing(PositionVerticalCard2, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
 
       Animated.timing(PositionHorizontalCard2, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
       Animated.timing(RotateCard1, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
       Animated.timing(UnRotateCard1, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
       Animated.timing(RotateCard2, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
       Animated.timing(UnRotateCard2, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
       Animated.timing(Opacity1, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
       Animated.timing(UnOpacity1, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
       Animated.timing(Opacity2, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
       Animated.timing(UnOpacity2, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
     }
   }, [StateCard]);
+
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
+
   const PositionHorizontalCard1 = useRef(new Animated.Value(0)).current;
   const PositionHorizontalCard2 = useRef(new Animated.Value(0)).current;
   const SizeCard1 = useRef(new Animated.Value(30)).current;
@@ -255,8 +263,8 @@ export const FakeUser1 = ({ StateCard, ImageCard }) => {
   const UnRotateCard2 = useRef(new Animated.Value(0)).current;
   const Opacity1 = useRef(new Animated.Value(1)).current;
   const Opacity2 = useRef(new Animated.Value(1)).current;
-  const UnOpacity1 = useRef(new Animated.Value(0)).current;
-  const UnOpacity2 = useRef(new Animated.Value(0)).current;
+  const UnOpacity1 = useRef(new Animated.Value(1)).current;
+  const UnOpacity2 = useRef(new Animated.Value(1)).current;
   const DegCard2 = GetInterpolate(RotateCard2, ["0deg", "0deg", "30deg"]);
 
   const DegCard1 = GetInterpolate(RotateCard1, ["0deg", "0deg", "-10deg"]);
@@ -268,6 +276,26 @@ export const FakeUser1 = ({ StateCard, ImageCard }) => {
 
   const UnOpacityCard1 = GetInterpolate(UnOpacity1, [0, 0, 1]);
   const UnOpacityCard2 = GetInterpolate(UnOpacity2, [0, 0, 1]);
+  const topPercentCard1 = GetInterpolate(PositionVerticalCard1, [
+    "5%",
+    "-200%",
+    "0%",
+  ]);
+  const rightPercentCard1 = GetInterpolate(PositionHorizontalCard1, [
+    "100%",
+    "-700%",
+    "0%",
+  ]);
+  const topPercentCard2 = GetInterpolate(PositionVerticalCard2, [
+    "5%",
+    "-200%",
+    "0%",
+  ]);
+  const rightPercentCard2 = GetInterpolate(PositionHorizontalCard2, [
+    "100%",
+    "-750%",
+    "0%",
+  ]);
   return (
     <View style={{ position: "absolute", bottom: "25%", left: "15%" }}>
       <View
@@ -286,10 +314,12 @@ export const FakeUser1 = ({ StateCard, ImageCard }) => {
             style={{
               position: "absolute",
               zIndex: 2,
-              width: 35,
-              height: 35,
+              width: SizeCard1,
+              height: SizeCard1,
               transform: [{ rotateZ: DegCard1 }],
-              opacity: OpacityCard1,
+              opacity: 1,
+              top: topPercentCard1,
+              right: rightPercentCard1,
             }}
           >
             <Image
@@ -302,10 +332,10 @@ export const FakeUser1 = ({ StateCard, ImageCard }) => {
           <Animated.View
             style={{
               zIndex: 2,
-              width: 35,
-              height: 35,
+              width: SizeCard1,
+              height: SizeCard1,
               transform: [{ rotateZ: "45deg" }],
-              opacity: UnOpacityCard1,
+              opacity: 0,
             }}
           >
             <Image
@@ -322,10 +352,12 @@ export const FakeUser1 = ({ StateCard, ImageCard }) => {
             style={{
               position: "absolute",
               zIndex: 2,
-              width: 35,
-              height: 35,
+              width: SizeCard2,
+              height: SizeCard2,
               transform: [{ rotateZ: DegCard2 }],
-              opacity: OpacityCard2,
+              opacity: 1,
+              top: topPercentCard2,
+              right: rightPercentCard2,
             }}
           >
             <Image
@@ -338,10 +370,10 @@ export const FakeUser1 = ({ StateCard, ImageCard }) => {
           <Animated.View
             style={{
               zIndex: 2,
-              width: 30,
-              height: 30,
+              width: SizeCard2,
+              height: SizeCard2,
               transform: [{ rotateY: UnDegCard2 }],
-              opacity: UnOpacityCard2,
+              opacity: 0,
             }}
           >
             <Image
@@ -378,6 +410,22 @@ export const FakeUser1 = ({ StateCard, ImageCard }) => {
       >
         5.00k
       </Text>
+      {/* <TouchableOpacity
+        onPress={() => {
+          setCount(count + 1);
+        }}
+        style={{
+          position: "absolute",
+          right: "-400%",
+          top: 0,
+          width: 50,
+          height: 50,
+          backgroundColor: "black",
+          zIndex: 100,
+        }}
+      >
+        <Text>TouchableOpacity</Text>
+      </TouchableOpacity> */}
     </View>
   );
 };

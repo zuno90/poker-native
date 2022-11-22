@@ -51,20 +51,6 @@ const Game = (props: any) => {
 
   const ImgCard1 = getImage(totalCard[0]);
   // console.log(room);
-  const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
-  const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
-  const PositionHorizontalCard1 = useRef(new Animated.Value(0)).current;
-  const PositionHorizontalCard2 = useRef(new Animated.Value(0)).current;
-  const SizeCard1 = useRef(new Animated.Value(0)).current;
-  const SizeCard2 = useRef(new Animated.Value(0)).current;
-  const RotateCard1 = useRef(new Animated.Value(0)).current;
-  const RotateCard2 = useRef(new Animated.Value(0)).current;
-  const UnRotateCard1 = useRef(new Animated.Value(0)).current;
-  const UnRotateCard2 = useRef(new Animated.Value(0)).current;
-  const Opacity1 = useRef(new Animated.Value(0)).current;
-  const Opacity2 = useRef(new Animated.Value(0)).current;
-  const UnOpacity1 = useRef(new Animated.Value(0)).current;
-  const UnOpacity2 = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (count % 6 == 1) {
@@ -72,17 +58,22 @@ const Game = (props: any) => {
         Animated.sequence([
           Animated.parallel([
             Animated.timing(SizeCard1, {
+              delay: 700,
               useNativeDriver: false,
-              toValue: 100,
+              toValue: 90,
               duration: 300,
             }),
             Animated.timing(PositionVerticalCard1, {
               useNativeDriver: false,
+              delay: 700,
+
               toValue: 1,
               duration: 300,
             }),
             Animated.timing(PositionHorizontalCard1, {
               useNativeDriver: false,
+              delay: 700,
+
               toValue: 1,
               duration: 300,
             }),
@@ -114,7 +105,7 @@ const Game = (props: any) => {
           Animated.parallel([
             Animated.timing(SizeCard2, {
               useNativeDriver: false,
-              toValue: 100,
+              toValue: 90,
               duration: 300,
             }),
             Animated.timing(PositionVerticalCard2, {
@@ -208,7 +199,7 @@ const Game = (props: any) => {
       }).start();
       Animated.timing(Opacity1, {
         useNativeDriver: false,
-        toValue: 1,
+        toValue: 0,
         duration: 300,
       }).start();
       Animated.timing(UnOpacity1, {
@@ -218,7 +209,7 @@ const Game = (props: any) => {
       }).start();
       Animated.timing(Opacity2, {
         useNativeDriver: false,
-        toValue: 1,
+        toValue: 0,
         duration: 300,
       }).start();
       Animated.timing(UnOpacity2, {
@@ -228,28 +219,42 @@ const Game = (props: any) => {
       }).start();
     }
   }, [count]);
+  const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
+  const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
+  const PositionHorizontalCard1 = useRef(new Animated.Value(0)).current;
+  const PositionHorizontalCard2 = useRef(new Animated.Value(0)).current;
+  const SizeCard1 = useRef(new Animated.Value(35)).current;
+  const SizeCard2 = useRef(new Animated.Value(35)).current;
+  const RotateCard1 = useRef(new Animated.Value(0)).current;
+  const RotateCard2 = useRef(new Animated.Value(0)).current;
+  const UnRotateCard1 = useRef(new Animated.Value(0)).current;
+  const UnRotateCard2 = useRef(new Animated.Value(0)).current;
+  const Opacity1 = useRef(new Animated.Value(0)).current;
+  const Opacity2 = useRef(new Animated.Value(0)).current;
+  const UnOpacity1 = useRef(new Animated.Value(0)).current;
+  const UnOpacity2 = useRef(new Animated.Value(0)).current;
 
   const bottomPercentCard1 = GetInterpolate(PositionVerticalCard1, [
     "5%",
-    "75%",
-    "10%",
+    "68%",
+    "5%",
   ]);
 
   const rightPercentCard1 = GetInterpolate(PositionHorizontalCard1, [
     "5%",
-    "46%",
-    "50%",
+    "48%",
+    "42%",
   ]);
   const bottomPercentCard2 = GetInterpolate(PositionVerticalCard2, [
     "5%",
-    "75%",
-    "10%",
+    "68%",
+    "8%",
   ]);
 
   const rightPercentCard2 = GetInterpolate(PositionHorizontalCard2, [
     "5%",
-    "46%",
-    "38%",
+    "48%",
+    "37%",
   ]);
   const DegCard2 = GetInterpolate(RotateCard2, ["0deg", "0deg", "180deg"]);
 
@@ -262,6 +267,7 @@ const Game = (props: any) => {
 
   const UnOpacityCard1 = GetInterpolate(UnOpacity1, [0, 0, 1]);
   const UnOpacityCard2 = GetInterpolate(UnOpacity2, [0, 0, 1]);
+  console.log(bottomPercentCard2, "%");
   return (
     <View
       style={{
@@ -284,8 +290,8 @@ const Game = (props: any) => {
         resizeMode="cover"
         source={require("../../../assets/TableRoom.png")}
         style={{
-          width: "80%",
-          height: "63%",
+          width: "70%",
+          height: "58%",
           zIndex: 2,
           position: "absolute",
         }}
@@ -301,7 +307,7 @@ const Game = (props: any) => {
       {/* TotalBet */}
       <Text
         style={{
-          top: "45%",
+          top: "25%",
           color: "white",
           position: "absolute",
           fontSize: 20,
@@ -312,36 +318,39 @@ const Game = (props: any) => {
       </Text>
       <BankerCard StateCard={count} ImageCard={bankerCard} />
       {/* User */}
+
+      {/* Card1 */}
+
       {/* Close */}
       <Animated.View
         style={{
-          position: "absolute",
-          bottom: bottomPercentCard1,
-          right: rightPercentCard1,
           zIndex: 2,
           width: SizeCard1,
           height: SizeCard1,
           transform: [{ rotateY: DegCard1 }],
           opacity: OpacityCard1,
+          position: "absolute",
+          bottom: bottomPercentCard1,
+          right: rightPercentCard1,
         }}
       >
         <Image
           resizeMode="contain"
           source={require("../../../assets/deckofcard/CloseCard.png")}
-          style={{ width: "5%", height: "5%" }}
+          style={{ width: "100%", height: "100%" }}
         />
       </Animated.View>
       {/* Open */}
       <Animated.View
         style={{
           position: "absolute",
-          bottom: "25%",
-          right: "48%",
           zIndex: 2,
-          width: 80,
-          height: 80,
-          transform: [{ rotateY: UnDegCard1 }],
+          width: 90,
+          height: 90,
+          transform: [{ rotateY: UnDegCard1 }, { rotateZ: "-5deg" }],
           opacity: UnOpacityCard1,
+          bottom: bottomPercentCard1,
+          right: rightPercentCard1,
         }}
       >
         <Image
@@ -350,17 +359,21 @@ const Game = (props: any) => {
           style={{ width: "100%", height: "100%" }}
         />
       </Animated.View>
+
+      {/* Card2 */}
+
       {/* Close Card2 */}
       <Animated.View
         style={{
+          width: SizeCard2,
+          height: SizeCard2,
+          transform: [{ rotateY: DegCard2 }, { rotateZ: "-10deg" }],
+          opacity: OpacityCard2,
           position: "absolute",
           bottom: bottomPercentCard2,
           right: rightPercentCard2,
-          zIndex: 2,
-          width: SizeCard2,
-          height: SizeCard2,
-          transform: [{ rotateY: DegCard2 }],
-          opacity: OpacityCard2,
+          zIndex: 10,
+          // backgroundColor: "white",
         }}
       >
         <Image
@@ -373,13 +386,13 @@ const Game = (props: any) => {
       <Animated.View
         style={{
           position: "absolute",
-          bottom: "25%",
-          right: "40%",
           zIndex: 2,
-          width: 80,
-          height: 80,
-          transform: [{ rotateY: UnDegCard2 }],
+          width: 90,
+          height: 90,
+          transform: [{ rotateY: UnDegCard2 }, { rotateZ: "10deg" }],
           opacity: UnOpacityCard2,
+          bottom: bottomPercentCard2,
+          right: rightPercentCard2,
         }}
       >
         <Image
@@ -388,11 +401,13 @@ const Game = (props: any) => {
           style={{ width: "100%", height: "100%" }}
         />
       </Animated.View>
+
       {/* profile User */}
       <View
         style={{
           position: "absolute",
           bottom: "5%",
+          right: "56%",
           backgroundColor: "white",
           width: 50,
           height: 60,
@@ -405,7 +420,8 @@ const Game = (props: any) => {
           style={{
             color: "white",
             position: "absolute",
-            top: -20,
+            top: -60,
+            right: -100,
             width: 70,
             zIndex: 10,
           }}
@@ -417,7 +433,7 @@ const Game = (props: any) => {
             color: "white",
             position: "absolute",
             bottom: 0,
-            right: -80,
+            left: -50,
             width: 70,
             zIndex: 10,
           }}
@@ -435,6 +451,7 @@ const Game = (props: any) => {
           UserName
         </Text>
       </View>
+
       <FakeUser1 StateCard={count} ImageCard={[""]} />
       <FakeUser2 StateCard={count} ImageCard={[""]} />
       <FakeUser3 StateCard={count} ImageCard={[""]} />
