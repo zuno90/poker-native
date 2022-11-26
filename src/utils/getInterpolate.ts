@@ -6,6 +6,7 @@ export const GetInterpolate = ( Input,Output)=>{
     return a;
     
 }
+
 interface Image {
     name: string;
     image: any;

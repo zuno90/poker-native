@@ -112,7 +112,7 @@ export const BankerCard4 = ({ StateCard, ImageBanker4 }) => {
     "-20%",
     "0%",
   ]);
-  console.log(count);
+
   return (
     <Animated.View
       style={{

@@ -7,7 +7,15 @@ import { Text, Image, Button } from "native-base";
 
 import { useAuth } from "../context/AuthContext";
 import { GameContext } from "../context/GameContext";
-
+interface InfoUser {
+  id?: string;
+  isHost?: false;
+  chips?: number;
+  betChips?: number;
+  turn?: number;
+  role?: "Bot" | "Player";
+  cards?: [];
+}
 const Home: React.FC = (props: any) => {
   const {
     authState: { user },
@@ -18,15 +26,60 @@ const Home: React.FC = (props: any) => {
   const client = new Colyseus.Client("ws://175.41.154.239");
   const [rooms, setRooms] = useState<Colyseus.RoomAvailable[]>([]);
 
-  const getAvailableRooms = async () => {
-    try {
-      const room = await client.getAvailableRooms("desk");
-      if (room) {
-        setRooms(room);
+  const getAvailableRooms = async (infoUser?: InfoUser) => {
+    const room = await client.getAvailableRooms("desk");
+    console.log(room, "room");
+    if (room.length !== 0) {
+      const { clients, roomId } = room[0];
+      if (clients <= 4 && clients > 1) {
+        const params = {
+          id: user.id,
+          chips: user.chips,
+          isHost: true,
+          turn: clients + 1,
+          cards: [],
+        };
+        try {
+          console.log("afdsafdsafsd", roomId);
+
+          const room = await client.joinById(roomId, params);
+
+          if (room) {
+            roomContext.handleRoom(room);
+
+            room && props.navigation.navigate("GAME");
+          }
+        } catch (error) {
+          console.log("adsf", error);
+        }
+      } else if (clients === 1) {
+        try {
+          console.log("afdsafdsafsd", roomId);
+
+          const room = await client.joinById(roomId, infoUser);
+
+          if (room) {
+            roomContext.handleRoom(room);
+
+            room && props.navigation.navigate("GAME");
+          }
+        } catch (error) {
+          console.log("adsf", error);
+        }
       }
-    } catch (error) {
-      console.error(error);
+    } else {
+      createRoom();
     }
+    return room;
+    // try {
+    //   const room = await client.getAvailableRooms("desk");
+    //   if (room) {
+    //     setRooms(room);
+    //   }
+    //   console.log(room, "room avai");
+    // } catch (error) {
+    //   console.error(error);
+    // }
   };
   // useEffect(() => {
   //   getAvailableRooms();
@@ -40,44 +93,25 @@ const Home: React.FC = (props: any) => {
       turn: 1,
       cards: [],
       betChips: 0,
+      role: "Player",
     };
 
     const room = await client.joinOrCreate("desk", params);
-    // const room = await client.create("desk", params);
 
     if (room) {
       console.log("kiem tra ham tao value", room);
-
+      getAvailableRooms({
+        betChips: 0,
+        id: "zuno-bot",
+        isHost: false,
+        chips: 10000,
+        turn: 2,
+        role: "Bot",
+        cards: [],
+      });
       roomContext.handleRoom(room);
 
       room && props.navigation.navigate("GAME");
-    }
-  };
-
-  const joinRoom = async (params: any) => {
-    const { clients, roomId } = params;
-
-    if (clients <= 5) {
-      const params = {
-        id: user.id,
-        chips: user.chips,
-        isHost: true,
-        turn: clients + 1,
-        cards: [],
-      };
-      try {
-        console.log("afdsafdsafsd", roomId);
-
-        const room = await client.joinById(roomId, params);
-
-        if (room) {
-          roomContext.handleRoom(room);
-
-          room && props.navigation.navigate("GAME");
-        }
-      } catch (error) {
-        console.log("adsf", error);
-      }
     }
   };
 
@@ -124,7 +158,17 @@ const Home: React.FC = (props: any) => {
           width: "30%",
           height: "20%",
         }}
-        onPress={createRoom}
+        onPress={() => {
+          getAvailableRooms({
+            id: "zuno-bot",
+            isHost: false,
+            chips: 10000,
+            turn: 2,
+            role: "Bot",
+            cards: [],
+            betChips: 0,
+          });
+        }}
       >
         <Image
           resizeMode="contain"
@@ -150,7 +194,7 @@ const Home: React.FC = (props: any) => {
           zIndex: 4,
         }}
       >
-        <TouchableOpacity style={{ bottom: 9, right: 10 }}>
+        <TouchableOpacity style={{ bottom: 9, right: 10 }} onPress={signOut}>
           <Image
             alt="No image"
             source={require("../../assets/SettingButton.png")}
@@ -271,9 +315,6 @@ const Home: React.FC = (props: any) => {
               width: "30%",
               height: "100%",
               zIndex: 5,
-            }}
-            onPress={() => {
-              Alert.alert("Sup");
             }}
           >
             <Image
