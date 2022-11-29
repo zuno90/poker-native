@@ -405,8 +405,46 @@ const Game = (props: any) => {
         source={require("../../../assets/BackgroundRoom.png")}
         style={{ width: "101%", height: "101%" }}
       />
+      {/* QuitRoom */}
+      <TouchableOpacity
+        onPress={handleLeaveRoom}
+        style={{
+          position: "absolute",
+          width: 30,
+          height: 30,
+          top: 20,
+          left: 20,
+        }}
+      >
+        <Image
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+          resizeMode="contain"
+          source={require("../../../assets/QuitRoom.png")}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{
+          position: "absolute",
+          width: 30,
+          height: 30,
+          bottom: 20,
+          left: 20,
+        }}
+      >
+        <Image
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+          resizeMode="contain"
+          source={require("../../../assets/Chat.png")}
+        />
+      </TouchableOpacity>
+      {/* Chat */}
       {/* Table */}
-
       <Image
         resizeMode="cover"
         source={require("../../../assets/TableRoom.png")}
@@ -437,15 +475,14 @@ const Game = (props: any) => {
       >
         70.0k
       </Text>
-      <BankerCard StateCard={count} ImageCard={bankerCard} />
+      <BankerCard ImageCard={bankerCard} />
       {/* User  */}
       <UserReal StateCard={count} />
-
       <FakeUser1 ImageCard={[""]} profile={Player[1]} />
-      <FakeUser2 StateCard={count} ImageCard={[""]} profile={Player[1]} />
+      {/* <FakeUser2 StateCard={count} ImageCard={[""]} profile={Player[1]} />
       <FakeUser3 StateCard={count} ImageCard={[""]} profile={Player[1]} />
-      <FakeUser4 StateCard={count} ImageCard={[""]} profile={Player[1]} />
-      {/* Card user */}
+      <FakeUser4 StateCard={count} ImageCard={[""]} profile={Player[1]} /> */}
+      {/* Bet */}
       <View
         style={{
           position: "absolute",
@@ -504,43 +541,6 @@ const Game = (props: any) => {
           />
         </View>
       </View>
-
-      {/* <View
-        style={{
-          position: "absolute",
-          left: "2%",
-          bottom: "5%",
-          display: "flex",
-          flexDirection: "row",
-          marginRight: "10%",
-        }}
-      >
-        <TouchableOpacity onPress={() => {}}>
-          <Image
-            resizeMode="contain"
-            source={require("../../../assets/deckofcard/T♦.png")}
-            style={{ width: 95, height: 95 }}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            setCount(count + 1);
-          }}
-        >
-          <Image
-            resizeMode="contain"
-            source={require("../../../assets/deckofcard/A♦.png")}
-            style={{ width: 95, height: 95 }}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleLeaveRoom}>
-          <Image
-            resizeMode="contain"
-            source={require("../../../assets/deckofcard/8♦.png")}
-            style={{ width: 95, height: 95 }}
-          />
-        </TouchableOpacity>
-      </View> */}
     </View>
   );
 };

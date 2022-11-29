@@ -1,5 +1,5 @@
 import { Room } from "colyseus.js";
-import { View } from "native-base";
+import { Flex, View } from "native-base";
 
 import { useContext, useEffect, useRef, useState } from "react";
 import { Animated, Image, Text, TouchableOpacity } from "react-native";
@@ -189,6 +189,12 @@ export const UserReal = ({ StateCard }) => {
           ]),
         ]),
       ]).start();
+    } else if (waveGame % 7 == 4) {
+      Animated.timing(OpacityRanking, {
+        toValue: 1,
+        useNativeDriver: false,
+        duration: 300,
+      }).start();
     } else if (waveGame % 7 == 5) {
       Animated.loop(
         Animated.sequence([
@@ -210,11 +216,16 @@ export const UserReal = ({ StateCard }) => {
         ])
       ).start();
     } else if (waveGame % 7 == 6) {
-      Animated.timing(OpacityWinLose, {
+      Animated.timing(OpacityRanking, {
         toValue: 0,
         useNativeDriver: false,
-        duration: 100,
+        duration: 300,
       }).start(),
+        Animated.timing(OpacityWinLose, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 100,
+        }).start(),
         Animated.timing(SizeCard1, {
           useNativeDriver: false,
           toValue: 10,
@@ -514,16 +525,17 @@ export const UserReal = ({ StateCard }) => {
       {/* Ranking */}
       <Animated.Text
         style={{
+          fontWeight: "500",
           color: "white",
           position: "absolute",
-          bottom: 50,
-          right: rightPercentRanking,
-          width: 70,
-          zIndex: 10,
+          bottom: -20,
+          left: "-48%",
+          width: 150,
+          zIndex: 13,
           opacity: OpacityRanking,
         }}
       >
-        jkashdihasiduhuiasd
+        {profileUser.cardRank}
       </Animated.Text>
       {/* Win | Lose */}
 
@@ -533,8 +545,8 @@ export const UserReal = ({ StateCard }) => {
           width: 150,
           height: 150,
           zIndex: 14,
-          bottom: -30,
-          right: "50%",
+          bottom: -50,
+          right: "45%",
           opacity: OpacityWinLose,
         }}
       >
@@ -558,12 +570,18 @@ export const UserReal = ({ StateCard }) => {
           position: "absolute",
           bottom: "5%",
           right: "56%",
-          backgroundColor: "white",
           width: 50,
           height: 60,
           zIndex: 5,
         }}
       >
+        <Image
+          source={require("../../../assets/AvatarExample.png")}
+          style={{
+            width: 60,
+            height: 60,
+          }}
+        />
         {/* chip Bet */}
         <Animated.Text
           style={{
@@ -578,18 +596,37 @@ export const UserReal = ({ StateCard }) => {
         >
           {profileUser ? profileUser.betChips / 1000 + " k" : "0k"}
         </Animated.Text>
-        <Text
+        {/* Chip user */}
+        <View
           style={{
-            color: "white",
-            position: "absolute",
-            bottom: 0,
-            left: -50,
-            width: 70,
+            display: "flex",
+            flexDirection: "row",
+            bottom: 20,
+            left: -60,
+            width: 100,
             zIndex: 10,
+            alignItems: "center",
           }}
         >
-          {profileUser ? profileUser.chips / 1000 + " k" : "0k"}
-        </Text>
+          <Image
+            resizeMode="contain"
+            source={require("../../../assets/Coins.png")}
+            style={{
+              width: 20,
+              height: 20,
+            }}
+          />
+          <Text
+            style={{
+              color: "white",
+              fontSize: 12,
+            }}
+          >
+            {profileUser ? profileUser.chips : "0"}
+          </Text>
+        </View>
+
+        {/* Profile */}
         <Text
           style={{
             color: "white",

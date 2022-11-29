@@ -2,11 +2,18 @@ import { View } from "native-base";
 
 import { useContext, useEffect, useRef, useState } from "react";
 import { Animated, Image, Text, TouchableOpacity } from "react-native";
+import { useSelector } from "react-redux";
 import { GetInterpolate } from "../../utils/getInterpolate";
-
+import { selectGame } from "./GameSlice";
+import { getImage } from "./get";
 export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
   const [count, setCount] = useState(0);
-  // console.log(profile[1]?.isWinner, "state winner");
+  const { profileUser1 } = useSelector(selectGame);
+  const { waveGame } = useSelector(selectGame);
+  const [getCard, setGetCard] = useState([
+    { image: require("../../../assets/deckofcard/♠5.png") },
+    { image: require("../../../assets/deckofcard/♠5.png") },
+  ]);
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;
@@ -23,50 +30,56 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
   const Opacity2 = useRef(new Animated.Value(0)).current;
   const OpacityBetChip = useRef(new Animated.Value(0)).current;
   const OpacityWinLose = useRef(new Animated.Value(0)).current;
+  const OpacityRanking = useRef(new Animated.Value(0)).current;
 
   const UnOpacity1 = useRef(new Animated.Value(0)).current;
   const UnOpacity2 = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    if (StateCard % 6 == 1) {
+    if (profileUser1.cards) {
+      setGetCard(getImage(profileUser1.cards));
+    }
+  }, [waveGame]);
+  useEffect(() => {
+    if (waveGame % 7 == 0) {
       Animated.sequence([
         Animated.sequence([
           Animated.parallel([
             Animated.timing(SizeCard1, {
-              delay: 1100,
-              toValue: 35,
+              delay: 500,
               useNativeDriver: false,
-              duration: 300,
+              toValue: 35,
+              duration: 100,
             }),
             Animated.timing(PositionVerticalCard1, {
-              delay: 1100,
+              delay: 500,
 
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
             Animated.timing(PositionHorizontalCard1, {
-              delay: 1100,
+              delay: 500,
 
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
           ]),
           Animated.parallel([
             Animated.timing(RotateCard1, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 400,
+              duration: 100,
             }),
             Animated.timing(UnRotateCard1, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 400,
+              duration: 100,
             }),
             Animated.timing(Opacity1, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 400,
+              duration: 100,
             }),
           ]),
         ]),
@@ -75,40 +88,40 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
             Animated.timing(SizeCard2, {
               useNativeDriver: false,
               toValue: 35,
-              duration: 300,
+              duration: 100,
             }),
             Animated.timing(PositionVerticalCard2, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
 
             Animated.timing(PositionHorizontalCard2, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 300,
+              duration: 100,
             }),
           ]),
           Animated.parallel([
             Animated.timing(RotateCard2, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 400,
+              duration: 100,
             }),
             Animated.timing(UnRotateCard2, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 400,
+              duration: 100,
             }),
             Animated.timing(Opacity2, {
               useNativeDriver: false,
               toValue: 1,
-              duration: 400,
+              duration: 100,
             }),
           ]),
         ]),
       ]).start();
-    } else if (StateCard % 6 == 5) {
+    } else if (waveGame % 7 == 4) {
       Animated.sequence([
         Animated.sequence([
           Animated.parallel([
@@ -193,82 +206,117 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
             }),
           ]),
         ]),
+        Animated.timing(OpacityRanking, {
+          toValue: 1,
+          useNativeDriver: false,
+          duration: 300,
+        }),
       ]).start();
-    } else if (StateCard % 6 == 0) {
-      Animated.timing(SizeCard1, {
-        useNativeDriver: false,
+    } else if (waveGame % 7 == 5) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(OpacityWinLose, {
+            toValue: 0.8,
+            useNativeDriver: false,
+            duration: 300,
+          }),
+          Animated.timing(OpacityWinLose, {
+            toValue: 1,
+            useNativeDriver: false,
+            duration: 300,
+          }),
+          Animated.timing(OpacityWinLose, {
+            toValue: 0.2,
+            useNativeDriver: false,
+            duration: 300,
+          }),
+        ])
+      ).start();
+    } else if (waveGame % 7 == 6) {
+      Animated.timing(OpacityRanking, {
         toValue: 0,
+        useNativeDriver: false,
         duration: 300,
-      }).start();
+      }).start(),
+        Animated.timing(OpacityWinLose, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 100,
+        }).start(),
+        Animated.timing(SizeCard1, {
+          useNativeDriver: false,
+          toValue: 0,
+          duration: 100,
+        }).start();
       Animated.timing(SizeCard2, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
       Animated.timing(PositionVerticalCard1, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
       Animated.timing(PositionHorizontalCard1, {
         useNativeDriver: false,
-        toValue: -1,
-        duration: 300,
+        toValue: 0,
+        duration: 100,
       }).start();
 
       Animated.timing(PositionVerticalCard2, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
 
       Animated.timing(PositionHorizontalCard2, {
         useNativeDriver: false,
-        toValue: -1,
-        duration: 300,
+        toValue: 0,
+        duration: 100,
       }).start();
       Animated.timing(RotateCard1, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
       Animated.timing(UnRotateCard1, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 400,
+        duration: 100,
       }).start();
       Animated.timing(RotateCard2, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
       Animated.timing(UnRotateCard2, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 400,
+        duration: 100,
       }).start();
       Animated.timing(Opacity1, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
       Animated.timing(UnOpacity1, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
       Animated.timing(Opacity2, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
       Animated.timing(UnOpacity2, {
         useNativeDriver: false,
         toValue: 0,
-        duration: 300,
+        duration: 100,
       }).start();
     }
-  }, [StateCard]);
+  }, [waveGame]);
   // useEffect(() => {
   //   if (count % 2 == 1) {
   //     Animated.sequence([
@@ -420,18 +468,27 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
     "150%",
     "400%",
   ]);
-  return profile ? (
+  return (
     <View style={{ position: "absolute", bottom: "55%", right: "4%" }}>
       <View
         style={{
           display: "flex",
           flexDirection: "row",
-          backgroundColor: "white",
+
           width: 50,
           height: 60,
           zIndex: 2,
         }}
       >
+        <Image
+          source={require("../../../assets/AvatarExample.png")}
+          style={{
+            width: 60,
+            height: 60,
+            position: "absolute",
+            zIndex: 13,
+          }}
+        />
         <View style={{ position: "relative", marginLeft: 28 }}>
           {/* Close */}
           <Animated.View
@@ -466,8 +523,7 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
           >
             <Image
               resizeMode="contain"
-              source={require("../../../assets/deckofcard/A♠.png")}
-              //   source={ImageCard ? ImageCard[0]?.image : ""}
+              source={getCard ? getCard[0]?.image : ""}
               style={{ width: "100%", height: "100%" }}
             />
           </Animated.View>
@@ -506,13 +562,27 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
           >
             <Image
               resizeMode="contain"
-              source={require("../../../assets/deckofcard/2♠.png")}
-              //   source={ImageCard ? ImageCard[1]?.image : ""}
+              source={getCard ? getCard[1]?.image : ""}
               style={{ width: "100%", height: "100%" }}
             />
           </Animated.View>
         </View>
       </View>
+      {/* Ranking */}
+      <Animated.Text
+        style={{
+          fontWeight: "500",
+          color: "white",
+          position: "absolute",
+          bottom: -10,
+          left: "-10%",
+          width: 150,
+          zIndex: 13,
+          opacity: OpacityRanking,
+        }}
+      >
+        {profileUser1.cardRank}
+      </Animated.Text>
       {/* Win | Lose */}
       <Animated.View
         style={{
@@ -528,7 +598,7 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
         <Image
           resizeMode="contain"
           source={
-            profile[1]?.isWinner === false
+            profileUser1?.isWinner === false
               ? require("../../../assets/Lose.png")
               : require("../../../assets/Win.png")
           }
@@ -548,7 +618,7 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
           zIndex: 5,
         }}
       >
-        {profile[1]?.id ? profile[1]?.id : ""}
+        {profileUser1[1]?.id ? profileUser1[1]?.id : ""}
       </Text>
       <Text
         style={{
@@ -560,9 +630,9 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
           zIndex: 10,
         }}
       >
-        {profile[1]?.chips > 1000
-          ? profile[1]?.chips / 1000 + " k"
-          : profile[1]?.chips}
+        {profileUser1[1]?.chips > 1000
+          ? profileUser1[1]?.chips / 1000 + " k"
+          : profileUser1[1]?.chips}
       </Text>
       <Animated.Text
         style={{
@@ -574,26 +644,8 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
           opacity: OpacityBetChip,
         }}
       >
-        {profile[1]?.betChips > 0 ? profile[1]?.betChips : "22k"}
+        {profileUser1[1]?.betChips > 0 ? profileUser1[1]?.betChips : "22k"}
       </Animated.Text>
-      <TouchableOpacity
-        onPress={() => {
-          setCount(count + 1);
-        }}
-        style={{
-          position: "absolute",
-          left: "-500%",
-          top: 0,
-          width: 50,
-          height: 50,
-          // backgroundColor: "black",
-          zIndex: 100,
-        }}
-      >
-        <Text>TouchableOpacity</Text>
-      </TouchableOpacity>
     </View>
-  ) : (
-    <></>
   );
 };

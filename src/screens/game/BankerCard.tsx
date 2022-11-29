@@ -2,16 +2,19 @@ import { View } from "native-base";
 
 import { useEffect, useRef, useState } from "react";
 import { Animated, Image, Text, TouchableOpacity } from "react-native";
+import { useSelector } from "react-redux";
 import { GetInterpolate } from "../../utils/getInterpolate";
 import { BankerCard4 } from "./BankerCard4";
 import { BankerCard5 } from "./BankerCard5";
+import { selectGame } from "./GameSlice";
 import { getImage } from "./get";
 
-export const BankerCard = ({ StateCard, ImageCard }) => {
+export const BankerCard = ({ ImageCard }) => {
   const ImageBanker = getImage(ImageCard);
-  const [count, setCount] = useState(0);
+  const { waveGame } = useSelector(selectGame);
+
   useEffect(() => {
-    if (StateCard % 7 === 2) {
+    if (waveGame % 7 === 1) {
       Animated.sequence([
         Animated.sequence([
           Animated.parallel([
@@ -135,7 +138,7 @@ export const BankerCard = ({ StateCard, ImageCard }) => {
           ]),
         ]),
       ]).start();
-    } else if (StateCard % 7 == 0) {
+    } else if (waveGame % 7 == 6) {
       Animated.parallel([
         Animated.timing(PositionVerticalCard1, {
           useNativeDriver: false,
@@ -247,7 +250,7 @@ export const BankerCard = ({ StateCard, ImageCard }) => {
         }),
       ]).start();
     }
-  }, [StateCard]);
+  }, [waveGame]);
 
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
@@ -465,16 +468,10 @@ export const BankerCard = ({ StateCard, ImageCard }) => {
 
       {/* Card 4*/}
 
-      <BankerCard4
-        StateCard={StateCard}
-        ImageBanker4={ImageBanker ? ImageBanker[1]?.image : []}
-      />
+      <BankerCard4 ImageBanker4={ImageBanker ? ImageBanker[1]?.image : []} />
 
       {/* Card 5 */}
-      <BankerCard5
-        StateCard={StateCard}
-        ImageBanker5={ImageBanker ? ImageBanker[0]?.image : []}
-      />
+      <BankerCard5 ImageBanker5={ImageBanker ? ImageBanker[0]?.image : []} />
     </View>
   );
 };

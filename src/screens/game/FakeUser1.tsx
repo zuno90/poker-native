@@ -196,6 +196,11 @@ export const FakeUser1 = ({ ImageCard, profile }) => {
             }),
           ]),
         ]),
+        Animated.timing(OpacityRanking, {
+          toValue: 1,
+          useNativeDriver: false,
+          duration: 100,
+        }),
       ]).start();
     } else if (waveGame % 7 == 5) {
       Animated.loop(
@@ -218,11 +223,16 @@ export const FakeUser1 = ({ ImageCard, profile }) => {
         ])
       ).start();
     } else if (waveGame % 7 == 6) {
-      Animated.timing(OpacityWinLose, {
+      Animated.timing(OpacityRanking, {
         toValue: 0,
         useNativeDriver: false,
         duration: 100,
       }).start(),
+        Animated.timing(OpacityWinLose, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 100,
+        }).start(),
         Animated.timing(SizeCard1, {
           useNativeDriver: false,
           toValue: 0,
@@ -667,6 +677,7 @@ export const FakeUser1 = ({ ImageCard, profile }) => {
   const Opacity2 = useRef(new Animated.Value(0)).current;
   const OpacityBetChip = useRef(new Animated.Value(0)).current;
   const OpacityWinLose = useRef(new Animated.Value(0)).current;
+  const OpacityRanking = useRef(new Animated.Value(0)).current;
   const UnOpacity1 = useRef(new Animated.Value(0)).current;
   const UnOpacity2 = useRef(new Animated.Value(0)).current;
   const DegCard2 = GetInterpolate(RotateCard2, ["0deg", "0deg", "30deg"]);
@@ -685,9 +696,9 @@ export const FakeUser1 = ({ ImageCard, profile }) => {
     "0%",
   ]);
   const rightPercentCard1 = GetInterpolate(PositionHorizontalCard1, [
-    "-700%",
-    "100%",
-    "0%",
+    "-300%",
+    "15%",
+    "-100%",
   ]);
   const topPercentCard2 = GetInterpolate(PositionVerticalCard2, [
     "5%",
@@ -696,8 +707,8 @@ export const FakeUser1 = ({ ImageCard, profile }) => {
   ]);
   const rightPercentCard2 = GetInterpolate(PositionHorizontalCard2, [
     "-0%",
-    "100%",
-    "0%",
+    "25%",
+    "-100%",
   ]);
   const bottomPercentBetChip = GetInterpolate(PositionVerticalChipBet, [
     "0%",
@@ -709,12 +720,13 @@ export const FakeUser1 = ({ ImageCard, profile }) => {
     "-150%",
     "-450%",
   ]);
+  console.log(rightPercentCard2, "asd");
   return (
     <View
       style={{
         position: "absolute",
-        bottom: "25%",
-        left: "15%",
+        bottom: "30%",
+        left: "12%",
         zIndex: 5,
       }}
     >
@@ -722,17 +734,15 @@ export const FakeUser1 = ({ ImageCard, profile }) => {
         style={{
           display: "flex",
           flexDirection: "row",
-          backgroundColor: "white",
-          width: 50,
+          width: 60,
           height: 60,
-          zIndex: 2,
+          zIndex: 6,
         }}
       >
-        <View style={{ position: "relative", marginLeft: 28 }}>
+        <View style={{ position: "relative" }}>
           {/* Close */}
           <Animated.View
             style={{
-              position: "absolute",
               zIndex: 2,
               width: SizeCard1,
               height: SizeCard1,
@@ -752,6 +762,7 @@ export const FakeUser1 = ({ ImageCard, profile }) => {
           <Animated.View
             style={{
               zIndex: 2,
+              position: "absolute",
               width: SizeCard1,
               height: SizeCard1,
               transform: [{ rotateZ: DegCard1 }],
@@ -809,6 +820,21 @@ export const FakeUser1 = ({ ImageCard, profile }) => {
           </Animated.View>
         </View>
       </View>
+      {/* Ranking */}
+      <Animated.Text
+        style={{
+          fontWeight: "500",
+          color: "white",
+          position: "absolute",
+          bottom: -50,
+          left: "50%",
+          width: 150,
+          zIndex: 13,
+          opacity: OpacityRanking,
+        }}
+      >
+        {profileUser1.cardRank}
+      </Animated.Text>
       {/* Win | Lose */}
       <Animated.View
         style={{
@@ -816,8 +842,8 @@ export const FakeUser1 = ({ ImageCard, profile }) => {
           width: 150,
           height: 150,
           zIndex: 14,
-          top: "-80%",
-          left: "-50%",
+          top: "-50%",
+          left: "-20%",
           opacity: OpacityWinLose,
         }}
       >
@@ -834,76 +860,78 @@ export const FakeUser1 = ({ ImageCard, profile }) => {
           }}
         />
       </Animated.View>
-      <Text
-        numberOfLines={1}
+      {/* Profile */}
+      <View
         style={{
-          color: "white",
-          position: "absolute",
-          bottom: -20,
-          width: 80,
-          overflow: "hidden",
-          height: 20,
-        }}
-      >
-        {profileUser1?.id ? profileUser1?.id : "" || "Bot-man"}
-      </Text>
-      <Text
-        style={{
-          color: "white",
-          position: "absolute",
-          bottom: 0,
-          width: 70,
-          left: -48,
-          zIndex: 10,
-        }}
-      >
-        {profileUser1?.chips > 1000
-          ? profileUser1?.chips / 1000 + " k"
-          : profileUser1?.chips}
-      </Text>
-      <Animated.Text
-        style={{
-          color: "white",
-          position: "absolute",
-          zIndex: 4,
-          bottom: bottomPercentBetChip,
-          right: rightPercentBetChip,
-          opacity: OpacityBetChip,
-        }}
-      >
-        {profileUser1?.betChips > 0 ? profileUser1?.betChips : "1k"}
-      </Animated.Text>
-      {/* <Image
-        resizeMode="contain"
-        style={{
-          width: 200,
-          height: 200,
-          zIndex: 12,
-          position: "absolute",
-          backgroundColor: "white",
-          top: 0,
-          right: 0,
-        }}
-        source={{
-          uri: "https://i0.wp.com/www.printmag.com/wp-content/uploads/2021/02/4cbe8d_f1ed2800a49649848102c68fc5a66e53mv2.gif?resize=476%2C280&ssl=1",
-        }}
-      /> */}
-      {/* <TouchableOpacity
-        onPress={() => {
-          setCount(count + 1);
-        }}
-        style={{
-          position: "absolute",
-          right: "-500%",
-          top: 0,
           width: 50,
-          height: 50,
-          // backgroundColor: "black",
-          zIndex: 100,
+          height: 60,
+          zIndex: 5,
+          position: "absolute",
         }}
       >
-        <Text>TouchableOpacity</Text>
-      </TouchableOpacity> */}
+        <Image
+          source={require("../../../assets/AvatarExample.png")}
+          style={{
+            width: 60,
+            height: 60,
+            position: "absolute",
+          }}
+        />
+        <Text
+          numberOfLines={1}
+          style={{
+            color: "white",
+            position: "absolute",
+            bottom: -20,
+            width: 80,
+            overflow: "hidden",
+            height: 20,
+          }}
+        >
+          {profileUser1?.id ? profileUser1?.id : "" || "Bot-man"}
+        </Text>
+        {/* chip user */}
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            bottom: -40,
+            left: -60,
+            width: 100,
+            zIndex: 10,
+            alignItems: "center",
+          }}
+        >
+          <Image
+            resizeMode="contain"
+            source={require("../../../assets/Coins.png")}
+            style={{
+              width: 20,
+              height: 20,
+            }}
+          />
+          <Text
+            style={{
+              color: "white",
+              fontSize: 12,
+            }}
+          >
+            {profileUser1 ? profileUser1.chips : "0"}
+          </Text>
+        </View>
+        <Animated.Text
+          style={{
+            color: "white",
+            position: "absolute",
+            zIndex: 4,
+            bottom: bottomPercentBetChip,
+            right: rightPercentBetChip,
+            opacity: OpacityBetChip,
+          }}
+        >
+          {profileUser1?.betChips > 0 ? profileUser1?.betChips : "1k"}
+        </Animated.Text>
+      </View>
     </View>
   );
 };

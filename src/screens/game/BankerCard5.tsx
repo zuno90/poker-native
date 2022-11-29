@@ -1,11 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, View, Image, TouchableOpacity, Text } from "react-native";
+import { useSelector } from "react-redux";
 import { GetInterpolate } from "../../utils/getInterpolate";
-export const BankerCard5 = ({ StateCard, ImageBanker5 }) => {
+import { selectGame } from "./GameSlice";
+export const BankerCard5 = ({ ImageBanker5 }) => {
   const [, setCount] = useState(0);
+  const { waveGame } = useSelector(selectGame);
 
   useEffect(() => {
-    if (StateCard % 7 == 4) {
+    if (waveGame % 7 == 3) {
       Animated.sequence([
         Animated.parallel([
           Animated.timing(SizeCard5, {
@@ -47,7 +50,7 @@ export const BankerCard5 = ({ StateCard, ImageBanker5 }) => {
           }),
         ]),
       ]).start();
-    } else if (StateCard % 7 == 0) {
+    } else if (waveGame % 7 == 6) {
       Animated.parallel([
         Animated.timing(RotateCard5, {
           useNativeDriver: false,
@@ -86,7 +89,7 @@ export const BankerCard5 = ({ StateCard, ImageBanker5 }) => {
         }),
       ]).start();
     }
-  }, [StateCard]);
+  }, [waveGame]);
 
   const RotateCard5 = useRef(new Animated.Value(0)).current;
   const UnRotateCard5 = useRef(new Animated.Value(0)).current;
