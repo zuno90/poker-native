@@ -7,7 +7,7 @@ export const BankerCard4 = ({ StateCard, ImageBanker4 }) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (StateCard % 6 === 3) {
+    if (StateCard % 7 === 3) {
       Animated.sequence([
         Animated.parallel([
           Animated.timing(SizeCard4, {
@@ -49,7 +49,7 @@ export const BankerCard4 = ({ StateCard, ImageBanker4 }) => {
           }),
         ]),
       ]).start();
-    } else if (StateCard % 6 == 0) {
+    } else if (StateCard % 7 == 0) {
       Animated.parallel([
         Animated.timing(RotateCard4, {
           useNativeDriver: false,

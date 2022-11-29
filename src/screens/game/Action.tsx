@@ -4,9 +4,7 @@ import React from "react";
 export const Action = ({ action, ImageAction, title }: any) => {
   return (
     <TouchableOpacity
-      onPress={() => {
-        Alert.alert("hello");
-      }}
+      onPress={action}
       style={{
         marginTop: "6%",
         zIndex: 9,

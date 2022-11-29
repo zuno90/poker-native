@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { Animated, View, Image, TouchableOpacity, Text } from "react-native";
 import { GetInterpolate } from "../../utils/getInterpolate";
 export const BankerCard5 = ({ StateCard, ImageBanker5 }) => {
-  const [count, setCount] = useState(0);
+  const [, setCount] = useState(0);
 
   useEffect(() => {
-    if (StateCard % 6 == 4) {
+    if (StateCard % 7 == 4) {
       Animated.sequence([
         Animated.parallel([
           Animated.timing(SizeCard5, {
@@ -47,7 +47,7 @@ export const BankerCard5 = ({ StateCard, ImageBanker5 }) => {
           }),
         ]),
       ]).start();
-    } else if (StateCard % 6 == 0) {
+    } else if (StateCard % 7 == 0) {
       Animated.parallel([
         Animated.timing(RotateCard5, {
           useNativeDriver: false,

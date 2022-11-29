@@ -2,13 +2,35 @@ import { View } from "native-base";
 
 import { useContext, useEffect, useRef, useState } from "react";
 import { Animated, Image, Text, TouchableOpacity } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { GameContext } from "../../context/GameContext";
 import { GetInterpolate } from "../../utils/getInterpolate";
+import { gameAction, selectGame } from "./GameSlice";
+import { getImage } from "./get";
 
-export const FakeUser1 = ({ StateCard, ImageCard, profile }) => {
-  // console.log(profile[1], "profile");
+export const FakeUser1 = ({ ImageCard, profile }) => {
+  const dispatch = useDispatch();
+  const { room } = useContext(GameContext);
+  const [card, setCard] = useState([]);
+  const [totalCard, setTotalCard] = useState();
+  const { profileUser1 } = useSelector(selectGame);
+  const { waveGame } = useSelector(selectGame);
+  console.log(profileUser1, "profileUser1");
+  const [getCard, setGetCard] = useState([
+    { image: require("../../../assets/deckofcard/♠5.png") },
+    { image: require("../../../assets/deckofcard/♠5.png") },
+  ]);
+  useEffect(() => {
+    if (profileUser1.cards) {
+      setGetCard(getImage(profileUser1.cards));
+      console.log(getCard, "get");
+    }
+  }, [waveGame]);
+  console.log(waveGame, "wave Game user1");
+
   const [count, setCount] = useState(0);
   useEffect(() => {
-    if (StateCard % 6 == 1) {
+    if (waveGame % 7 == 0) {
       Animated.sequence([
         Animated.sequence([
           Animated.parallel([
@@ -89,7 +111,7 @@ export const FakeUser1 = ({ StateCard, ImageCard, profile }) => {
           ]),
         ]),
       ]).start();
-    } else if (StateCard % 6 == 5) {
+    } else if (waveGame % 7 == 4) {
       Animated.sequence([
         Animated.sequence([
           Animated.parallel([
@@ -175,12 +197,37 @@ export const FakeUser1 = ({ StateCard, ImageCard, profile }) => {
           ]),
         ]),
       ]).start();
-    } else if (StateCard % 6 == 0) {
-      Animated.timing(SizeCard1, {
-        useNativeDriver: false,
+    } else if (waveGame % 7 == 5) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(OpacityWinLose, {
+            toValue: 0.8,
+            useNativeDriver: false,
+            duration: 300,
+          }),
+          Animated.timing(OpacityWinLose, {
+            toValue: 1,
+            useNativeDriver: false,
+            duration: 300,
+          }),
+          Animated.timing(OpacityWinLose, {
+            toValue: 0.2,
+            useNativeDriver: false,
+            duration: 300,
+          }),
+        ])
+      ).start();
+    } else if (waveGame % 7 == 6) {
+      Animated.timing(OpacityWinLose, {
         toValue: 0,
+        useNativeDriver: false,
         duration: 100,
-      }).start();
+      }).start(),
+        Animated.timing(SizeCard1, {
+          useNativeDriver: false,
+          toValue: 0,
+          duration: 100,
+        }).start();
       Animated.timing(SizeCard2, {
         useNativeDriver: false,
         toValue: 0,
@@ -249,7 +296,7 @@ export const FakeUser1 = ({ StateCard, ImageCard, profile }) => {
         duration: 100,
       }).start();
     }
-  }, [StateCard]);
+  }, [waveGame]);
   useEffect(() => {
     if (count % 3 == 1) {
       Animated.sequence([
@@ -306,249 +353,249 @@ export const FakeUser1 = ({ StateCard, ImageCard, profile }) => {
       ]).start();
     }
   }, [count]);
-  useEffect(() => {
-    if (StateCard % 6 == 1) {
-      Animated.sequence([
-        Animated.sequence([
-          Animated.parallel([
-            Animated.timing(SizeCard1, {
-              delay: 1100,
-              toValue: 35,
-              useNativeDriver: false,
-              duration: 300,
-            }),
-            Animated.timing(PositionVerticalCard1, {
-              delay: 1100,
+  // useEffect(() => {
+  //   if (waveGame % 6 == 1) {
+  //     Animated.sequence([
+  //       Animated.sequence([
+  //         Animated.parallel([
+  //           Animated.timing(SizeCard1, {
+  //             delay: 1100,
+  //             toValue: 35,
+  //             useNativeDriver: false,
+  //             duration: 300,
+  //           }),
+  //           Animated.timing(PositionVerticalCard1, {
+  //             delay: 1100,
 
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 300,
-            }),
-            Animated.timing(PositionHorizontalCard1, {
-              delay: 1100,
+  //             useNativeDriver: false,
+  //             toValue: 1,
+  //             duration: 300,
+  //           }),
+  //           Animated.timing(PositionHorizontalCard1, {
+  //             delay: 1100,
 
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 300,
-            }),
-          ]),
-          Animated.parallel([
-            Animated.timing(RotateCard1, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-            Animated.timing(UnRotateCard1, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-            Animated.timing(Opacity1, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-          ]),
-        ]),
-        Animated.sequence([
-          Animated.parallel([
-            Animated.timing(SizeCard2, {
-              useNativeDriver: false,
-              toValue: 35,
-              duration: 300,
-            }),
-            Animated.timing(PositionVerticalCard2, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 300,
-            }),
+  //             useNativeDriver: false,
+  //             toValue: 1,
+  //             duration: 300,
+  //           }),
+  //         ]),
+  //         Animated.parallel([
+  //           Animated.timing(RotateCard1, {
+  //             useNativeDriver: false,
+  //             toValue: 1,
+  //             duration: 400,
+  //           }),
+  //           Animated.timing(UnRotateCard1, {
+  //             useNativeDriver: false,
+  //             toValue: 1,
+  //             duration: 400,
+  //           }),
+  //           Animated.timing(Opacity1, {
+  //             useNativeDriver: false,
+  //             toValue: 1,
+  //             duration: 400,
+  //           }),
+  //         ]),
+  //       ]),
+  //       Animated.sequence([
+  //         Animated.parallel([
+  //           Animated.timing(SizeCard2, {
+  //             useNativeDriver: false,
+  //             toValue: 35,
+  //             duration: 300,
+  //           }),
+  //           Animated.timing(PositionVerticalCard2, {
+  //             useNativeDriver: false,
+  //             toValue: 1,
+  //             duration: 300,
+  //           }),
 
-            Animated.timing(PositionHorizontalCard2, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 300,
-            }),
-          ]),
-          Animated.parallel([
-            Animated.timing(RotateCard2, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-            Animated.timing(UnRotateCard2, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-            Animated.timing(Opacity2, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-          ]),
-        ]),
-      ]).start();
-    } else if (StateCard % 6 == 5) {
-      Animated.sequence([
-        Animated.sequence([
-          Animated.parallel([
-            Animated.timing(SizeCard1, {
-              useNativeDriver: false,
-              toValue: 85,
-              duration: 300,
-            }),
-            Animated.timing(PositionVerticalCard1, {
-              useNativeDriver: false,
-              toValue: -1,
-              duration: 300,
-            }),
-            Animated.timing(PositionHorizontalCard1, {
-              useNativeDriver: false,
-              toValue: 0,
-              duration: 300,
-            }),
-          ]),
-          Animated.parallel([
-            Animated.timing(RotateCard1, {
-              useNativeDriver: false,
-              toValue: -1,
-              duration: 400,
-            }),
-            Animated.timing(UnRotateCard1, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-            Animated.timing(Opacity1, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-            Animated.timing(UnOpacity1, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-          ]),
-        ]),
-        Animated.sequence([
-          Animated.parallel([
-            Animated.timing(SizeCard2, {
-              useNativeDriver: false,
-              toValue: 85,
-              duration: 300,
-            }),
-            Animated.timing(PositionVerticalCard2, {
-              useNativeDriver: false,
-              toValue: -1,
-              duration: 300,
-            }),
+  //           Animated.timing(PositionHorizontalCard2, {
+  //             useNativeDriver: false,
+  //             toValue: 1,
+  //             duration: 300,
+  //           }),
+  //         ]),
+  //         Animated.parallel([
+  //           Animated.timing(RotateCard2, {
+  //             useNativeDriver: false,
+  //             toValue: 1,
+  //             duration: 400,
+  //           }),
+  //           Animated.timing(UnRotateCard2, {
+  //             useNativeDriver: false,
+  //             toValue: 1,
+  //             duration: 400,
+  //           }),
+  //           Animated.timing(Opacity2, {
+  //             useNativeDriver: false,
+  //             toValue: 1,
+  //             duration: 400,
+  //           }),
+  //         ]),
+  //       ]),
+  //     ]).start();
+  //   } else if (waveGame % 6 == 5) {
+  //     Animated.sequence([
+  //       Animated.sequence([
+  //         Animated.parallel([
+  //           Animated.timing(SizeCard1, {
+  //             useNativeDriver: false,
+  //             toValue: 85,
+  //             duration: 300,
+  //           }),
+  //           Animated.timing(PositionVerticalCard1, {
+  //             useNativeDriver: false,
+  //             toValue: -1,
+  //             duration: 300,
+  //           }),
+  //           Animated.timing(PositionHorizontalCard1, {
+  //             useNativeDriver: false,
+  //             toValue: 0,
+  //             duration: 300,
+  //           }),
+  //         ]),
+  //         Animated.parallel([
+  //           Animated.timing(RotateCard1, {
+  //             useNativeDriver: false,
+  //             toValue: -1,
+  //             duration: 400,
+  //           }),
+  //           Animated.timing(UnRotateCard1, {
+  //             useNativeDriver: false,
+  //             toValue: 1,
+  //             duration: 400,
+  //           }),
+  //           Animated.timing(Opacity1, {
+  //             useNativeDriver: false,
+  //             toValue: 1,
+  //             duration: 400,
+  //           }),
+  //           Animated.timing(UnOpacity1, {
+  //             useNativeDriver: false,
+  //             toValue: 1,
+  //             duration: 400,
+  //           }),
+  //         ]),
+  //       ]),
+  //       Animated.sequence([
+  //         Animated.parallel([
+  //           Animated.timing(SizeCard2, {
+  //             useNativeDriver: false,
+  //             toValue: 85,
+  //             duration: 300,
+  //           }),
+  //           Animated.timing(PositionVerticalCard2, {
+  //             useNativeDriver: false,
+  //             toValue: -1,
+  //             duration: 300,
+  //           }),
 
-            Animated.timing(PositionHorizontalCard2, {
-              useNativeDriver: false,
-              toValue: 0,
-              duration: 300,
-            }),
-          ]),
-          Animated.parallel([
-            Animated.timing(RotateCard2, {
-              useNativeDriver: false,
-              toValue: -1,
-              duration: 400,
-            }),
-            Animated.timing(UnRotateCard2, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-            Animated.timing(Opacity2, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-            Animated.timing(UnOpacity2, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-          ]),
-        ]),
-      ]).start();
-    } else if (StateCard % 6 == 0) {
-      Animated.timing(SizeCard1, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-      Animated.timing(SizeCard2, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-      Animated.timing(PositionVerticalCard1, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-      Animated.timing(PositionHorizontalCard1, {
-        useNativeDriver: false,
-        toValue: -1,
-        duration: 300,
-      }).start();
+  //           Animated.timing(PositionHorizontalCard2, {
+  //             useNativeDriver: false,
+  //             toValue: 0,
+  //             duration: 300,
+  //           }),
+  //         ]),
+  //         Animated.parallel([
+  //           Animated.timing(RotateCard2, {
+  //             useNativeDriver: false,
+  //             toValue: -1,
+  //             duration: 400,
+  //           }),
+  //           Animated.timing(UnRotateCard2, {
+  //             useNativeDriver: false,
+  //             toValue: 1,
+  //             duration: 400,
+  //           }),
+  //           Animated.timing(Opacity2, {
+  //             useNativeDriver: false,
+  //             toValue: 1,
+  //             duration: 400,
+  //           }),
+  //           Animated.timing(UnOpacity2, {
+  //             useNativeDriver: false,
+  //             toValue: 1,
+  //             duration: 400,
+  //           }),
+  //         ]),
+  //       ]),
+  //     ]).start();
+  //   } else if (waveGame % 6 == 0) {
+  //     Animated.timing(SizeCard1, {
+  //       useNativeDriver: false,
+  //       toValue: 0,
+  //       duration: 300,
+  //     }).start();
+  //     Animated.timing(SizeCard2, {
+  //       useNativeDriver: false,
+  //       toValue: 0,
+  //       duration: 300,
+  //     }).start();
+  //     Animated.timing(PositionVerticalCard1, {
+  //       useNativeDriver: false,
+  //       toValue: 0,
+  //       duration: 300,
+  //     }).start();
+  //     Animated.timing(PositionHorizontalCard1, {
+  //       useNativeDriver: false,
+  //       toValue: -1,
+  //       duration: 300,
+  //     }).start();
 
-      Animated.timing(PositionVerticalCard2, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
+  //     Animated.timing(PositionVerticalCard2, {
+  //       useNativeDriver: false,
+  //       toValue: 0,
+  //       duration: 300,
+  //     }).start();
 
-      Animated.timing(PositionHorizontalCard2, {
-        useNativeDriver: false,
-        toValue: -1,
-        duration: 300,
-      }).start();
-      Animated.timing(RotateCard1, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-      Animated.timing(UnRotateCard1, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 400,
-      }).start();
-      Animated.timing(RotateCard2, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-      Animated.timing(UnRotateCard2, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 400,
-      }).start();
-      Animated.timing(Opacity1, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-      Animated.timing(UnOpacity1, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-      Animated.timing(Opacity2, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-      Animated.timing(UnOpacity2, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-    }
-  }, [StateCard]);
+  //     Animated.timing(PositionHorizontalCard2, {
+  //       useNativeDriver: false,
+  //       toValue: -1,
+  //       duration: 300,
+  //     }).start();
+  //     Animated.timing(RotateCard1, {
+  //       useNativeDriver: false,
+  //       toValue: 0,
+  //       duration: 300,
+  //     }).start();
+  //     Animated.timing(UnRotateCard1, {
+  //       useNativeDriver: false,
+  //       toValue: 0,
+  //       duration: 400,
+  //     }).start();
+  //     Animated.timing(RotateCard2, {
+  //       useNativeDriver: false,
+  //       toValue: 0,
+  //       duration: 300,
+  //     }).start();
+  //     Animated.timing(UnRotateCard2, {
+  //       useNativeDriver: false,
+  //       toValue: 0,
+  //       duration: 400,
+  //     }).start();
+  //     Animated.timing(Opacity1, {
+  //       useNativeDriver: false,
+  //       toValue: 0,
+  //       duration: 300,
+  //     }).start();
+  //     Animated.timing(UnOpacity1, {
+  //       useNativeDriver: false,
+  //       toValue: 0,
+  //       duration: 300,
+  //     }).start();
+  //     Animated.timing(Opacity2, {
+  //       useNativeDriver: false,
+  //       toValue: 0,
+  //       duration: 300,
+  //     }).start();
+  //     Animated.timing(UnOpacity2, {
+  //       useNativeDriver: false,
+  //       toValue: 0,
+  //       duration: 300,
+  //     }).start();
+  //   }
+  // }, [waveGame]);
   useEffect(() => {
     if (count % 2 == 1) {
       Animated.loop(
@@ -616,12 +663,12 @@ export const FakeUser1 = ({ StateCard, ImageCard, profile }) => {
   const RotateCard2 = useRef(new Animated.Value(180)).current;
   const UnRotateCard1 = useRef(new Animated.Value(0)).current;
   const UnRotateCard2 = useRef(new Animated.Value(0)).current;
-  const Opacity1 = useRef(new Animated.Value(1)).current;
-  const Opacity2 = useRef(new Animated.Value(1)).current;
+  const Opacity1 = useRef(new Animated.Value(0)).current;
+  const Opacity2 = useRef(new Animated.Value(0)).current;
   const OpacityBetChip = useRef(new Animated.Value(0)).current;
   const OpacityWinLose = useRef(new Animated.Value(0)).current;
-  const UnOpacity1 = useRef(new Animated.Value(1)).current;
-  const UnOpacity2 = useRef(new Animated.Value(1)).current;
+  const UnOpacity1 = useRef(new Animated.Value(0)).current;
+  const UnOpacity2 = useRef(new Animated.Value(0)).current;
   const DegCard2 = GetInterpolate(RotateCard2, ["0deg", "0deg", "30deg"]);
 
   const DegCard1 = GetInterpolate(RotateCard1, ["0deg", "0deg", "-10deg"]);
@@ -662,9 +709,7 @@ export const FakeUser1 = ({ StateCard, ImageCard, profile }) => {
     "-150%",
     "-450%",
   ]);
-  // console.log(profile[1], "profile");
-  console.log(count % 3, "count");
-  return profile ? (
+  return (
     <View
       style={{
         position: "absolute",
@@ -710,15 +755,15 @@ export const FakeUser1 = ({ StateCard, ImageCard, profile }) => {
               width: SizeCard1,
               height: SizeCard1,
               transform: [{ rotateZ: DegCard1 }],
-              opacity: UnOpacityCard2,
+              opacity: UnOpacityCard1,
               top: topPercentCard1,
               right: rightPercentCard1,
             }}
           >
             <Image
               resizeMode="contain"
-              source={require("../../../assets/deckofcard/A♠.png")}
-              //   source={ImageCard ? ImageCard[0]?.image : ""}
+              // source={require("../../../assets/deckofcard/A♠.png")}
+              source={getCard ? getCard[0]?.image : ""}
               style={{ width: "100%", height: "100%" }}
             />
           </Animated.View>
@@ -757,8 +802,8 @@ export const FakeUser1 = ({ StateCard, ImageCard, profile }) => {
           >
             <Image
               resizeMode="contain"
-              source={require("../../../assets/deckofcard/A♠.png")}
-              //   source={ImageCard ? ImageCard[1]?.image : ""}
+              // source={require("../../../assets/deckofcard/A♠.png")}
+              source={getCard ? getCard[1]?.image : ""}
               style={{ width: "100%", height: "100%" }}
             />
           </Animated.View>
@@ -779,7 +824,7 @@ export const FakeUser1 = ({ StateCard, ImageCard, profile }) => {
         <Image
           resizeMode="contain"
           source={
-            profile[1]?.isWinner === false
+            profileUser1?.isWinner === false
               ? require("../../../assets/Lose.png")
               : require("../../../assets/Win.png")
           }
@@ -800,7 +845,7 @@ export const FakeUser1 = ({ StateCard, ImageCard, profile }) => {
           height: 20,
         }}
       >
-        {profile[1]?.id ? profile[1]?.id : ""}
+        {profileUser1?.id ? profileUser1?.id : "" || "Bot-man"}
       </Text>
       <Text
         style={{
@@ -812,9 +857,9 @@ export const FakeUser1 = ({ StateCard, ImageCard, profile }) => {
           zIndex: 10,
         }}
       >
-        {profile[1]?.chips > 1000
-          ? profile[1]?.chips / 1000 + " k"
-          : profile[1]?.chips}
+        {profileUser1?.chips > 1000
+          ? profileUser1?.chips / 1000 + " k"
+          : profileUser1?.chips}
       </Text>
       <Animated.Text
         style={{
@@ -826,7 +871,7 @@ export const FakeUser1 = ({ StateCard, ImageCard, profile }) => {
           opacity: OpacityBetChip,
         }}
       >
-        {profile[1]?.betChips > 0 ? profile[1]?.betChips : "1k"}
+        {profileUser1?.betChips > 0 ? profileUser1?.betChips : "1k"}
       </Animated.Text>
       {/* <Image
         resizeMode="contain"
@@ -843,7 +888,7 @@ export const FakeUser1 = ({ StateCard, ImageCard, profile }) => {
           uri: "https://i0.wp.com/www.printmag.com/wp-content/uploads/2021/02/4cbe8d_f1ed2800a49649848102c68fc5a66e53mv2.gif?resize=476%2C280&ssl=1",
         }}
       /> */}
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={() => {
           setCount(count + 1);
         }}
@@ -858,9 +903,7 @@ export const FakeUser1 = ({ StateCard, ImageCard, profile }) => {
         }}
       >
         <Text>TouchableOpacity</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
-  ) : (
-    <></>
   );
 };

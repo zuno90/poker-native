@@ -7,6 +7,8 @@ import { Text, Image, Button } from "native-base";
 
 import { useAuth } from "../context/AuthContext";
 import { GameContext } from "../context/GameContext";
+import { selectGame } from "./game/GameSlice";
+import { useSelector } from "react-redux";
 interface InfoUser {
   id?: string;
   isHost?: false;
@@ -24,11 +26,8 @@ const Home: React.FC = (props: any) => {
   const roomContext = useContext(GameContext);
 
   const client = new Colyseus.Client("ws://175.41.154.239");
-  const [rooms, setRooms] = useState<Colyseus.RoomAvailable[]>([]);
-
   const getAvailableRooms = async (infoUser?: InfoUser) => {
     const room = await client.getAvailableRooms("desk");
-    console.log(room, "room");
     if (room.length !== 0) {
       const { clients, roomId } = room[0];
       if (clients <= 4 && clients > 1) {
@@ -40,13 +39,10 @@ const Home: React.FC = (props: any) => {
           cards: [],
         };
         try {
-          console.log("afdsafdsafsd", roomId);
-
           const room = await client.joinById(roomId, params);
 
           if (room) {
             roomContext.handleRoom(room);
-
             room && props.navigation.navigate("GAME");
           }
         } catch (error) {
@@ -54,8 +50,6 @@ const Home: React.FC = (props: any) => {
         }
       } else if (clients === 1) {
         try {
-          console.log("afdsafdsafsd", roomId);
-
           const room = await client.joinById(roomId, infoUser);
 
           if (room) {
@@ -71,19 +65,7 @@ const Home: React.FC = (props: any) => {
       createRoom();
     }
     return room;
-    // try {
-    //   const room = await client.getAvailableRooms("desk");
-    //   if (room) {
-    //     setRooms(room);
-    //   }
-    //   console.log(room, "room avai");
-    // } catch (error) {
-    //   console.error(error);
-    // }
   };
-  // useEffect(() => {
-  //   getAvailableRooms();
-  // }, [rooms]);
 
   const createRoom = async () => {
     const params = {
@@ -99,7 +81,6 @@ const Home: React.FC = (props: any) => {
     const room = await client.joinOrCreate("desk", params);
 
     if (room) {
-      console.log("kiem tra ham tao value", room);
       getAvailableRooms({
         betChips: 0,
         id: "zuno-bot",

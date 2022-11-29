@@ -10,63 +10,89 @@ import { getImage } from "./get";
 import { FakeUser1, FakeUser2, FakeUser3, FakeUser4 } from "./index";
 import { BankerCard } from "./BankerCard";
 import { Action } from "./Action";
+import { useDispatch, useSelector } from "react-redux";
+import { gameAction, selectGame } from "./GameSlice";
+import { useAuth } from "../../context/AuthContext";
+import { UserReal } from "./UserReal";
 
 const Game = (props: any) => {
-  const { room, handleRoom } = useContext(GameContext);
-  const [totalCard, setTotalCard] = useState<any>([]);
-  const roomContext = useContext(GameContext);
-  const [rooms, setRooms] = useState<Colyseus.RoomAvailable[]>([]);
-
-  const getAvailableRooms = async () => {
-    try {
-      const room = await client.getAvailableRooms("desk");
-      if (room) {
-        setRooms(room);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const [Player, setPlayer] = useState<any>([
-    [
-      "Bot",
-      {
-        id: "Bot",
-      },
-    ],
-  ]);
-
-  const [bankerCard, setBankerCard] = useState<any>([]);
+  const { room } = useContext(GameContext);
+  const {
+    authState: { user },
+  } = useAuth();
   const myroom = room as Room;
+  const [totalCard, setTotalCard] = useState<any>([]);
+  const dispatch = useDispatch();
+  const [Player, setPlayer] = useState<any>([]);
+  const [bankerCard, setBankerCard] = useState<any>([]);
   let [count, setCount] = useState(1);
+  const { waveGame } = useSelector(selectGame);
+
   const client = new Colyseus.Client("ws://175.41.154.239");
+  const a = useSelector(selectGame);
+  let [TotalCardUser, setTotalCardUser] = useState([]);
+  const [profileUser, setprofileUser] = useState({
+    betChips: 0,
+    cards: [["3", "4"]],
+    chips: 10000,
+    connected: true,
+    id: "zuno-bot",
+    isFold: false,
+    isHost: false,
+    isWinner: false,
+    role: "Bot",
+    turn: 2,
+  });
 
   useEffect(() => {
-    if (room && room !== null) {
-      myroom.onStateChange((state) => {
-        for (let i of state.players) {
-          setPlayer([...Player, i]);
-          console.log(i, "player");
-        }
-
-        for (let i of state.players.values()) {
-          if (i.cards.length !== 0) {
-            setTotalCard([...totalCard, i.cards]);
+    setprofileUser(a.Total[a.PositionArray % 5]);
+    dispatch(gameAction.updateProfileUser(a.Total[a.PositionArray % 5]));
+    dispatch(gameAction.updateProfileUser1(a.Total[(a.PositionArray + 1) % 5]));
+    dispatch(gameAction.updateProfileUser2(a.Total[a.PositionArray % 5]));
+    dispatch(gameAction.updateProfileUser3(a.Total[a.PositionArray % 5]));
+    dispatch(gameAction.updateProfileUser4(a.Total[a.PositionArray % 5]));
+  }, [a.Total]);
+  console.log(a.Total);
+  useEffect(() => {
+    try {
+      if (room && room !== null) {
+        let countPositionArray = -1;
+        myroom.onStateChange((state) => {
+          for (let i of state.players.$items) {
+            countPositionArray++;
+            if (i[1].id === user.id) {
+              dispatch(gameAction.updatePositionArray(countPositionArray));
+            }
           }
-        }
-        if (state.banker5Cards) {
-          setBankerCard(state.banker5Cards);
-        }
-      });
-      myroom.onLeave((code) => {
-        console.log("we left you idiot");
-        handleRoom(null);
-      });
-      return () => {
-        myroom.removeAllListeners();
-      };
-    } else {
-      props.navigation.navigate("HOME");
+          let Arr = Array.from(
+            state.players.$items,
+            ([sessionId, Value]) => Value
+          );
+          console.log(Arr, "Arr");
+          dispatch(gameAction.updateTotal(Arr));
+
+          for (let i of state.players.values()) {
+            if (i.cards.length !== 0) {
+              setTotalCard([...totalCard, i.cards]);
+            }
+          }
+          if (state.banker5Cards) {
+            setBankerCard(state.banker5Cards);
+          }
+        });
+        myroom.onLeave((code) => {
+          console.log("we left you idiot");
+          props.navigation.navigate("HOME");
+        });
+
+        return () => {
+          myroom.removeAllListeners();
+        };
+      } else {
+        props.navigation.navigate("HOME");
+      }
+    } catch {
+      console.log("Error");
     }
   }, [room]);
   useEffect(() => {
@@ -124,42 +150,12 @@ const Game = (props: any) => {
       ]).start();
     }
   }, [count]);
-  const joinRoom = async () => {
-    await getAvailableRooms();
-    console.log(rooms);
-    // const params = {
-    //   id: "zuno-bot",
-    //   isHost: false,
-    //   chips: 10000,
-    //   turn: this?.clients.length + 1,
-    //   role: "Bot",
-    // }
-    // try {
-    //   const room = await client.join("desk", params);
-
-    //   if (room) {
-    //     roomContext.handleRoom(room);
-    //   }
-    // } catch (error) {
-    //   console.log("adsf", error);
-    // }
-  };
   const handleReady = () => {
     myroom.send("START_GAME");
   };
   const handleLeaveRoom = () => {
     myroom.leave();
-    setPlayer([
-      [
-        "Bot",
-        {
-          id: "Bot",
-        },
-      ],
-    ]);
   };
-
-  const ImgCard1 = getImage(totalCard[0]);
 
   useEffect(() => {
     if (count % 6 == 1) {
@@ -328,8 +324,8 @@ const Game = (props: any) => {
       }).start();
     }
   }, [count]);
-  console.log(Player, "playerTotal");
-  // console.log(room, "Room");
+  // console.log(totalCard, "1232jkb");
+  // const a = useSelector(selectGame);
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;
@@ -392,6 +388,7 @@ const Game = (props: any) => {
     "-220%",
     "-220%",
   ]);
+
   return (
     <View
       style={{
@@ -441,171 +438,10 @@ const Game = (props: any) => {
         70.0k
       </Text>
       <BankerCard StateCard={count} ImageCard={bankerCard} />
-      {/* User */}
+      {/* User  */}
+      <UserReal StateCard={count} />
 
-      {/* Card1 */}
-
-      {/* Close */}
-      <Animated.View
-        style={{
-          zIndex: 2,
-          width: SizeCard1,
-          height: SizeCard1,
-          transform: [{ rotateY: DegCard1 }],
-          opacity: OpacityCard1,
-          position: "absolute",
-          bottom: bottomPercentCard1,
-          right: rightPercentCard1,
-        }}
-      >
-        <Image
-          resizeMode="contain"
-          source={require("../../../assets/deckofcard/CloseCard.png")}
-          style={{ width: "100%", height: "100%" }}
-        />
-      </Animated.View>
-      {/* Open */}
-      <Animated.View
-        style={{
-          position: "absolute",
-          zIndex: 2,
-          width: 90,
-          height: 90,
-          transform: [{ rotateY: UnDegCard1 }, { rotateZ: "-5deg" }],
-          opacity: UnOpacityCard1,
-          bottom: bottomPercentCard1,
-          right: rightPercentCard1,
-        }}
-      >
-        <Image
-          resizeMode="contain"
-          source={ImgCard1 ? ImgCard1[0]?.image : ""}
-          style={{ width: "100%", height: "100%" }}
-        />
-      </Animated.View>
-
-      {/* Card2 */}
-
-      {/* Close Card2 */}
-      <Animated.View
-        style={{
-          width: SizeCard2,
-          height: SizeCard2,
-          transform: [{ rotateY: DegCard2 }, { rotateZ: "-10deg" }],
-          opacity: OpacityCard2,
-          position: "absolute",
-          bottom: bottomPercentCard2,
-          right: rightPercentCard2,
-          zIndex: 10,
-          // backgroundColor: "white",
-        }}
-      >
-        <Image
-          resizeMode="contain"
-          source={require("../../../assets/deckofcard/CloseCard.png")}
-          style={{ width: "100%", height: "100%" }}
-        />
-      </Animated.View>
-      {/* OpenCard2 */}
-      <Animated.View
-        style={{
-          position: "absolute",
-          zIndex: 2,
-          width: 90,
-          height: 90,
-          transform: [{ rotateY: UnDegCard2 }, { rotateZ: "10deg" }],
-          opacity: UnOpacityCard2,
-          bottom: bottomPercentCard2,
-          right: rightPercentCard2,
-        }}
-      >
-        <Image
-          resizeMode="contain"
-          source={ImgCard1 ? ImgCard1[1]?.image : ""}
-          style={{ width: "100%", height: "100%" }}
-        />
-      </Animated.View>
-      {/* Win | Lose */}
-      {Player[1] ? (
-        <Animated.View
-          style={{
-            position: "absolute",
-            width: 150,
-            height: 150,
-            zIndex: 14,
-            bottom: "-5%",
-            right: "50%",
-            opacity: OpacityWinLose,
-          }}
-        >
-          <Image
-            resizeMode="contain"
-            source={
-              Player[1][1] === false
-                ? require("../../../assets/Lose.png")
-                : require("../../../assets/Win.png") ||
-                  require("../../../assets/Lose.png")
-            }
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
-          />
-        </Animated.View>
-      ) : (
-        <></>
-      )}
-      {/* profile User */}
-      <View
-        style={{
-          position: "absolute",
-          bottom: "5%",
-          right: "56%",
-          backgroundColor: "white",
-          width: 50,
-          height: 60,
-          zIndex: 5,
-        }}
-      >
-        {/* chip Bet */}
-        <Animated.Text
-          style={{
-            color: "white",
-            position: "absolute",
-            top: bottomPercentBetChip,
-            right: rightPercentBetChip,
-            width: 70,
-            zIndex: 10,
-            opacity: OpacityBetChip,
-          }}
-        >
-          5.00k
-        </Animated.Text>
-        <Text
-          style={{
-            color: "white",
-            position: "absolute",
-            bottom: 0,
-            left: -50,
-            width: 70,
-            zIndex: 10,
-          }}
-        >
-          5.00k
-        </Text>
-        <Text
-          style={{
-            color: "white",
-            position: "absolute",
-            bottom: -20,
-            width: 70,
-          }}
-        >
-          UserName
-        </Text>
-      </View>
-
-      <FakeUser1 StateCard={count} ImageCard={[""]} profile={Player[1]} />
+      <FakeUser1 ImageCard={[""]} profile={Player[1]} />
       <FakeUser2 StateCard={count} ImageCard={[""]} profile={Player[1]} />
       <FakeUser3 StateCard={count} ImageCard={[""]} profile={Player[1]} />
       <FakeUser4 StateCard={count} ImageCard={[""]} profile={Player[1]} />
@@ -653,18 +489,23 @@ const Game = (props: any) => {
           />
           {/* FOLD */}
           <Action
+            action={() => handleReady()}
             ImageAction={require("../../../assets/Fold.png")}
             title="FOLD"
           />
           {/* ALL In */}
           <Action
+            action={() => {
+              setCount(count + 1);
+              dispatch(gameAction.updateWaveGame(waveGame + 1));
+            }}
             ImageAction={require("../../../assets/Allin.png")}
             title="ALL IN"
           />
         </View>
       </View>
 
-      <View
+      {/* <View
         style={{
           position: "absolute",
           left: "2%",
@@ -674,11 +515,7 @@ const Game = (props: any) => {
           marginRight: "10%",
         }}
       >
-        <TouchableOpacity
-          onPress={() => {
-            handleReady();
-          }}
-        >
+        <TouchableOpacity onPress={() => {}}>
           <Image
             resizeMode="contain"
             source={require("../../../assets/deckofcard/T♦.png")}
@@ -688,7 +525,6 @@ const Game = (props: any) => {
         <TouchableOpacity
           onPress={() => {
             setCount(count + 1);
-            room.send("RAISE", 5000);
           }}
         >
           <Image
@@ -704,7 +540,7 @@ const Game = (props: any) => {
             style={{ width: 95, height: 95 }}
           />
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 };

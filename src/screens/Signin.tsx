@@ -1,49 +1,15 @@
 import { useEffect } from "react";
 import { Platform } from "react-native";
-import {
-  Box,
-  Button,
-  Input,
-  VStack,
-  HStack,
-  FormControl,
-  Stack,
-  Icon,
-  Image,
-  Text,
-  useToast,
-} from "native-base";
-import {
-  Feather,
-  MaterialCommunityIcons,
-  Entypo,
-  AntDesign,
-} from "@expo/vector-icons";
-import {
-  StyleSheet,
-  Alert,
-  ImageBackground,
-  TouchableOpacity,
-  View,
-  TextInput,
-} from "react-native";
-import * as ScreenOrientation from "expo-screen-orientation";
+import { Input, Image, Text, useToast } from "native-base";
+import { AntDesign } from "@expo/vector-icons";
+import { TouchableOpacity, View } from "react-native";
 
 import { useForm, Controller } from "react-hook-form";
-import { signInWithFb, signInWithGg } from "../utils/firebaseLogin";
-import { LoginButton } from "react-native-fbsdk-next";
+import { signInWithFb } from "../utils/firebaseLogin";
 import { useAuth } from "../context/AuthContext";
 import { TCredential } from "../__types__/credential.type";
 import axios from "axios";
-import {
-  API_ANDROID_URL,
-  API_IOS_URL,
-  API_URL,
-  GOOGLE_EXPO_CLIENT_ID,
-  GOOGLE_IOS_CLIENT_ID,
-  GOOGLE_ANDROID_CLIENT_ID,
-  GOOGLE_FIREBASE_WEBCLIENT_ID,
-} from "react-native-dotenv";
+import { API_URL } from "react-native-dotenv";
 
 const Signin: React.FC = ({ route, navigation }: any) => {
   const { authState, signIn } = useAuth();
@@ -123,41 +89,41 @@ const Signin: React.FC = ({ route, navigation }: any) => {
   };
 
   // handle google sign in
-  const handleGoogleLogin = async () => {
-    try {
-      const user = await signInWithGg();
-      if (!user) return;
-      const data = {
-        type: "google",
-        payload: {
-          ggEmail: user.user.email,
-          ggName: user.user.name,
-          ggAvatar: user.user.photo,
-        },
-      };
-      const res = await axios.post(
-        // Platform.OS === "android" ? API_ANDROID_URL : API_IOS_URL + "/auth/signin",
-        API_URL + "/auth/signin",
-        data
-      );
-      const { success, msg, accessToken } = res.data;
-      if (!success) throw new Error("Bad request!");
-      toast.show({
-        title: "Login status",
-        description: msg,
-        variant: "solid",
-        placement: "top",
-      });
-      return signIn(accessToken);
-    } catch (error) {
-      console.error(error);
-      toast.show({
-        title: "Login status",
-        description: error.message,
-        placement: "top",
-      });
-    }
-  };
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     const user = await signInWithGg();
+  //     if (!user) return;
+  //     const data = {
+  //       type: "google",
+  //       payload: {
+  //         ggEmail: user.user.email,
+  //         ggName: user.user.name,
+  //         ggAvatar: user.user.photo,
+  //       },
+  //     };
+  //     const res = await axios.post(
+  //       // Platform.OS === "android" ? API_ANDROID_URL : API_IOS_URL + "/auth/signin",
+  //       API_URL + "/auth/signin",
+  //       data
+  //     );
+  //     const { success, msg, accessToken } = res.data;
+  //     if (!success) throw new Error("Bad request!");
+  //     toast.show({
+  //       title: "Login status",
+  //       description: msg,
+  //       variant: "solid",
+  //       placement: "top",
+  //     });
+  //     return signIn(accessToken);
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast.show({
+  //       title: "Login status",
+  //       description: error.message,
+  //       placement: "top",
+  //     });
+  //   }
+  // };
 
   return (
     <View>
@@ -300,7 +266,7 @@ const Signin: React.FC = ({ route, navigation }: any) => {
         >
           <TouchableOpacity
             style={{ bottom: 9, right: 10 }}
-            onPress={handleGoogleLogin}
+            // onPress={handleGoogleLogin}
           >
             <Image
               alt="No image"

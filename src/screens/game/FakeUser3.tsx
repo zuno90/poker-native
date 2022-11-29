@@ -379,7 +379,6 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
       ]).start();
     }
   }, [count]);
-  console.log(count, "count");
   const DegCard2 = GetInterpolate(RotateCard2, ["0deg", "0deg", "30deg"]);
 
   const DegCard1 = GetInterpolate(RotateCard1, ["0deg", "0deg", "-10deg"]);
