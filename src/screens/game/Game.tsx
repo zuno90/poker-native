@@ -43,18 +43,29 @@ const Game = (props: any) => {
     }
   }, [room]);
 
-  const handleReady = () => {
+  const handleReady = async () => {
     myroom.send("START_GAME");
 
-    const hello = myroom.state.players.$items;
-    const arr = Array.from(hello, ([_, value]) => {
+    const object_array = room.state.players.$items;
+    const arr = Array.from(object_array, ([_, value]) => {
       return value.id;
     });
-    const formatarr = arr.shift();
+    // const newarr = arr.map((item) => item);
+    // const formatarr = newarr.shift();
+
+    // console.log("check ob arr", object_array);
+
+    // console.log("check arnoamal", arr);
+
+    // console.log(
+    //   "cheafdasf",
+    //   arr.filter((item) => item !== arr[0])
+    // );
 
     setCurrent(arr[0]);
-    setPlayerWait([...playerWait, arr[0]]);
-    setRoundGame(formatarr);
+    // setPlayerWait([...playerWait, arr[0]]);
+    // setRoundGame(arr.filter((item) => item !== arr[0]));
+    setRoundGame(arr);
   };
 
   const handleLeaveRoom = () => {
@@ -241,7 +252,7 @@ const Game = (props: any) => {
     authState: { user }
   } = useAuth();
 
-  const [roundgame, setRoundGame] = useState([]);
+  const [roundgame, setRoundGame] = useState(null);
   const [current, setCurrent] = useState<any>(null);
   const [playerWait, setPlayerWait] = useState([]);
   const [allowPlay, setAllowPlay] = useState<boolean>(false);
@@ -249,9 +260,18 @@ const Game = (props: any) => {
 
   useEffect(() => {
     if (room && room !== null) {
-      myroom.onStateChange((state) => {
-        console.log("hello", roundgame);
+      console.log("check round game", roundgame);
+      console.log("check current", current);
+      console.log("check wait", playerWait);
 
+      if (Array.isArray(roundgame) && roundgame.length === 0) {
+        handeEndTurn();
+      }
+
+      myroom.onStateChange((state) => {
+        // console.log("hello", state);
+        // if (roundgame !== null && roundgame.length === 0) {
+        // }
         // console.log("this is state", state);
         // const arr = Array.from(state.players.$items, ([_, value]) => {
         //   return value;
@@ -267,9 +287,7 @@ const Game = (props: any) => {
         //   setBankerCard(state.banker5Cards);
         // }
       });
-      // myroom.onMessage("CALL", (messeage) => {
-      //   console.log("afsd hihi", messeage);
-      // });
+
       myroom.onLeave((code) => {
         console.log("we left you idiot");
         handleRoom(null);
@@ -289,22 +307,37 @@ const Game = (props: any) => {
     }
   }, [room, roundgame, playerWait, allowPlay, current]);
 
-  console.log("roundgame", roundgame);
-  // console.log("current", current);
-  // console.log("playerwait", playerWait);
-
   const handlePlayerAction = (actionType: "CALL" | "FOLD" | "RAISE" | "CHECK" | "ALLIN") => {
-    const newarr = roundgame;
-    const formatarr = newarr.shift();
+    const newarr = roundgame.filter((item) => item !== roundgame[0]);
+
+    console.log("kiem tra round game action", newarr);
+
+    // const formatarr = newarr.shift();
 
     if (actionType === "ALLIN" || actionType === "RAISE") {
-      setRoundGame([...formatarr, ...playerWait]);
+      setRoundGame([...newarr, ...playerWait]);
     }
-    setPlayerWait([...playerWait, user.id]);
-    setRoundGame(formatarr);
+
+    setCurrent(newarr[0]);
+    setRoundGame(newarr);
+
+    // setPlayerWait([...playerWait, user.id]);
+    // setRoundGame(newarr);
 
     // if (condition) {
     // }
+  };
+
+  const handeEndTurn = () => {
+    const object_array = room.state.players.$items;
+    const arr = Array.from(object_array, ([_, value]) => {
+      return value.id;
+    });
+
+    // viet tang turn tai day
+
+    setCurrent(arr[0]);
+    setRoundGame(arr);
   };
 
   // --- end of Quang code ----
