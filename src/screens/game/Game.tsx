@@ -63,7 +63,7 @@ const Game = (props: any) => {
     // );
 
     setCurrent(arr[0]);
-    // setPlayerWait([...playerWait, arr[0]]);
+    setPlayerWait([]);
     // setRoundGame(arr.filter((item) => item !== arr[0]));
     setRoundGame(arr);
   };
@@ -319,6 +319,7 @@ const Game = (props: any) => {
     }
 
     setCurrent(newarr[0]);
+    setPlayerWait(roundgame[0]);
     setRoundGame(newarr);
 
     // setPlayerWait([...playerWait, user.id]);
@@ -338,6 +339,7 @@ const Game = (props: any) => {
 
     setCurrent(arr[0]);
     setRoundGame(arr);
+    setPlayerWait([]);
   };
 
   // --- end of Quang code ----
