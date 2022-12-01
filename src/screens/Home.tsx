@@ -155,17 +155,6 @@ const Home: React.FC = (props: any) => {
             betChips: 0,
           });
         }}
-        onPress={() => {
-          getAvailableRooms({
-            id: "zuno-bot",
-            isHost: false,
-            chips: 10000,
-            turn: 2,
-            role: "Bot",
-            cards: [],
-            betChips: 0,
-          });
-        }}
       >
         <Image
           resizeMode="contain"
