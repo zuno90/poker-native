@@ -318,8 +318,8 @@ const Game = (props: any) => {
       setRoundGame([...newarr, ...playerWait]);
     }
 
-    setCurrent(newarr[0]);
     setPlayerWait(roundgame[0]);
+    setCurrent(newarr[0]);
     setRoundGame(newarr);
 
     // setPlayerWait([...playerWait, user.id]);
@@ -330,6 +330,8 @@ const Game = (props: any) => {
   };
 
   const handeEndTurn = () => {
+    console.log("end turn");
+
     const object_array = room.state.players.$items;
     const arr = Array.from(object_array, ([_, value]) => {
       return value.id;
