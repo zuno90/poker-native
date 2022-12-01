@@ -51,20 +51,10 @@ const Game = (props: any) => {
       return value.id;
     });
     const formatarr = arr.shift();
+
     setCurrent(arr[0]);
     setPlayerWait([...playerWait, arr[0]]);
     setRoundGame(formatarr);
-
-    // console.log("adsfasfdfdas", myroom.state.players.$items.values());
-    // console.log("adsfasfdfdas", arr);
-
-    // myroom.state.players.$items.forEach((element) => {
-    //   console.log("this is element", element.id);
-    //   // setRoundGame([...roundgame, element.id]);
-    // });
-    // (myroom.state.players.$items as Map<any, any>).forEach((value: any) => {
-    //   setRoundGame([...roundgame, value]);
-    // });
   };
 
   const handleLeaveRoom = () => {
@@ -260,14 +250,13 @@ const Game = (props: any) => {
   useEffect(() => {
     if (room && room !== null) {
       myroom.onStateChange((state) => {
-        console.log("this is state", state);
+        console.log("hello", roundgame);
 
-        const arr = Array.from(state.players.$items, ([_, value]) => {
-          return value;
-        });
-
-        console.log("check value of state", arr);
-
+        // console.log("this is state", state);
+        // const arr = Array.from(state.players.$items, ([_, value]) => {
+        //   return value;
+        // });
+        // console.log("check value of state", arr);
         // console.log("check statet", (state.players.$items as Map<any,any>).);
         // for (let i of state.players.values()) {
         //   if (i.cards.length !== 0) {
@@ -298,16 +287,22 @@ const Game = (props: any) => {
     } else {
       setAllowPlay(false);
     }
-  }, [room]);
+  }, [room, roundgame, playerWait, allowPlay, current]);
 
   console.log("roundgame", roundgame);
-  console.log("current", current);
-  console.log("playerwait", playerWait);
+  // console.log("current", current);
+  // console.log("playerwait", playerWait);
 
-  console.log("adfafdsaf", user);
+  const handlePlayerAction = (actionType: "CALL" | "FOLD" | "RAISE" | "CHECK" | "ALLIN") => {
+    const newarr = roundgame;
+    const formatarr = newarr.shift();
 
-  const handlePlayerAction = () => {
-    console.log("hello");
+    if (actionType === "ALLIN" || actionType === "RAISE") {
+      setRoundGame([...formatarr, ...playerWait]);
+    }
+    setPlayerWait([...playerWait, user.id]);
+    setRoundGame(formatarr);
+
     // if (condition) {
     // }
   };

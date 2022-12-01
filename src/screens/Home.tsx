@@ -42,7 +42,7 @@ const Home: React.FC = (props: any) => {
           cards: []
         };
         try {
-          console.log("afdsafdsafsd", roomId);
+          // console.log("afdsafdsafsd", roomId);
 
           const room = await client.joinById(roomId, params);
 
@@ -56,7 +56,7 @@ const Home: React.FC = (props: any) => {
         }
       } else if (clients === 1) {
         try {
-          console.log("afdsafdsafsd", roomId);
+          // console.log("afdsafdsafsd", roomId);
 
           const room = await client.joinById(roomId, infoUser);
 
