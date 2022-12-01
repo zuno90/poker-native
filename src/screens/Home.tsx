@@ -26,8 +26,10 @@ const Home: React.FC = (props: any) => {
   const roomContext = useContext(GameContext);
 
   const client = new Colyseus.Client("ws://175.41.154.239");
+
   const getAvailableRooms = async (infoUser?: InfoUser) => {
     const room = await client.getAvailableRooms("desk");
+    console.log(room, "room");
     if (room.length !== 0) {
       const { clients, roomId } = room[0];
       if (clients <= 4 && clients > 1) {
@@ -39,10 +41,13 @@ const Home: React.FC = (props: any) => {
           cards: [],
         };
         try {
+          // console.log("afdsafdsafsd", roomId);
+
           const room = await client.joinById(roomId, params);
 
           if (room) {
             roomContext.handleRoom(room);
+
             room && props.navigation.navigate("GAME");
           }
         } catch (error) {
@@ -138,6 +143,17 @@ const Home: React.FC = (props: any) => {
           right: "35%",
           width: "30%",
           height: "20%",
+        }}
+        onPress={() => {
+          getAvailableRooms({
+            id: "zuno-bot",
+            isHost: false,
+            chips: 10000,
+            turn: 2,
+            role: "Bot",
+            cards: [],
+            betChips: 0,
+          });
         }}
         onPress={() => {
           getAvailableRooms({

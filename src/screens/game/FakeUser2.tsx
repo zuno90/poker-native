@@ -15,6 +15,7 @@ export const FakeUser2 = ({ StateCard, ImageCard, profile }) => {
     { image: require("../../../assets/deckofcard/♠5.png") },
     { image: require("../../../assets/deckofcard/♠5.png") },
   ]);
+
   useEffect(() => {
     if (profileUser1.cards) {
       setGetCard(getImage(profileUser1.cards));

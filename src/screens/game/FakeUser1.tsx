@@ -26,7 +26,7 @@ export const FakeUser1 = ({ ImageCard, profile }) => {
       console.log(getCard, "get");
     }
   }, [waveGame]);
-  console.log(waveGame, "wave Game user1");
+  console.log(profileUser1, "wave Game user1");
 
   const [count, setCount] = useState(0);
   useEffect(() => {

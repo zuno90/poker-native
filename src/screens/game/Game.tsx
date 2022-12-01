@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Room } from "colyseus.js";
 
 import { View } from "native-base";
@@ -30,7 +30,6 @@ const Game = (props: any) => {
 
   const client = new Colyseus.Client("ws://175.41.154.239");
   const a = useSelector(selectGame);
-  let [TotalCardUser, setTotalCardUser] = useState([]);
   const [profileUser, setprofileUser] = useState({
     betChips: 0,
     cards: [["3", "4"]],
@@ -152,6 +151,16 @@ const Game = (props: any) => {
   }, [count]);
   const handleReady = () => {
     myroom.send("START_GAME");
+
+    const hello = myroom.state.players.$items;
+    const arr = Array.from(hello, ([_, value]) => {
+      return value.id;
+    });
+    const formatarr = arr.shift();
+
+    setCurrent(arr[0]);
+    setPlayerWait([...playerWait, arr[0]]);
+    setRoundGame(formatarr);
   };
   const handleLeaveRoom = () => {
     myroom.leave();
@@ -324,8 +333,80 @@ const Game = (props: any) => {
       }).start();
     }
   }, [count]);
-  // console.log(totalCard, "1232jkb");
-  // const a = useSelector(selectGame);
+
+  // console.log("kiem tra state rooom", room);
+  // console.log("kiem tra props", props);
+
+  // --- start of Quang code ----
+  const [roundgame, setRoundGame] = useState([]);
+  const [current, setCurrent] = useState<any>(null);
+  const [playerWait, setPlayerWait] = useState([]);
+  const [allowPlay, setAllowPlay] = useState<boolean>(false);
+  // const [ready, setReady] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (room && room !== null) {
+      myroom.onStateChange((state) => {
+        console.log("hello", roundgame);
+
+        // console.log("this is state", state);
+        // const arr = Array.from(state.players.$items, ([_, value]) => {
+        //   return value;
+        // });
+        // console.log("check value of state", arr);
+        // console.log("check statet", (state.players.$items as Map<any,any>).);
+        // for (let i of state.players.values()) {
+        //   if (i.cards.length !== 0) {
+        //     setTotalCard([...totalCard, i.cards]);
+        //   }
+        // }
+        // if (state.banker5Cards) {
+        //   setBankerCard(state.banker5Cards);
+        // }
+      });
+      // myroom.onMessage("CALL", (messeage) => {
+      //   console.log("afsd hihi", messeage);
+      // });
+      myroom.onLeave((code) => {
+        console.log("we left you idiot");
+        // props.navigation.navigate("HOME");
+      });
+      return () => {
+        myroom.removeAllListeners();
+      };
+    } else {
+      props.navigation.navigate("HOME");
+    }
+
+    if (user.id === current) {
+      setAllowPlay(true);
+    } else {
+      setAllowPlay(false);
+    }
+  }, [room, roundgame, playerWait, allowPlay, current]);
+
+  console.log("roundgame", roundgame);
+  // console.log("current", current);
+  // console.log("playerwait", playerWait);
+
+  const handlePlayerAction = (
+    actionType: "CALL" | "FOLD" | "RAISE" | "CHECK" | "ALLIN"
+  ) => {
+    const newarr = roundgame;
+    const formatarr = newarr.shift();
+
+    if (actionType === "ALLIN" || actionType === "RAISE") {
+      setRoundGame([...formatarr, ...playerWait]);
+    }
+    setPlayerWait([...playerWait, user.id]);
+    setRoundGame(formatarr);
+
+    // if (condition) {
+    // }
+  };
+
+  // --- end of Quang code ----
+
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;
@@ -516,6 +597,7 @@ const Game = (props: any) => {
         >
           {/* Call */}
           <Action
+            action={handlePlayerAction}
             ImageAction={require("../../../assets/Call.png")}
             title="CALL"
           />
