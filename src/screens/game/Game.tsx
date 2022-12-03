@@ -170,7 +170,6 @@ const Game = (props: any) => {
 
     setCurrent(arr[0]);
     setPlayerWait([]);
-    // setRoundGame(arr.filter((item) => item !== arr[0]));
     setRoundGame(arr);
   };
   const handleLeaveRoom = () => {
