@@ -29,7 +29,6 @@ const Home: React.FC = (props: any) => {
 
   const getAvailableRooms = async (infoUser?: InfoUser) => {
     const room = await client.getAvailableRooms("desk");
-    console.log(room, "room");
     if (room.length !== 0) {
       const { clients, roomId } = room[0];
       if (clients <= 4 && clients > 1) {

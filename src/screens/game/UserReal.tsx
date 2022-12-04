@@ -11,7 +11,7 @@ import { Action } from "./Action";
 import { gameAction, selectGame } from "./GameSlice";
 import { getImage } from "./get";
 
-export const UserReal = ({ StateCard }) => {
+export const UserReal = ({ StateCard, handleAction }) => {
   const dispatch = useDispatch();
   const [card, setCard] = useState([]);
   const [totalCard, setTotalCard] = useState();
@@ -30,10 +30,9 @@ export const UserReal = ({ StateCard }) => {
     authState: { user },
   } = useAuth();
   const myroom = room as Room;
-  console.log(profileUser, "profile");
   const [getCard, setGetCard] = useState([
-    { image: require("../../../assets/deckofcard/♠5.png") },
-    { image: require("../../../assets/deckofcard/♠5.png") },
+    { image: require("../../../assets/deckofcard/5♠.png") },
+    { image: require("../../../assets/deckofcard/5♠.png") },
   ]);
   useEffect(() => {
     if (profileUser.cards) {

@@ -20,6 +20,8 @@ const Game = (props: any) => {
   const {
     authState: { user },
   } = useAuth();
+  const { profileUser } = useSelector(selectGame);
+
   const myroom = room as Room;
   const [totalCard, setTotalCard] = useState<any>([]);
   const dispatch = useDispatch();
@@ -27,34 +29,36 @@ const Game = (props: any) => {
   const [bankerCard, setBankerCard] = useState<any>([]);
   let [count, setCount] = useState(1);
   const { waveGame } = useSelector(selectGame);
-
+  const [roundgame, setRoundGame] = useState(null);
+  const [current, setCurrent] = useState<any>(null);
+  const [playerWait, setPlayerWait] = useState([]);
+  const [allowPlay, setAllowPlay] = useState<boolean>(false);
   const client = new Colyseus.Client("ws://175.41.154.239");
   const a = useSelector(selectGame);
-  const [profileUser, setprofileUser] = useState({
-    betChips: 0,
-    cards: [["3", "4"]],
-    chips: 10000,
-    connected: true,
-    id: "zuno-bot",
-    isFold: false,
-    isHost: false,
-    isWinner: false,
-    role: "Bot",
-    turn: 2,
-  });
 
   useEffect(() => {
-    setprofileUser(a.Total[a.PositionArray % 5]);
     dispatch(gameAction.updateProfileUser(a.Total[a.PositionArray % 5]));
     dispatch(gameAction.updateProfileUser1(a.Total[(a.PositionArray + 1) % 5]));
-    dispatch(gameAction.updateProfileUser2(a.Total[a.PositionArray % 5]));
-    dispatch(gameAction.updateProfileUser3(a.Total[a.PositionArray % 5]));
-    dispatch(gameAction.updateProfileUser4(a.Total[a.PositionArray % 5]));
-  }, [a.Total]);
-  console.log(a.Total);
+    dispatch(
+      gameAction.updateProfileUser2(a.Total[((a.PositionArray % 5) + 2) % 5])
+    );
+    dispatch(
+      gameAction.updateProfileUser3(a.Total[(a.PositionArray % 5) + (3 % 5)])
+    );
+    dispatch(
+      gameAction.updateProfileUser4(a.Total[(a.PositionArray % 5) + (4 % 5)])
+    );
+  }, [a]);
+  // console.log(a.Total);
   useEffect(() => {
     try {
       if (room && room !== null) {
+        // console.log("check round game", roundgame);
+        console.log("check current", current);
+        // console.log("check wait", playerWait);
+        if (Array.isArray(roundgame) && roundgame.length === 0) {
+          handeEndTurn();
+        }
         let countPositionArray = -1;
         myroom.onStateChange((state) => {
           for (let i of state.players.$items) {
@@ -63,11 +67,11 @@ const Game = (props: any) => {
               dispatch(gameAction.updatePositionArray(countPositionArray));
             }
           }
+          countPositionArray = -1;
           let Arr = Array.from(
             state.players.$items,
             ([sessionId, Value]) => Value
           );
-          console.log(Arr, "Arr");
           dispatch(gameAction.updateTotal(Arr));
 
           for (let i of state.players.values()) {
@@ -89,6 +93,11 @@ const Game = (props: any) => {
         };
       } else {
         props.navigation.navigate("HOME");
+      }
+      if (user.id === current) {
+        setAllowPlay(true);
+      } else {
+        setAllowPlay(false);
       }
     } catch {
       console.log("Error");
@@ -151,26 +160,14 @@ const Game = (props: any) => {
   }, [count]);
   const handleReady = () => {
     myroom.send("START_GAME");
-
     const object_array = room.state.players.$items;
     const arr = Array.from(object_array, ([_, value]) => {
       return value.id;
     });
-    // const newarr = arr.map((item) => item);
-    // const formatarr = newarr.shift();
-
-    // console.log("check ob arr", object_array);
-
-    // console.log("check arnoamal", arr);
-
-    // console.log(
-    //   "cheafdasf",
-    //   arr.filter((item) => item !== arr[0])
-    // );
-
     setCurrent(arr[0]);
     setPlayerWait([]);
     setRoundGame(arr);
+    // dispatch(gameAction.updateCurrentPlayer(arr[0]));
   };
   const handleLeaveRoom = () => {
     myroom.leave();
@@ -344,87 +341,24 @@ const Game = (props: any) => {
     }
   }, [count]);
 
-  // console.log("kiem tra state rooom", room);
-  // console.log("kiem tra props", props);
-
-  // --- start of Quang code ----
-
-  const [roundgame, setRoundGame] = useState(null);
-  const [current, setCurrent] = useState<any>(null);
-  const [playerWait, setPlayerWait] = useState([]);
-  const [allowPlay, setAllowPlay] = useState<boolean>(false);
-  // const [ready, setReady] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (room && room !== null) {
-      console.log("check round game", roundgame);
-      console.log("check current", current);
-      console.log("check wait", playerWait);
-
-      if (Array.isArray(roundgame) && roundgame.length === 0) {
-        handeEndTurn();
-      }
-
-      myroom.onStateChange((state) => {
-        // console.log("hello", state);
-        // if (roundgame !== null && roundgame.length === 0) {
-        // }
-        // console.log("this is state", state);
-        // const arr = Array.from(state.players.$items, ([_, value]) => {
-        //   return value;
-        // });
-        // console.log("check value of state", arr);
-        // console.log("check statet", (state.players.$items as Map<any,any>).);
-        // for (let i of state.players.values()) {
-        //   if (i.cards.length !== 0) {
-        //     setTotalCard([...totalCard, i.cards]);
-        //   }
-        // }
-        // if (state.banker5Cards) {
-        //   setBankerCard(state.banker5Cards);
-        // }
-      });
-
-      myroom.onLeave((code) => {
-        console.log("we left you idiot");
-        // props.navigation.navigate("HOME");
-      });
-      return () => {
-        myroom.removeAllListeners();
-      };
-    } else {
-      props.navigation.navigate("HOME");
-    }
-
-    if (user.id === current) {
-      setAllowPlay(true);
-    } else {
-      setAllowPlay(false);
-    }
-  }, [room, roundgame, playerWait, allowPlay, current]);
-
   const handlePlayerAction = (
-    actionType: "CALL" | "FOLD" | "RAISE" | "CHECK" | "ALLIN"
+    actionType: "CALL" | "FOLD" | "RAISE" | "CHECK" | "ALLIN",
+    Chip
   ) => {
+    room.send(actionType, Chip);
     const newarr = roundgame.filter((item) => item !== roundgame[0]);
-
-    console.log("kiem tra round game action", newarr);
-
-    // const formatarr = newarr.shift();
-
-    if (actionType === "ALLIN" || actionType === "RAISE") {
-      setRoundGame([...newarr, ...playerWait]);
-    }
+    // console.log(roundgame, " roundgame sau khi action");
 
     setPlayerWait(roundgame[0]);
     setCurrent(newarr[0]);
-    setRoundGame(newarr);
+    if (actionType === "ALLIN" || actionType === "RAISE") {
+      setRoundGame([...newarr, ...playerWait]);
+    } else {
+      setRoundGame(newarr);
+    }
 
     // setPlayerWait([...playerWait, user.id]);
     // setRoundGame(newarr);
-
-    // if (condition) {
-    // }
   };
 
   const handeEndTurn = () => {
@@ -462,50 +396,11 @@ const Game = (props: any) => {
   const OpacityBetChip = useRef(new Animated.Value(0)).current;
   const UnOpacity1 = useRef(new Animated.Value(0)).current;
   const UnOpacity2 = useRef(new Animated.Value(0)).current;
-
-  const bottomPercentCard1 = GetInterpolate(PositionVerticalCard1, [
-    "5%",
-    "68%",
-    "5%",
-  ]);
-
-  const rightPercentCard1 = GetInterpolate(PositionHorizontalCard1, [
-    "5%",
-    "48%",
-    "42%",
-  ]);
-  const bottomPercentCard2 = GetInterpolate(PositionVerticalCard2, [
-    "5%",
-    "68%",
-    "8%",
-  ]);
-
-  const rightPercentCard2 = GetInterpolate(PositionHorizontalCard2, [
-    "5%",
-    "48%",
-    "37%",
-  ]);
-  const DegCard2 = GetInterpolate(RotateCard2, ["0deg", "0deg", "180deg"]);
-
-  const DegCard1 = GetInterpolate(RotateCard1, ["0deg", "0deg", "180deg"]);
-  const UnDegCard1 = GetInterpolate(UnRotateCard1, ["0deg", "-180deg", "0deg"]);
-  const UnDegCard2 = GetInterpolate(UnRotateCard2, ["0deg", "-180deg", "0deg"]);
-
-  const OpacityCard1 = GetInterpolate(Opacity1, [0, 0, 1]);
-  const OpacityCard2 = GetInterpolate(Opacity2, [0, 0, 1]);
-
-  const UnOpacityCard1 = GetInterpolate(UnOpacity1, [0, 0, 1]);
-  const UnOpacityCard2 = GetInterpolate(UnOpacity2, [0, 0, 1]);
-  const bottomPercentBetChip = GetInterpolate(PositionVerticalChipBet, [
-    "70%",
-    "-120%",
-    "-360%",
-  ]);
-  const rightPercentBetChip = GetInterpolate(PositionHorizontalChipBet, [
-    "60%",
-    "-220%",
-    "-220%",
-  ]);
+  // console.log(roundgame, "roundgame2 nè");
+  console.log(room, "action check");
+  // console.log(playerWait, "playerWait nè");
+  // console.log(roundgame, "round nè");
+  // console.log(current, "current nè");
 
   return (
     <View
@@ -517,6 +412,21 @@ const Game = (props: any) => {
         flex: 1,
       }}
     >
+      <TouchableOpacity
+        onPress={() => {
+          handlePlayerAction("CALL", 5000);
+        }}
+        style={{
+          position: "absolute",
+          top: "20%",
+          width: 50,
+          height: 50,
+          backgroundColor: "black",
+          zIndex: 20,
+        }}
+      >
+        <Text style={{ color: "white" }}>Start Game</Text>
+      </TouchableOpacity>
       {/* Background */}
       <Image
         resizeMode="cover"
@@ -595,12 +505,13 @@ const Game = (props: any) => {
       </Text>
       <BankerCard ImageCard={bankerCard} />
       {/* User  */}
-      <UserReal StateCard={count} />
-      <FakeUser1 ImageCard={[""]} profile={Player[1]} />
-      {/* <FakeUser2 StateCard={count} ImageCard={[""]} profile={Player[1]} />
-      <FakeUser3 StateCard={count} ImageCard={[""]} profile={Player[1]} />
-      <FakeUser4 StateCard={count} ImageCard={[""]} profile={Player[1]} /> */}
+      <UserReal StateCard={count} handleAction={handlePlayerAction} />
+      <FakeUser1 currentPlayer={current} handleAction={handlePlayerAction} />
+      {/* <FakeUser2 StateCard={count} currentPlayer={current} />
+      <FakeUser3 StateCard={count} currentPlayer={current} />
+      <FakeUser4 StateCard={count} currentPlayer={current} /> */}
       {/* Bet */}
+      {/* {current === profileUser.id && ( */}
       <View
         style={{
           position: "absolute",
@@ -634,7 +545,9 @@ const Game = (props: any) => {
         >
           {/* Call */}
           <Action
-            action={handlePlayerAction}
+            action={() => {
+              room.send("FOLD");
+            }}
             ImageAction={require("../../../assets/Call.png")}
             title="CALL"
           />
@@ -652,7 +565,6 @@ const Game = (props: any) => {
           {/* ALL In */}
           <Action
             action={() => {
-              setCount(count + 1);
               dispatch(gameAction.updateWaveGame(waveGame + 1));
             }}
             ImageAction={require("../../../assets/Allin.png")}
@@ -660,6 +572,7 @@ const Game = (props: any) => {
           />
         </View>
       </View>
+      {/* )} */}
     </View>
   );
 };

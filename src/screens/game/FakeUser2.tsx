@@ -12,8 +12,8 @@ export const FakeUser2 = ({ StateCard, ImageCard, profile }) => {
   const { waveGame } = useSelector(selectGame);
   const { profileUser1 } = useSelector(selectGame);
   const [getCard, setGetCard] = useState([
-    { image: require("../../../assets/deckofcard/♠5.png") },
-    { image: require("../../../assets/deckofcard/♠5.png") },
+    { image: require("../../../assets/deckofcard/5♠.png") },
+    { image: require("../../../assets/deckofcard/5♠.png") },
   ]);
 
   useEffect(() => {

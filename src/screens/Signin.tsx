@@ -1,6 +1,4 @@
-import { useEffect } from "react";
-import { Platform } from "react-native";
-import { Input, Image, Text, useToast } from "native-base";
+import { Input, Image, Text, useToast, Icon } from "native-base";
 import { AntDesign } from "@expo/vector-icons";
 import { TouchableOpacity, View } from "react-native";
 
@@ -22,8 +20,8 @@ const Signin: React.FC = ({ route, navigation }: any) => {
 
   const onSubmit = async (data: TCredential) => {
     try {
-      console.log("data sign in", data);
-      console.log(API_URL + "/auth/signin");
+      // console.log("data sign in", data);
+      // console.log(API_URL + "/auth/signin");
       const res = await axios.post(
         // Platform.OS === "android" ? API_ANDROID_URL : API_IOS_URL + "/auth/signin",
         API_URL + "/auth/signin",

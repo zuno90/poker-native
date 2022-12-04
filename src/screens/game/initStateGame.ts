@@ -19,6 +19,8 @@ interface init {
   profileUser4?: any;
   PositionArray: number;
   waveGame: number;
+  currentPlayer?: string;
+  countDown: number;
 }
 export const GAME_INIT: init = {
   Total: [],
@@ -29,4 +31,6 @@ export const GAME_INIT: init = {
   profileUser3: {},
   profileUser4: {},
   waveGame: 0,
+  countDown: 9,
+  currentPlayer: "",
 };

@@ -11,8 +11,8 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
   const { profileUser1 } = useSelector(selectGame);
   const { waveGame } = useSelector(selectGame);
   const [getCard, setGetCard] = useState([
-    { image: require("../../../assets/deckofcard/♠5.png") },
-    { image: require("../../../assets/deckofcard/♠5.png") },
+    { image: require("../../../assets/deckofcard/5♠.png") },
+    { image: require("../../../assets/deckofcard/5♠.png") },
   ]);
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;

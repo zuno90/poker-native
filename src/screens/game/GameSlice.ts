@@ -5,10 +5,15 @@ const gameSlice = createSlice({
   initialState: GAME_INIT,
   reducers: {
     updateTotal(state, action: PayloadAction<any>) {
-      console.log(state.Total, "store");
+      // console.log(state.Total, "store");
       if (typeof action.payload === "object") {
         state.Total = action.payload;
       }
+    },
+
+    updateCountdown(state, action: PayloadAction<any>) {
+      console.log(action.payload, "current");
+      state.countDown = action.payload;
     },
     updateWaveGame(state, action: PayloadAction<any>) {
       state.waveGame = action.payload;
