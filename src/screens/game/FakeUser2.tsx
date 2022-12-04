@@ -7,18 +7,18 @@ import { GetInterpolate } from "../../utils/getInterpolate";
 import { selectGame } from "./GameSlice";
 import { getImage } from "./get";
 
-export const FakeUser2 = ({ StateCard, ImageCard, profile }) => {
+export const FakeUser2 = ({ handleAction }) => {
   const [count, setCount] = useState(0);
   const { waveGame } = useSelector(selectGame);
-  const { profileUser1 } = useSelector(selectGame);
+  const { profileUser2 } = useSelector(selectGame);
   const [getCard, setGetCard] = useState([
     { image: require("../../../assets/deckofcard/5♠.png") },
     { image: require("../../../assets/deckofcard/5♠.png") },
   ]);
 
   useEffect(() => {
-    if (profileUser1.cards) {
-      setGetCard(getImage(profileUser1.cards));
+    if (profileUser2.cards) {
+      setGetCard(getImage(profileUser2.cards));
     }
   }, [waveGame]);
   useEffect(() => {
@@ -717,6 +717,21 @@ export const FakeUser2 = ({ StateCard, ImageCard, profile }) => {
     <View
       style={{ position: "absolute", bottom: "55%", left: "8%", zIndex: 4 }}
     >
+      <TouchableOpacity
+        onPress={() => {
+          handleAction("CHECK", 5000);
+        }}
+        style={{
+          position: "absolute",
+          top: "20%",
+          width: 50,
+          height: 50,
+          backgroundColor: "black",
+          zIndex: 20,
+        }}
+      >
+        <Text style={{ color: "white" }}>acTion</Text>
+      </TouchableOpacity>
       <View
         style={{
           display: "flex",
@@ -827,7 +842,7 @@ export const FakeUser2 = ({ StateCard, ImageCard, profile }) => {
           opacity: OpacityRanking,
         }}
       >
-        {profileUser1.cardRank}
+        {profileUser2.cardRank}
       </Animated.Text>
       {/* Win | Lose */}
       <Animated.View
@@ -844,7 +859,7 @@ export const FakeUser2 = ({ StateCard, ImageCard, profile }) => {
         <Image
           resizeMode="contain"
           source={
-            profileUser1[1]?.isWinner === false
+            profileUser2?.isWinner === false
               ? require("../../../assets/Lose.png")
               : require("../../../assets/Win.png")
           }
@@ -865,7 +880,7 @@ export const FakeUser2 = ({ StateCard, ImageCard, profile }) => {
         }}
       >
         {" "}
-        {profileUser1[1]?.id ? profileUser1[1]?.id : ""}
+        {profileUser2?.id ? profileUser2?.id : ""}
       </Text>
       <Text
         style={{
@@ -877,9 +892,9 @@ export const FakeUser2 = ({ StateCard, ImageCard, profile }) => {
           zIndex: 10,
         }}
       >
-        {profileUser1[1]?.chips > 1000
-          ? profileUser1[1]?.chips / 1000 + " k"
-          : profileUser1[1]?.chips}
+        {profileUser2?.chips > 1000
+          ? profileUser2?.chips / 1000 + " k"
+          : profileUser2?.chips}
       </Text>
       <Animated.Text
         style={{
@@ -891,7 +906,7 @@ export const FakeUser2 = ({ StateCard, ImageCard, profile }) => {
           opacity: OpacityBetChip,
         }}
       >
-        {profileUser1[1]?.betChips > 0 ? profileUser1[1]?.betChips : "22"}
+        {profileUser2?.betChips > 0 ? profileUser2?.betChips : "22"}
       </Animated.Text>
     </View>
   );

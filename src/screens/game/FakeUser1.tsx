@@ -9,6 +9,7 @@ import { gameAction, selectGame } from "./GameSlice";
 import { getImage } from "./get";
 
 export const FakeUser1 = ({ currentPlayer, handleAction }) => {
+  console.log(currentPlayer, "Fake1");
   const dispatch = useDispatch();
   const { room } = useContext(GameContext);
   const [trues, SetTrue] = useState(false);
@@ -744,7 +745,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction }) => {
     >
       <TouchableOpacity
         onPress={() => {
-          handleAction("CALL", 5000);
+          handleAction("RAISE", 5000);
         }}
         style={{
           position: "absolute",

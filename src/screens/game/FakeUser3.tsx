@@ -6,9 +6,9 @@ import { useSelector } from "react-redux";
 import { GetInterpolate } from "../../utils/getInterpolate";
 import { selectGame } from "./GameSlice";
 import { getImage } from "./get";
-export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
+export const FakeUser3 = ({ handleAction }) => {
   const [count, setCount] = useState(0);
-  const { profileUser1 } = useSelector(selectGame);
+  const { profileUser3 } = useSelector(selectGame);
   const { waveGame } = useSelector(selectGame);
   const [getCard, setGetCard] = useState([
     { image: require("../../../assets/deckofcard/5♠.png") },
@@ -35,8 +35,8 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
   const UnOpacity1 = useRef(new Animated.Value(0)).current;
   const UnOpacity2 = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    if (profileUser1.cards) {
-      setGetCard(getImage(profileUser1.cards));
+    if (profileUser3.cards) {
+      setGetCard(getImage(profileUser3.cards));
     }
   }, [waveGame]);
   useEffect(() => {
@@ -480,6 +480,21 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
           zIndex: 2,
         }}
       >
+        <TouchableOpacity
+          onPress={() => {
+            handleAction("CALL", 5000);
+          }}
+          style={{
+            position: "absolute",
+            top: "200%",
+            width: 50,
+            height: 50,
+            backgroundColor: "black",
+            zIndex: 45,
+          }}
+        >
+          <Text style={{ color: "white" }}>asdasdasd</Text>
+        </TouchableOpacity>
         <Image
           source={require("../../../assets/AvatarExample.png")}
           style={{
@@ -581,7 +596,7 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
           opacity: OpacityRanking,
         }}
       >
-        {profileUser1.cardRank}
+        {profileUser3.cardRank}
       </Animated.Text>
       {/* Win | Lose */}
       <Animated.View
@@ -598,7 +613,7 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
         <Image
           resizeMode="contain"
           source={
-            profileUser1?.isWinner === false
+            profileUser3?.isWinner === false
               ? require("../../../assets/Lose.png")
               : require("../../../assets/Win.png")
           }
@@ -618,7 +633,7 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
           zIndex: 5,
         }}
       >
-        {profileUser1[1]?.id ? profileUser1[1]?.id : ""}
+        {profileUser3?.id ? profileUser3?.id : ""}
       </Text>
       <Text
         style={{
@@ -630,9 +645,9 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
           zIndex: 10,
         }}
       >
-        {profileUser1[1]?.chips > 1000
-          ? profileUser1[1]?.chips / 1000 + " k"
-          : profileUser1[1]?.chips}
+        {profileUser3?.chips > 1000
+          ? profileUser3?.chips / 1000 + " k"
+          : profileUser3?.chips}
       </Text>
       <Animated.Text
         style={{
@@ -644,7 +659,7 @@ export const FakeUser3 = ({ StateCard, ImageCard, profile }) => {
           opacity: OpacityBetChip,
         }}
       >
-        {profileUser1[1]?.betChips > 0 ? profileUser1[1]?.betChips : "22k"}
+        {profileUser3?.betChips > 0 ? profileUser3?.betChips : "22k"}
       </Animated.Text>
     </View>
   );

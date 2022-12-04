@@ -39,12 +39,8 @@ const Game = (props: any) => {
   useEffect(() => {
     dispatch(gameAction.updateProfileUser(a.Total[a.PositionArray % 5]));
     dispatch(gameAction.updateProfileUser1(a.Total[(a.PositionArray + 1) % 5]));
-    dispatch(
-      gameAction.updateProfileUser2(a.Total[((a.PositionArray % 5) + 2) % 5])
-    );
-    dispatch(
-      gameAction.updateProfileUser3(a.Total[(a.PositionArray % 5) + (3 % 5)])
-    );
+    dispatch(gameAction.updateProfileUser2(a.Total[(a.PositionArray + 2) % 5]));
+    dispatch(gameAction.updateProfileUser3(a.Total[(a.PositionArray + 3) % 5]));
     dispatch(
       gameAction.updateProfileUser4(a.Total[(a.PositionArray % 5) + (4 % 5)])
     );
@@ -347,20 +343,33 @@ const Game = (props: any) => {
   ) => {
     room.send(actionType, Chip);
     const newarr = roundgame.filter((item) => item !== roundgame[0]);
-    // console.log(roundgame, " roundgame sau khi action");
+    if (
+      newarr.length === 1 &&
+      (actionType === "CHECK" ||
+        actionType === "CALL" ||
+        actionType === "ALLIN")
+    ) {
+      console.log("END turn");
+      console.log(roundgame);
+      console.log("actionType", actionType);
 
-    setPlayerWait(roundgame[0]);
-    setCurrent(newarr[0]);
+      dispatch(gameAction.updateWaveGame(waveGame + 1));
+    }
+
     if (actionType === "ALLIN" || actionType === "RAISE") {
-      setRoundGame([...newarr, ...playerWait]);
+      setRoundGame([...newarr, ...playerWait, roundgame[0]]);
+      setPlayerWait([]);
     } else {
+      setPlayerWait([...playerWait, roundgame[0]]);
       setRoundGame(newarr);
     }
 
-    // setPlayerWait([...playerWait, user.id]);
+    setCurrent(newarr[0]);
     // setRoundGame(newarr);
   };
-
+  const setPlayerAfterAction = (newValue) => {
+    console.log(roundgame, "new func");
+  };
   const handeEndTurn = () => {
     console.log("end turn");
 
@@ -396,12 +405,11 @@ const Game = (props: any) => {
   const OpacityBetChip = useRef(new Animated.Value(0)).current;
   const UnOpacity1 = useRef(new Animated.Value(0)).current;
   const UnOpacity2 = useRef(new Animated.Value(0)).current;
-  // console.log(roundgame, "roundgame2 nè");
-  console.log(room, "action check");
-  // console.log(playerWait, "playerWait nè");
-  // console.log(roundgame, "round nè");
-  // console.log(current, "current nè");
-
+  console.log(roundgame, "roundgame2 nè");
+  // console.log(room, "Checkroom");
+  // console.log(playerWait, "playerWait sau action");
+  // console.log(roundgame, "round sau action");
+  // console.log(current, "current sau action");
   return (
     <View
       style={{
@@ -507,9 +515,9 @@ const Game = (props: any) => {
       {/* User  */}
       <UserReal StateCard={count} handleAction={handlePlayerAction} />
       <FakeUser1 currentPlayer={current} handleAction={handlePlayerAction} />
-      {/* <FakeUser2 StateCard={count} currentPlayer={current} />
-      <FakeUser3 StateCard={count} currentPlayer={current} />
-      <FakeUser4 StateCard={count} currentPlayer={current} /> */}
+      <FakeUser2 handleAction={handlePlayerAction} />
+      <FakeUser3 handleAction={handlePlayerAction} />
+      {/* <FakeUser4 StateCard={count} currentPlayer={current} /> */}
       {/* Bet */}
       {/* {current === profileUser.id && ( */}
       <View

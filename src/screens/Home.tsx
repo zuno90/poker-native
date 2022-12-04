@@ -55,9 +55,29 @@ const Home: React.FC = (props: any) => {
       } else if (clients === 1) {
         try {
           const room = await client.joinById(roomId, infoUser);
+          const room2 = await client.joinById(roomId, {
+            betChips: 0,
+            id: "zuno-bot22",
+            isHost: false,
+            chips: 10000,
+            turn: 3,
+            role: "Bot",
+            cards: [],
+          });
+          const room3 = await client.joinById(roomId, {
+            betChips: 0,
+            id: "zuno-bot33",
+            isHost: false,
+            chips: 10000,
+            turn: 4,
+            role: "Bot",
+            cards: [],
+          });
 
           if (room) {
             roomContext.handleRoom(room);
+            roomContext.handleRoom(room2);
+            roomContext.handleRoom(room3);
 
             room && props.navigation.navigate("GAME");
           }
