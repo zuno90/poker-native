@@ -8,27 +8,41 @@ import { GetInterpolate } from "../../utils/getInterpolate";
 import { gameAction, selectGame } from "./GameSlice";
 import { getImage } from "./get";
 
-export const FakeUser1 = ({ ImageCard, profile }) => {
+export const FakeUser1 = ({ currentPlayer, handleAction }) => {
+  const { profileFake1 } = useContext(GameContext);
+
   const dispatch = useDispatch();
   const { room } = useContext(GameContext);
-  const [card, setCard] = useState([]);
-  const [totalCard, setTotalCard] = useState();
   const { profileUser1 } = useSelector(selectGame);
+
+  const { countDown } = useSelector(selectGame);
   const { waveGame } = useSelector(selectGame);
-  console.log(profileUser1, "profileUser1");
   const [getCard, setGetCard] = useState([
-    { image: require("../../../assets/deckofcard/♠5.png") },
-    { image: require("../../../assets/deckofcard/♠5.png") },
+    { image: require("../../../assets/deckofcard/5♠.png") },
+    { image: require("../../../assets/deckofcard/5♠.png") },
   ]);
   useEffect(() => {
     if (profileUser1.cards) {
       setGetCard(getImage(profileUser1.cards));
-      console.log(getCard, "get");
     }
   }, [waveGame]);
-  console.log(waveGame, "wave Game user1");
+  console.log(profileUser1, "Fake1");
 
+  useEffect(() => {
+    if (countDown > -1 && currentPlayer === profileUser1.id) {
+      setTimeout(() => {
+        dispatch(gameAction.updateCountdown(countDown - 1));
+      }, 1000);
+    } else {
+      Animated.timing(OpacityCountdown, {
+        toValue: 0,
+        useNativeDriver: false,
+        duration: 200,
+      });
+    }
+  }, [countDown]);
   const [count, setCount] = useState(0);
+
   useEffect(() => {
     if (waveGame % 7 == 0) {
       Animated.sequence([
@@ -628,39 +642,62 @@ export const FakeUser1 = ({ ImageCard, profile }) => {
         ])
       ).start();
     } else if (count % 2 == 0) {
-      Animated.sequence([
-        Animated.parallel([
-          Animated.timing(PositionVerticalChipBet, {
-            toValue: 1,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-          Animated.timing(PositionHorizontalChipBet, {
-            toValue: 1,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-        ]),
-        Animated.timing(OpacityBetChip, {
+    }
+  }, [count]);
+  useEffect(() => {
+    Animated.sequence([
+      Animated.timing(OpacityBetChip, {
+        toValue: 1,
+        useNativeDriver: false,
+        duration: 300,
+      }),
+      Animated.parallel([
+        Animated.timing(PositionVerticalChipBet, {
           toValue: 0,
           useNativeDriver: false,
           duration: 300,
         }),
-        Animated.parallel([
-          Animated.timing(PositionVerticalChipBet, {
-            toValue: -1,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-          Animated.timing(PositionHorizontalChipBet, {
-            toValue: -1,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-        ]),
-      ]).start();
-    }
-  }, [count]);
+        Animated.timing(PositionHorizontalChipBet, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 300,
+        }),
+      ]),
+    ]).start();
+  }, [profileUser1.chips]);
+  useEffect(() => {
+    Animated.sequence([
+      Animated.parallel([
+        Animated.timing(PositionVerticalChipBet, {
+          toValue: 1,
+          useNativeDriver: false,
+          duration: 300,
+        }),
+        Animated.timing(PositionHorizontalChipBet, {
+          toValue: 1,
+          useNativeDriver: false,
+          duration: 300,
+        }),
+      ]),
+      Animated.timing(OpacityBetChip, {
+        toValue: 0,
+        useNativeDriver: false,
+        duration: 300,
+      }),
+      Animated.parallel([
+        Animated.timing(PositionVerticalChipBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 300,
+        }),
+        Animated.timing(PositionHorizontalChipBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 300,
+        }),
+      ]),
+    ]).start();
+  }, [waveGame]);
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;
@@ -678,6 +715,7 @@ export const FakeUser1 = ({ ImageCard, profile }) => {
   const OpacityBetChip = useRef(new Animated.Value(0)).current;
   const OpacityWinLose = useRef(new Animated.Value(0)).current;
   const OpacityRanking = useRef(new Animated.Value(0)).current;
+  const OpacityCountdown = useRef(new Animated.Value(0)).current;
   const UnOpacity1 = useRef(new Animated.Value(0)).current;
   const UnOpacity2 = useRef(new Animated.Value(0)).current;
   const DegCard2 = GetInterpolate(RotateCard2, ["0deg", "0deg", "30deg"]);
@@ -720,7 +758,7 @@ export const FakeUser1 = ({ ImageCard, profile }) => {
     "-150%",
     "-450%",
   ]);
-  console.log(rightPercentCard2, "asd");
+
   return (
     <View
       style={{
@@ -730,6 +768,38 @@ export const FakeUser1 = ({ ImageCard, profile }) => {
         zIndex: 5,
       }}
     >
+      {currentPlayer === profileUser1.id && (
+        <TouchableOpacity
+          onPress={() => {
+            handleAction("CALL", { chips: 5000 }, profileFake1);
+          }}
+          style={{
+            position: "absolute",
+            top: "20%",
+            width: 50,
+            height: 50,
+            backgroundColor: "black",
+            zIndex: 20,
+          }}
+        >
+          <Text style={{ color: "white" }}>acTion</Text>
+        </TouchableOpacity>
+      )}
+
+      <Animated.Text
+        style={{
+          zIndex: 6,
+          fontSize: 60,
+          color: "white",
+          position: "absolute",
+          display: "flex",
+          top: -10,
+          left: 10,
+          opacity: countDown > -1 && currentPlayer === profileUser1.id ? 1 : 0,
+        }}
+      >
+        {countDown}
+      </Animated.Text>
       <View
         style={{
           display: "flex",

@@ -50,11 +50,20 @@ const Home: React.FC = (props: any) => {
         }
       } else if (clients === 1) {
         try {
-          const room = await client.joinById(roomId, infoUser);
+          const profileFake1 = await client.joinById(roomId, infoUser);
+          const profileFake2 = await client.joinById(roomId, {
+            betChips: 0,
+            id: "zuno-bot22",
+            isHost: false,
+            chips: 10000,
+            turn: 3,
+            role: "Bot",
+            cards: [],
+          });
 
           if (room) {
-            roomContext.handleRoom(room);
-
+            roomContext.handleProfileFake1(profileFake1);
+            roomContext.handleProfileFake2(profileFake2);
             room && props.navigation.navigate("GAME");
           }
         } catch (error) {

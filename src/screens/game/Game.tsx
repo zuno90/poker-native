@@ -1,12 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Room } from "colyseus.js";
 
 import { View } from "native-base";
 import * as Colyseus from "colyseus.js";
 import { GameContext } from "../../context/GameContext";
 import { Animated, TouchableOpacity, Image, Text, Alert } from "react-native";
-import { GetInterpolate } from "../../utils/getInterpolate";
-import { getImage } from "./get";
 import { FakeUser1, FakeUser2, FakeUser3, FakeUser4 } from "./index";
 import { BankerCard } from "./BankerCard";
 import { Action } from "./Action";
@@ -14,61 +12,59 @@ import { useDispatch, useSelector } from "react-redux";
 import { gameAction, selectGame } from "./GameSlice";
 import { useAuth } from "../../context/AuthContext";
 import { UserReal } from "./UserReal";
-
+interface ROOM_CHAT {
+  ROOM_CHAT: "ROOM_CHAT";
+  message: string;
+}
 const Game = (props: any) => {
   const { room } = useContext(GameContext);
   const {
     authState: { user },
   } = useAuth();
+  const { profileUser } = useSelector(selectGame);
+  const { roundGame } = useSelector(selectGame);
   const myroom = room as Room;
   const [totalCard, setTotalCard] = useState<any>([]);
+  const [senddata, setSenddata] = useState<any>(0);
   const dispatch = useDispatch();
-  const [Player, setPlayer] = useState<any>([]);
   const [bankerCard, setBankerCard] = useState<any>([]);
   let [count, setCount] = useState(1);
   const { waveGame } = useSelector(selectGame);
-
+  const [roundgame, setRoundGame] = useState(roundGame);
+  const [current, setCurrent] = useState<any>(null);
+  const [playerWait, setPlayerWait] = useState([]);
+  const [allowPlay, setAllowPlay] = useState<boolean>(false);
   const client = new Colyseus.Client("ws://175.41.154.239");
   const a = useSelector(selectGame);
-  let [TotalCardUser, setTotalCardUser] = useState([]);
-  const [profileUser, setprofileUser] = useState({
-    betChips: 0,
-    cards: [["3", "4"]],
-    chips: 10000,
-    connected: true,
-    id: "zuno-bot",
-    isFold: false,
-    isHost: false,
-    isWinner: false,
-    role: "Bot",
-    turn: 2,
-  });
 
   useEffect(() => {
-    setprofileUser(a.Total[a.PositionArray % 5]);
     dispatch(gameAction.updateProfileUser(a.Total[a.PositionArray % 5]));
     dispatch(gameAction.updateProfileUser1(a.Total[(a.PositionArray + 1) % 5]));
-    dispatch(gameAction.updateProfileUser2(a.Total[a.PositionArray % 5]));
-    dispatch(gameAction.updateProfileUser3(a.Total[a.PositionArray % 5]));
-    dispatch(gameAction.updateProfileUser4(a.Total[a.PositionArray % 5]));
-  }, [a.Total]);
-  console.log(a.Total);
+    dispatch(gameAction.updateProfileUser2(a.Total[(a.PositionArray + 2) % 5]));
+    dispatch(gameAction.updateProfileUser3(a.Total[(a.PositionArray + 3) % 5]));
+    dispatch(gameAction.updateProfileUser4(a.Total[(a.PositionArray + 4) % 5]));
+  }, [a]);
+  useEffect(() => {
+    setRoundGame(roundGame);
+  }, [waveGame]);
   useEffect(() => {
     try {
       if (room && room !== null) {
+        setSenddata(room);
+
         let countPositionArray = -1;
-        myroom.onStateChange((state) => {
+        room.onStateChange((state) => {
           for (let i of state.players.$items) {
             countPositionArray++;
             if (i[1].id === user.id) {
               dispatch(gameAction.updatePositionArray(countPositionArray));
             }
           }
+          countPositionArray = -1;
           let Arr = Array.from(
             state.players.$items,
             ([sessionId, Value]) => Value
           );
-          console.log(Arr, "Arr");
           dispatch(gameAction.updateTotal(Arr));
 
           for (let i of state.players.values()) {
@@ -90,6 +86,11 @@ const Game = (props: any) => {
         };
       } else {
         props.navigation.navigate("HOME");
+      }
+      if (user.id === current) {
+        setAllowPlay(true);
+      } else {
+        setAllowPlay(false);
       }
     } catch {
       console.log("Error");
@@ -152,6 +153,14 @@ const Game = (props: any) => {
   }, [count]);
   const handleReady = () => {
     myroom.send("START_GAME");
+    const object_array = myroom.state.players.$items;
+    const arr = Array.from(object_array, ([_, value]) => {
+      return value.id;
+    });
+    setCurrent(arr[0]);
+    setPlayerWait([]);
+    setRoundGame(arr);
+    // dispatch(gameAction.updateCurrentPlayer(arr[0]));
   };
   const handleLeaveRoom = () => {
     myroom.leave();
@@ -324,8 +333,46 @@ const Game = (props: any) => {
       }).start();
     }
   }, [count]);
-  // console.log(totalCard, "1232jkb");
-  // const a = useSelector(selectGame);
+
+  const handlePlayerAction = (
+    actionType: "CALL" | "FOLD" | "RAISE" | "CHECK" | "ALLIN" | "",
+    Chip,
+    profile
+  ) => {
+    // profileFake1.send("CALL", { chip: 5000 });
+    profile.send(actionType, Chip);
+    const newarr = roundgame.filter((item) => item !== roundgame[0]);
+    if (
+      newarr.length === 1 &&
+      (actionType === "CHECK" || actionType === "CALL")
+    ) {
+      actionType = "";
+      handeEndTurn();
+    }
+
+    if (actionType === "ALLIN" || actionType === "RAISE") {
+      setRoundGame([...newarr, ...playerWait, roundgame[0]]);
+      setPlayerWait([]);
+    } else {
+      setPlayerWait([...playerWait, roundgame[0]]);
+      setRoundGame(newarr);
+    }
+    setCurrent(newarr[0]);
+    // setRoundGame(newarr);
+  };
+  const handeEndTurn = () => {
+    const object_array = room.state.players.$items;
+    const arr = Array.from(object_array, ([_, value]) => {
+      return value.id;
+    });
+    setCurrent(arr[0]);
+
+    dispatch(gameAction.updateRoundGame(arr));
+    dispatch(gameAction.updateWaveGame(waveGame + 1));
+  };
+  // console.log(myroom, "CEhk");
+  // --- end of Quang code ----
+
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;
@@ -344,51 +391,6 @@ const Game = (props: any) => {
   const OpacityBetChip = useRef(new Animated.Value(0)).current;
   const UnOpacity1 = useRef(new Animated.Value(0)).current;
   const UnOpacity2 = useRef(new Animated.Value(0)).current;
-
-  const bottomPercentCard1 = GetInterpolate(PositionVerticalCard1, [
-    "5%",
-    "68%",
-    "5%",
-  ]);
-
-  const rightPercentCard1 = GetInterpolate(PositionHorizontalCard1, [
-    "5%",
-    "48%",
-    "42%",
-  ]);
-  const bottomPercentCard2 = GetInterpolate(PositionVerticalCard2, [
-    "5%",
-    "68%",
-    "8%",
-  ]);
-
-  const rightPercentCard2 = GetInterpolate(PositionHorizontalCard2, [
-    "5%",
-    "48%",
-    "37%",
-  ]);
-  const DegCard2 = GetInterpolate(RotateCard2, ["0deg", "0deg", "180deg"]);
-
-  const DegCard1 = GetInterpolate(RotateCard1, ["0deg", "0deg", "180deg"]);
-  const UnDegCard1 = GetInterpolate(UnRotateCard1, ["0deg", "-180deg", "0deg"]);
-  const UnDegCard2 = GetInterpolate(UnRotateCard2, ["0deg", "-180deg", "0deg"]);
-
-  const OpacityCard1 = GetInterpolate(Opacity1, [0, 0, 1]);
-  const OpacityCard2 = GetInterpolate(Opacity2, [0, 0, 1]);
-
-  const UnOpacityCard1 = GetInterpolate(UnOpacity1, [0, 0, 1]);
-  const UnOpacityCard2 = GetInterpolate(UnOpacity2, [0, 0, 1]);
-  const bottomPercentBetChip = GetInterpolate(PositionVerticalChipBet, [
-    "70%",
-    "-120%",
-    "-360%",
-  ]);
-  const rightPercentBetChip = GetInterpolate(PositionHorizontalChipBet, [
-    "60%",
-    "-220%",
-    "-220%",
-  ]);
-
   return (
     <View
       style={{
@@ -399,6 +401,34 @@ const Game = (props: any) => {
         flex: 1,
       }}
     >
+      <TouchableOpacity
+        onPress={() => {
+          handlePlayerAction("ALLIN", { chips: 5000 }, myroom);
+        }}
+        style={{
+          position: "absolute",
+          top: "20%",
+          width: 50,
+          height: 50,
+          backgroundColor: "black",
+          zIndex: 20,
+        }}
+      >
+        <Text style={{ color: "white" }}>ACtion</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={handleReady}
+        style={{
+          position: "absolute",
+          top: "40%",
+          width: 50,
+          height: 50,
+          backgroundColor: "black",
+          zIndex: 20,
+        }}
+      >
+        <Text style={{ color: "white" }}>Start Game</Text>
+      </TouchableOpacity>
       {/* Background */}
       <Image
         resizeMode="cover"
@@ -477,70 +507,74 @@ const Game = (props: any) => {
       </Text>
       <BankerCard ImageCard={bankerCard} />
       {/* User  */}
-      <UserReal StateCard={count} />
-      <FakeUser1 ImageCard={[""]} profile={Player[1]} />
-      {/* <FakeUser2 StateCard={count} ImageCard={[""]} profile={Player[1]} />
-      <FakeUser3 StateCard={count} ImageCard={[""]} profile={Player[1]} />
-      <FakeUser4 StateCard={count} ImageCard={[""]} profile={Player[1]} /> */}
+      <UserReal StateCard={count} handleAction={handlePlayerAction} />
+      <FakeUser1 currentPlayer={current} handleAction={handlePlayerAction} />
+      <FakeUser2 currentPlayer={current} handleAction={handlePlayerAction} />
+      <FakeUser3 handleAction={handlePlayerAction} />
+      {/* <FakeUser4 StateCard={count} currentPlayer={current} /> */}
       {/* Bet */}
-      <View
-        style={{
-          position: "absolute",
-          right: 0,
-          bottom: "-1%",
-          display: "flex",
-          width: "40%",
-          height: "17%",
-          flexDirection: "row",
-        }}
-      >
-        <Image
-          resizeMode="cover"
-          source={require("../../../assets/betFrame.png")}
-          style={{
-            width: "100%",
-            height: "100%",
-            zIndex: 6,
-            position: "absolute",
-          }}
-        />
+      {current === profileUser.id && (
         <View
           style={{
-            zIndex: 7,
-            width: "100%",
-            height: "100%",
+            position: "absolute",
+            right: 0,
+            bottom: "-1%",
             display: "flex",
+            width: "40%",
+            height: "17%",
             flexDirection: "row",
-            justifyContent: "space-around",
           }}
         >
-          {/* Call */}
-          <Action
-            ImageAction={require("../../../assets/Call.png")}
-            title="CALL"
-          />
-          {/* Check */}
-          <Action
-            ImageAction={require("../../../assets/Check.png")}
-            title="CHECK"
-          />
-          {/* FOLD */}
-          <Action
-            action={() => handleReady()}
-            ImageAction={require("../../../assets/Fold.png")}
-            title="FOLD"
-          />
-          {/* ALL In */}
-          <Action
-            action={() => {
-              setCount(count + 1);
-              dispatch(gameAction.updateWaveGame(waveGame + 1));
+          <Image
+            resizeMode="cover"
+            source={require("../../../assets/betFrame.png")}
+            style={{
+              width: "100%",
+              height: "100%",
+              zIndex: 6,
+              position: "absolute",
             }}
-            ImageAction={require("../../../assets/Allin.png")}
-            title="ALL IN"
           />
+          <View
+            style={{
+              zIndex: 7,
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-around",
+            }}
+          >
+            {/* Call */}
+            <Action
+              action={() => {
+                room.send("FOLD");
+              }}
+              ImageAction={require("../../../assets/Call.png")}
+              title="CALL"
+            />
+            {/* Check */}
+            <Action
+              ImageAction={require("../../../assets/Check.png")}
+              title="CHECK"
+            />
+            {/* FOLD */}
+            <Action
+              action={() => handleReady()}
+              ImageAction={require("../../../assets/Fold.png")}
+              title="FOLD"
+            />
+            {/* ALL In */}
+            <Action
+              action={() => {
+                dispatch(gameAction.updateWaveGame(waveGame + 1));
+              }}
+              ImageAction={require("../../../assets/Allin.png")}
+              title="ALL IN"
+            />
+          </View>
         </View>
-      </View>
+      )}
     </View>
   );
 };
