@@ -14,7 +14,7 @@ const gameSlice = createSlice({
       state.roundGame = action.payload;
     },
     updateCountdown(state, action: PayloadAction<any>) {
-      console.log(action.payload, "current");
+      // console.log(action.payload, "current");
       state.countDown = action.payload;
     },
     updateWaveGame(state, action: PayloadAction<any>) {

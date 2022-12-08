@@ -25,7 +25,7 @@ const Game = (props: any) => {
   const { roundGame } = useSelector(selectGame);
   const myroom = room as Room;
   const [totalCard, setTotalCard] = useState<any>([]);
-  const [senddata, setSenddata] = useState<any>(0);
+  const [highestBet, setHighestBet] = useState<number>(0);
   const dispatch = useDispatch();
   const [bankerCard, setBankerCard] = useState<any>([]);
   let [count, setCount] = useState(1);
@@ -50,8 +50,7 @@ const Game = (props: any) => {
   useEffect(() => {
     try {
       if (room && room !== null) {
-        setSenddata(room);
-
+        setHighestBet(room.state.highestBet);
         let countPositionArray = -1;
         room.onStateChange((state) => {
           for (let i of state.players.$items) {
@@ -151,6 +150,7 @@ const Game = (props: any) => {
       ]).start();
     }
   }, [count]);
+
   const handleReady = () => {
     myroom.send("START_GAME");
     const object_array = myroom.state.players.$items;
@@ -339,6 +339,7 @@ const Game = (props: any) => {
     Chip,
     profile
   ) => {
+    // console.log(profile, "asdjaois");
     // profileFake1.send("CALL", { chip: 5000 });
     profile.send(actionType, Chip);
     const newarr = roundgame.filter((item) => item !== roundgame[0]);
@@ -366,13 +367,17 @@ const Game = (props: any) => {
       return value.id;
     });
     setCurrent(arr[0]);
+    setPlayerWait([]);
 
     dispatch(gameAction.updateRoundGame(arr));
     dispatch(gameAction.updateWaveGame(waveGame + 1));
   };
-  // console.log(myroom, "CEhk");
   // --- end of Quang code ----
-
+  console.log(myroom, "myr");
+  console.log(highestBet, "highestBetjkas");
+  console.log(typeof profileUser.betChips, "betchips");
+  console.log(current, "curre");
+  console.log(roundgame, "round");
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;
@@ -550,24 +555,29 @@ const Game = (props: any) => {
               action={() => {
                 room.send("FOLD");
               }}
-              ImageAction={require("../../../assets/Call.png")}
-              title="CALL"
+              ImageAction={require("../../../assets/Fold.png")}
+              title="FOLD"
             />
             {/* Check */}
             <Action
+              action={() => {
+                handlePlayerAction("CHECK", { chips: 0 }, myroom);
+              }}
               ImageAction={require("../../../assets/Check.png")}
               title="CHECK"
             />
-            {/* FOLD */}
+            {/* Raise */}
             <Action
-              action={() => handleReady()}
-              ImageAction={require("../../../assets/Fold.png")}
-              title="FOLD"
+              action={() =>
+                handlePlayerAction("RAISE", { chips: highestBet + 100 }, myroom)
+              }
+              ImageAction={require("../../../assets/Raise.png")}
+              title="Raise"
             />
             {/* ALL In */}
             <Action
               action={() => {
-                dispatch(gameAction.updateWaveGame(waveGame + 1));
+                // dispatch(gameAction.updateWaveGame(waveGame + 1));
               }}
               ImageAction={require("../../../assets/Allin.png")}
               title="ALL IN"

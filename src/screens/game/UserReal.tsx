@@ -354,6 +354,62 @@ export const UserReal = ({ StateCard, handleAction }) => {
   //     ]).start();
   //   }
   // }, [count]);
+  useEffect(() => {
+    Animated.sequence([
+      Animated.parallel([
+        Animated.timing(PositionVerticalChipBet, {
+          toValue: 1,
+          useNativeDriver: false,
+          duration: 300,
+        }),
+        Animated.timing(PositionHorizontalChipBet, {
+          toValue: 1,
+          useNativeDriver: false,
+          duration: 300,
+        }),
+      ]),
+      Animated.timing(OpacityBetChip, {
+        toValue: 0,
+        useNativeDriver: false,
+        duration: 300,
+      }),
+      Animated.parallel([
+        Animated.timing(PositionVerticalChipBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 300,
+        }),
+        Animated.timing(PositionHorizontalChipBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 300,
+        }),
+      ]),
+    ]).start();
+  }, [waveGame]);
+  useEffect(() => {
+    Animated.sequence([
+      Animated.timing(OpacityBetChip, {
+        toValue: 1,
+        useNativeDriver: false,
+        duration: 300,
+      }),
+      Animated.parallel([
+        Animated.timing(PositionVerticalChipBet, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 300,
+        }),
+        Animated.timing(PositionHorizontalChipBet, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 300,
+        }),
+      ]),
+    ]).start();
+  }, [profileUser.chips]);
+  // console.log(profileUser, "Fake");
+
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;

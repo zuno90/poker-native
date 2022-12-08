@@ -375,10 +375,6 @@ const Home: React.FC = (props: any) => {
           >
             {user.username}
           </Text>
-          {/* <Text style={{ fontWeight: "bold" }}>
-            I am bold
-            <Text style={{ color: "red" }}>and red</Text>
-          </Text> */}
         </TouchableOpacity>
         <View
           style={{
@@ -414,49 +410,6 @@ const Home: React.FC = (props: any) => {
           </Text>
         </View>
       </View>
-
-      {/* <View
-          style={{
-            width: "100%",
-            height: "100%",
-            zIndex: 10000,
-            backgroundColor: "black",
-            position: "absolute",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Text color={"white"} fontSize={30}>
-            TEST SCREEN
-          </Text>
-          <Button marginBottom={6} onPress={getAvailableRooms}>
-            Get Room
-          </Button>
-          <Button marginBottom={6} onPress={createRoom}>
-            Create Room
-          </Button>
-
-          <View>
-            {rooms.length > 0 &&
-              rooms.map((item, index) => (
-                <View
-                  key={index}
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    flexDirection: "row",
-                    minWidth: 200,
-                  }}
-                >
-                  <Text fontSize={20} color={"white"}>
-                    {item.roomId}
-                  </Text>
-                  <Button onPress={() => joinRoom(item)}>Join</Button>
-                </View>
-              ))}
-          </View>
-        </View> */}
     </View>
   );
 };

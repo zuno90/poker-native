@@ -26,7 +26,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction }) => {
       setGetCard(getImage(profileUser1.cards));
     }
   }, [waveGame]);
-  console.log(profileUser1, "Fake1");
+  // console.log(profileUser1, "Fake1");
 
   useEffect(() => {
     if (countDown > -1 && currentPlayer === profileUser1.id) {
@@ -771,7 +771,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction }) => {
       {currentPlayer === profileUser1.id && (
         <TouchableOpacity
           onPress={() => {
-            handleAction("CALL", { chips: 5000 }, profileFake1);
+            handleAction("RAISE", { chips: 5000 }, profileFake1);
           }}
           style={{
             position: "absolute",
