@@ -10,7 +10,9 @@ const gameSlice = createSlice({
         state.Total = action.payload;
       }
     },
-
+    updateRoundGame(state, action: PayloadAction<any>) {
+      state.roundGame = action.payload;
+    },
     updateCountdown(state, action: PayloadAction<any>) {
       console.log(action.payload, "current");
       state.countDown = action.payload;

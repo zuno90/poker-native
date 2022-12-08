@@ -9,11 +9,12 @@ import { gameAction, selectGame } from "./GameSlice";
 import { getImage } from "./get";
 
 export const FakeUser1 = ({ currentPlayer, handleAction }) => {
-  console.log(currentPlayer, "Fake1");
+  const { profileFake1 } = useContext(GameContext);
+
   const dispatch = useDispatch();
   const { room } = useContext(GameContext);
-  const [trues, SetTrue] = useState(false);
   const { profileUser1 } = useSelector(selectGame);
+
   const { countDown } = useSelector(selectGame);
   const { waveGame } = useSelector(selectGame);
   const [getCard, setGetCard] = useState([
@@ -25,6 +26,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction }) => {
       setGetCard(getImage(profileUser1.cards));
     }
   }, [waveGame]);
+  console.log(profileUser1, "Fake1");
 
   useEffect(() => {
     if (countDown > -1 && currentPlayer === profileUser1.id) {
@@ -640,39 +642,62 @@ export const FakeUser1 = ({ currentPlayer, handleAction }) => {
         ])
       ).start();
     } else if (count % 2 == 0) {
-      Animated.sequence([
-        Animated.parallel([
-          Animated.timing(PositionVerticalChipBet, {
-            toValue: 1,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-          Animated.timing(PositionHorizontalChipBet, {
-            toValue: 1,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-        ]),
-        Animated.timing(OpacityBetChip, {
+    }
+  }, [count]);
+  useEffect(() => {
+    Animated.sequence([
+      Animated.timing(OpacityBetChip, {
+        toValue: 1,
+        useNativeDriver: false,
+        duration: 300,
+      }),
+      Animated.parallel([
+        Animated.timing(PositionVerticalChipBet, {
           toValue: 0,
           useNativeDriver: false,
           duration: 300,
         }),
-        Animated.parallel([
-          Animated.timing(PositionVerticalChipBet, {
-            toValue: -1,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-          Animated.timing(PositionHorizontalChipBet, {
-            toValue: -1,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-        ]),
-      ]).start();
-    }
-  }, [count]);
+        Animated.timing(PositionHorizontalChipBet, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 300,
+        }),
+      ]),
+    ]).start();
+  }, [profileUser1.chips]);
+  useEffect(() => {
+    Animated.sequence([
+      Animated.parallel([
+        Animated.timing(PositionVerticalChipBet, {
+          toValue: 1,
+          useNativeDriver: false,
+          duration: 300,
+        }),
+        Animated.timing(PositionHorizontalChipBet, {
+          toValue: 1,
+          useNativeDriver: false,
+          duration: 300,
+        }),
+      ]),
+      Animated.timing(OpacityBetChip, {
+        toValue: 0,
+        useNativeDriver: false,
+        duration: 300,
+      }),
+      Animated.parallel([
+        Animated.timing(PositionVerticalChipBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 300,
+        }),
+        Animated.timing(PositionHorizontalChipBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 300,
+        }),
+      ]),
+    ]).start();
+  }, [waveGame]);
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;
@@ -743,21 +768,24 @@ export const FakeUser1 = ({ currentPlayer, handleAction }) => {
         zIndex: 5,
       }}
     >
-      <TouchableOpacity
-        onPress={() => {
-          handleAction("RAISE", 5000);
-        }}
-        style={{
-          position: "absolute",
-          top: "20%",
-          width: 50,
-          height: 50,
-          backgroundColor: "black",
-          zIndex: 20,
-        }}
-      >
-        <Text style={{ color: "white" }}>acTion</Text>
-      </TouchableOpacity>
+      {currentPlayer === profileUser1.id && (
+        <TouchableOpacity
+          onPress={() => {
+            handleAction("CALL", { chips: 5000 }, profileFake1);
+          }}
+          style={{
+            position: "absolute",
+            top: "20%",
+            width: 50,
+            height: 50,
+            backgroundColor: "black",
+            zIndex: 20,
+          }}
+        >
+          <Text style={{ color: "white" }}>acTion</Text>
+        </TouchableOpacity>
+      )}
+
       <Animated.Text
         style={{
           zIndex: 6,

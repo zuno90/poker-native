@@ -21,6 +21,7 @@ interface init {
   waveGame: number;
   currentPlayer?: string;
   countDown: number;
+  roundGame: Array<string>;
 }
 export const GAME_INIT: init = {
   Total: [],
@@ -33,4 +34,5 @@ export const GAME_INIT: init = {
   waveGame: 0,
   countDown: 9,
   currentPlayer: "",
+  roundGame: [],
 };

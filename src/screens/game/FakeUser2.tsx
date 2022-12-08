@@ -1,16 +1,19 @@
 import { View } from "native-base";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import { Animated, Image, Text, TouchableOpacity } from "react-native";
 import { useSelector } from "react-redux";
+import { GameContext } from "../../context/GameContext";
 import { GetInterpolate } from "../../utils/getInterpolate";
 import { selectGame } from "./GameSlice";
 import { getImage } from "./get";
 
-export const FakeUser2 = ({ handleAction }) => {
+export const FakeUser2 = ({ currentPlayer, handleAction }) => {
   const [count, setCount] = useState(0);
   const { waveGame } = useSelector(selectGame);
   const { profileUser2 } = useSelector(selectGame);
+  const { profileFake2 } = useContext(GameContext);
+
   const [getCard, setGetCard] = useState([
     { image: require("../../../assets/deckofcard/5♠.png") },
     { image: require("../../../assets/deckofcard/5♠.png") },
@@ -717,21 +720,24 @@ export const FakeUser2 = ({ handleAction }) => {
     <View
       style={{ position: "absolute", bottom: "55%", left: "8%", zIndex: 4 }}
     >
-      <TouchableOpacity
-        onPress={() => {
-          handleAction("CHECK", 5000);
-        }}
-        style={{
-          position: "absolute",
-          top: "20%",
-          width: 50,
-          height: 50,
-          backgroundColor: "black",
-          zIndex: 20,
-        }}
-      >
-        <Text style={{ color: "white" }}>acTion</Text>
-      </TouchableOpacity>
+      {currentPlayer === profileUser2.id && (
+        <TouchableOpacity
+          onPress={() => {
+            // profileFake2.send("CALL", { chip: 5000 });
+            handleAction("CALL", { chips: 5000 }, profileFake2);
+          }}
+          style={{
+            position: "absolute",
+            top: "20%",
+            width: 50,
+            height: 50,
+            backgroundColor: "black",
+            zIndex: 20,
+          }}
+        >
+          <Text style={{ color: "white" }}>acTion</Text>
+        </TouchableOpacity>
+      )}
       <View
         style={{
           display: "flex",

@@ -3,11 +3,13 @@ import { View } from "native-base";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Animated, Image, Text, TouchableOpacity } from "react-native";
 import { useSelector } from "react-redux";
+import { GameContext } from "../../context/GameContext";
 import { GetInterpolate } from "../../utils/getInterpolate";
 import { selectGame } from "./GameSlice";
 import { getImage } from "./get";
 export const FakeUser3 = ({ handleAction }) => {
   const [count, setCount] = useState(0);
+  const { profileFake3 } = useContext(GameContext);
   const { profileUser3 } = useSelector(selectGame);
   const { waveGame } = useSelector(selectGame);
   const [getCard, setGetCard] = useState([
@@ -468,6 +470,7 @@ export const FakeUser3 = ({ handleAction }) => {
     "150%",
     "400%",
   ]);
+
   return (
     <View style={{ position: "absolute", bottom: "55%", right: "4%" }}>
       <View
@@ -482,7 +485,8 @@ export const FakeUser3 = ({ handleAction }) => {
       >
         <TouchableOpacity
           onPress={() => {
-            handleAction("CALL", 5000);
+            // handleAction("RAISE", { chips: 5000, id: "ạdháhdjkhkádukahsd" });
+            profileFake3.send("CALL", 5000);
           }}
           style={{
             position: "absolute",

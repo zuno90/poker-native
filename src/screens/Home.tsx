@@ -26,7 +26,6 @@ const Home: React.FC = (props: any) => {
   const roomContext = useContext(GameContext);
 
   const client = new Colyseus.Client("ws://175.41.154.239");
-
   const getAvailableRooms = async (infoUser?: InfoUser) => {
     const room = await client.getAvailableRooms("desk");
     if (room.length !== 0) {
@@ -40,13 +39,10 @@ const Home: React.FC = (props: any) => {
           cards: [],
         };
         try {
-          // console.log("afdsafdsafsd", roomId);
-
           const room = await client.joinById(roomId, params);
 
           if (room) {
             roomContext.handleRoom(room);
-
             room && props.navigation.navigate("GAME");
           }
         } catch (error) {
@@ -54,8 +50,8 @@ const Home: React.FC = (props: any) => {
         }
       } else if (clients === 1) {
         try {
-          const room = await client.joinById(roomId, infoUser);
-          const room2 = await client.joinById(roomId, {
+          const profileFake1 = await client.joinById(roomId, infoUser);
+          const profileFake2 = await client.joinById(roomId, {
             betChips: 0,
             id: "zuno-bot22",
             isHost: false,
@@ -64,21 +60,10 @@ const Home: React.FC = (props: any) => {
             role: "Bot",
             cards: [],
           });
-          const room3 = await client.joinById(roomId, {
-            betChips: 0,
-            id: "zuno-bot33",
-            isHost: false,
-            chips: 10000,
-            turn: 4,
-            role: "Bot",
-            cards: [],
-          });
 
           if (room) {
-            roomContext.handleRoom(room);
-            roomContext.handleRoom(room2);
-            roomContext.handleRoom(room3);
-
+            roomContext.handleProfileFake1(profileFake1);
+            roomContext.handleProfileFake2(profileFake2);
             room && props.navigation.navigate("GAME");
           }
         } catch (error) {
