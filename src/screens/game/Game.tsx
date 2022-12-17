@@ -22,10 +22,12 @@ const Game = (props: any) => {
     authState: { user },
   } = useAuth();
   const { profileUser } = useSelector(selectGame);
+  const { currentBetChips } = useSelector(selectGame);
+  const { highBetWave } = useSelector(selectGame);
   const { roundGame } = useSelector(selectGame);
   const myroom = room as Room;
   const [totalCard, setTotalCard] = useState<any>([]);
-  const [highestBet, setHighestBet] = useState<number>(0);
+  const [highestBet, setHighestBet] = useState<number>(100);
   const dispatch = useDispatch();
   const [bankerCard, setBankerCard] = useState<any>([]);
   let [count, setCount] = useState(1);
@@ -33,6 +35,7 @@ const Game = (props: any) => {
   const [roundgame, setRoundGame] = useState(roundGame);
   const [current, setCurrent] = useState<any>(null);
   const [playerWait, setPlayerWait] = useState([]);
+  const { isRunning } = useSelector(selectGame);
   const [allowPlay, setAllowPlay] = useState<boolean>(false);
   const client = new Colyseus.Client("ws://175.41.154.239");
   const a = useSelector(selectGame);
@@ -46,11 +49,46 @@ const Game = (props: any) => {
   }, [a]);
   useEffect(() => {
     setRoundGame(roundGame);
+    setHighestBet(100);
+
+    switch (waveGame % 7) {
+      case 0:
+        dispatch(gameAction.updateCurrentBetChips(100));
+        break;
+      case 4:
+        setTimeout(() => {
+          dispatch(gameAction.updateWaveGame(waveGame + 1));
+        }, 3000);
+        break;
+      case 5:
+        myroom.send("FINISH_GAME", "");
+
+        setTimeout(() => {
+          dispatch(gameAction.updateWaveGame(waveGame + 1));
+          dispatch(gameAction.updateHighBetWave(0));
+        }, 3000);
+        break;
+      case 6:
+        myroom.send("RESET_GAME", "");
+        setTimeout(() => {
+          dispatch(gameAction.updateIsRunning(false));
+        }, 5000);
+        break;
+
+      default:
+        break;
+    }
+    dispatch(gameAction.updateCurrentBetChips(profileUser.betChips));
   }, [waveGame]);
+  // useEffect(() => {
+  //   if (currentBetChips <= profileUser.betChips) {
+  //     dispatch(gameAction.updateCurrentBetChips(profileUser.betChips));
+  //   }
+  //   console.log("in effect");
+  // }, [profileUser]);
   useEffect(() => {
     try {
       if (room && room !== null) {
-        setHighestBet(room.state.highestBet);
         let countPositionArray = -1;
         room.onStateChange((state) => {
           for (let i of state.players.$items) {
@@ -153,6 +191,8 @@ const Game = (props: any) => {
 
   const handleReady = () => {
     myroom.send("START_GAME");
+    dispatch(gameAction.updateCurrentBetChips(100));
+
     const object_array = myroom.state.players.$items;
     const arr = Array.from(object_array, ([_, value]) => {
       return value.id;
@@ -160,7 +200,6 @@ const Game = (props: any) => {
     setCurrent(arr[0]);
     setPlayerWait([]);
     setRoundGame(arr);
-    // dispatch(gameAction.updateCurrentPlayer(arr[0]));
   };
   const handleLeaveRoom = () => {
     myroom.leave();
@@ -333,51 +372,75 @@ const Game = (props: any) => {
       }).start();
     }
   }, [count]);
+  useEffect(() => {
+    if (!isRunning) {
+      console.log(isRunning, "runnnig effect");
 
+      setTimeout(() => {
+        console.log("Start games");
+        handleReady();
+        dispatch(gameAction.updateIsRunning(true));
+        if (waveGame > 0) {
+          dispatch(gameAction.updateWaveGame(waveGame + 1));
+        }
+      }, 1000);
+    }
+  }, [isRunning]);
+
+  // myroom.onMessage("CONGRATULATION", (message) => {
+  //   console.log(message, "mess back");
+  // });
+  // console.log(room.onMessageHandlers.events.CONGRATULATION, "muyrom");
   const handlePlayerAction = (
     actionType: "CALL" | "FOLD" | "RAISE" | "CHECK" | "ALLIN" | "",
     Chip,
-    profile
+    profile,
+    profileUser
   ) => {
-    // console.log(profile, "asdjaois");
-    // profileFake1.send("CALL", { chip: 5000 });
     profile.send(actionType, Chip);
+
     const newarr = roundgame.filter((item) => item !== roundgame[0]);
     if (
       newarr.length === 1 &&
       (actionType === "CHECK" || actionType === "CALL")
     ) {
       actionType = "";
-      handeEndTurn();
+      handeEndTurn(profileUser);
     }
-
+    setCurrent(newarr[0]);
+    if (profileUser.betChips > highBetWave) {
+      dispatch(gameAction.updateHighBetWave(currentBetChips));
+    }
     if (actionType === "ALLIN" || actionType === "RAISE") {
+      setHighestBet(highestBet * 2);
       setRoundGame([...newarr, ...playerWait, roundgame[0]]);
       setPlayerWait([]);
+      dispatch(gameAction.updateCurrentBetChips(currentBetChips + highestBet));
     } else {
       setPlayerWait([...playerWait, roundgame[0]]);
       setRoundGame(newarr);
     }
-    setCurrent(newarr[0]);
-    // setRoundGame(newarr);
+    dispatch(gameAction.updateCountdown(9));
+    dispatch(
+      gameAction.updateRandomCountdown(Math.floor(Math.random() * 7) + 1)
+    );
   };
-  const handeEndTurn = () => {
+  const handeEndTurn = (profileUserBack) => {
+    console.log(profileUserBack, "profile end turn");
     const object_array = room.state.players.$items;
     const arr = Array.from(object_array, ([_, value]) => {
       return value.id;
     });
     setCurrent(arr[0]);
     setPlayerWait([]);
-
     dispatch(gameAction.updateRoundGame(arr));
     dispatch(gameAction.updateWaveGame(waveGame + 1));
+    dispatch(gameAction.updateWaveChipTotal(profileUserBack.betChips));
   };
   // --- end of Quang code ----
-  console.log(myroom, "myr");
-  console.log(highestBet, "highestBetjkas");
-  console.log(typeof profileUser.betChips, "betchips");
-  console.log(current, "curre");
-  console.log(roundgame, "round");
+
+  // console.log(myroom, "waveGame");
+
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;
@@ -396,6 +459,18 @@ const Game = (props: any) => {
   const OpacityBetChip = useRef(new Animated.Value(0)).current;
   const UnOpacity1 = useRef(new Animated.Value(0)).current;
   const UnOpacity2 = useRef(new Animated.Value(0)).current;
+  // console.log(highestBet, "hight");
+  useEffect(() => {
+    if (myroom) {
+      myroom.onMessage("FINISH_GAME", (message) => {
+        console.log(message, "mess back  finish game");
+      });
+      myroom.onMessage("RESET_GAME", (message) => {
+        console.log(message, "mess back  RESET_GAME game");
+      });
+    }
+  }, [myroom]);
+  // console.log(room);
   return (
     <View
       style={{
@@ -408,7 +483,7 @@ const Game = (props: any) => {
     >
       <TouchableOpacity
         onPress={() => {
-          handlePlayerAction("ALLIN", { chips: 5000 }, myroom);
+          myroom.send("FINISH_GAME", "");
         }}
         style={{
           position: "absolute",
@@ -421,7 +496,7 @@ const Game = (props: any) => {
       >
         <Text style={{ color: "white" }}>ACtion</Text>
       </TouchableOpacity>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={handleReady}
         style={{
           position: "absolute",
@@ -431,9 +506,7 @@ const Game = (props: any) => {
           backgroundColor: "black",
           zIndex: 20,
         }}
-      >
-        <Text style={{ color: "white" }}>Start Game</Text>
-      </TouchableOpacity>
+      ></TouchableOpacity> */}
       {/* Background */}
       <Image
         resizeMode="cover"
@@ -441,7 +514,7 @@ const Game = (props: any) => {
         style={{ width: "101%", height: "101%" }}
       />
       {/* QuitRoom */}
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={handleLeaveRoom}
         style={{
           position: "absolute",
@@ -459,7 +532,7 @@ const Game = (props: any) => {
           resizeMode="contain"
           source={require("../../../assets/QuitRoom.png")}
         />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <TouchableOpacity
         style={{
           position: "absolute",
@@ -501,10 +574,10 @@ const Game = (props: any) => {
       {/* TotalBet */}
       <Text
         style={{
-          top: "25%",
+          top: "24%",
           color: "white",
           position: "absolute",
-          fontSize: 20,
+          fontSize: 16,
           zIndex: 6,
         }}
       >
@@ -513,9 +586,18 @@ const Game = (props: any) => {
       <BankerCard ImageCard={bankerCard} />
       {/* User  */}
       <UserReal StateCard={count} handleAction={handlePlayerAction} />
-      <FakeUser1 currentPlayer={current} handleAction={handlePlayerAction} />
-      <FakeUser2 currentPlayer={current} handleAction={handlePlayerAction} />
-      <FakeUser3 handleAction={handlePlayerAction} />
+      <FakeUser1
+        currentPlayer={current}
+        handleAction={handlePlayerAction}
+        currentChips={currentBetChips}
+      />
+      <FakeUser2
+        highestBet={highestBet}
+        currentPlayer={current}
+        handleAction={handlePlayerAction}
+        currentChips={currentBetChips}
+      />
+      {/* <FakeUser3 handleAction={handlePlayerAction} /> */}
       {/* <FakeUser4 StateCard={count} currentPlayer={current} /> */}
       {/* Bet */}
       {current === profileUser.id && (
@@ -553,7 +635,7 @@ const Game = (props: any) => {
             {/* Call */}
             <Action
               action={() => {
-                room.send("FOLD");
+                handlePlayerAction("FOLD", { chips: 0 }, myroom, profileUser);
               }}
               ImageAction={require("../../../assets/Fold.png")}
               title="FOLD"
@@ -561,7 +643,7 @@ const Game = (props: any) => {
             {/* Check */}
             <Action
               action={() => {
-                handlePlayerAction("CHECK", { chips: 0 }, myroom);
+                handlePlayerAction("CHECK", { chips: 0 }, myroom, profileUser);
               }}
               ImageAction={require("../../../assets/Check.png")}
               title="CHECK"
@@ -569,7 +651,14 @@ const Game = (props: any) => {
             {/* Raise */}
             <Action
               action={() =>
-                handlePlayerAction("RAISE", { chips: highestBet + 100 }, myroom)
+                handlePlayerAction(
+                  "RAISE",
+                  {
+                    chips: currentBetChips - profileUser.betChips + highestBet,
+                  },
+                  myroom,
+                  profileUser
+                )
               }
               ImageAction={require("../../../assets/Raise.png")}
               title="Raise"
@@ -577,7 +666,15 @@ const Game = (props: any) => {
             {/* ALL In */}
             <Action
               action={() => {
-                // dispatch(gameAction.updateWaveGame(waveGame + 1));
+                dispatch(gameAction.updateWaveGame(waveGame + 1));
+                // handlePlayerAction(
+                //   "RAISE",
+                //   {
+                //     chips: profileUser.chips,
+                //   },
+                //   myroom,
+                //   profileUser
+                // );
               }}
               ImageAction={require("../../../assets/Allin.png")}
               title="ALL IN"

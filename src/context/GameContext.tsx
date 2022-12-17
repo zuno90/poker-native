@@ -4,7 +4,7 @@ import { createContext, useState } from "react";
 export const GameContext = createContext<any>({});
 
 const GameContextProvider = ({ children }: { children: React.ReactNode }) => {
-  const [room, setRoom] = useState<Room>(null);
+  const [room, setRoom] = useState<Room>();
   const [profileFake1, setProfileFake1] = useState<Room>(null);
   const [profileFake2, setProfileFake2] = useState<Room>(null);
   const handleRoom = (value: Room) => {

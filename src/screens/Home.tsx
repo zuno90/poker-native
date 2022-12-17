@@ -7,8 +7,8 @@ import { Text, Image, Button } from "native-base";
 
 import { useAuth } from "../context/AuthContext";
 import { GameContext } from "../context/GameContext";
-import { selectGame } from "./game/GameSlice";
-import { useSelector } from "react-redux";
+import { gameAction, selectGame } from "./game/GameSlice";
+import { useDispatch, useSelector } from "react-redux";
 interface InfoUser {
   id?: string;
   isHost?: false;
@@ -24,11 +24,11 @@ const Home: React.FC = (props: any) => {
     signOut,
   } = useAuth();
   const roomContext = useContext(GameContext);
-
+  const dispatch = useDispatch();
   const client = new Colyseus.Client("ws://175.41.154.239");
   const getAvailableRooms = async (infoUser?: InfoUser) => {
     const room = await client.getAvailableRooms("desk");
-    if (room.length !== 0) {
+    if (room.length !== 0 && room !== null) {
       const { clients, roomId } = room[0];
       if (clients <= 4 && clients > 1) {
         const params = {
@@ -41,7 +41,7 @@ const Home: React.FC = (props: any) => {
         try {
           const room = await client.joinById(roomId, params);
 
-          if (room) {
+          if (room && room !== null) {
             roomContext.handleRoom(room);
             room && props.navigation.navigate("GAME");
           }
@@ -61,9 +61,10 @@ const Home: React.FC = (props: any) => {
             cards: [],
           });
 
-          if (room) {
+          if (room && room !== null) {
             roomContext.handleProfileFake1(profileFake1);
             roomContext.handleProfileFake2(profileFake2);
+            dispatch(gameAction.updateIsRunning(false));
             room && props.navigation.navigate("GAME");
           }
         } catch (error) {
@@ -89,7 +90,7 @@ const Home: React.FC = (props: any) => {
 
     const room = await client.joinOrCreate("desk", params);
 
-    if (room) {
+    if (room && room !== null) {
       getAvailableRooms({
         betChips: 0,
         id: "zuno-bot",

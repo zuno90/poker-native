@@ -13,11 +13,11 @@ import { getImage } from "./get";
 
 export const UserReal = ({ StateCard, handleAction }) => {
   const dispatch = useDispatch();
-  const [card, setCard] = useState([]);
-  const [totalCard, setTotalCard] = useState();
   const { profileUser } = useSelector(selectGame);
   const { waveGame } = useSelector(selectGame);
-
+  const { currentBetChips } = useSelector(selectGame);
+  const { highBetWave } = useSelector(selectGame);
+  console.log(highBetWave, "hightbet");
   const handleReady = () => {
     myroom.send("START_GAME");
   };
@@ -97,6 +97,26 @@ export const UserReal = ({ StateCard, handleAction }) => {
   //     }
   //   }, [StateCard]);
   useEffect(() => {
+    Animated.sequence([
+      Animated.parallel([
+        Animated.timing(PositionVerticalTotalBet, {
+          useNativeDriver: false,
+          toValue: 0,
+          duration: 300,
+        }),
+        Animated.timing(PositionHorizontalTotalBet, {
+          useNativeDriver: false,
+          toValue: 0,
+          duration: 300,
+        }),
+      ]),
+
+      Animated.timing(OpacityTotalBetChip, {
+        useNativeDriver: false,
+        toValue: 0,
+        duration: 300,
+      }),
+    ]).start();
     if (waveGame % 7 == 0) {
       Animated.sequence([
         Animated.sequence([
@@ -354,39 +374,7 @@ export const UserReal = ({ StateCard, handleAction }) => {
   //     ]).start();
   //   }
   // }, [count]);
-  useEffect(() => {
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(PositionVerticalChipBet, {
-          toValue: 1,
-          useNativeDriver: false,
-          duration: 300,
-        }),
-        Animated.timing(PositionHorizontalChipBet, {
-          toValue: 1,
-          useNativeDriver: false,
-          duration: 300,
-        }),
-      ]),
-      Animated.timing(OpacityBetChip, {
-        toValue: 0,
-        useNativeDriver: false,
-        duration: 300,
-      }),
-      Animated.parallel([
-        Animated.timing(PositionVerticalChipBet, {
-          toValue: -1,
-          useNativeDriver: false,
-          duration: 300,
-        }),
-        Animated.timing(PositionHorizontalChipBet, {
-          toValue: -1,
-          useNativeDriver: false,
-          duration: 300,
-        }),
-      ]),
-    ]).start();
-  }, [waveGame]);
+
   useEffect(() => {
     Animated.sequence([
       Animated.timing(OpacityBetChip, {
@@ -398,25 +386,70 @@ export const UserReal = ({ StateCard, handleAction }) => {
         Animated.timing(PositionVerticalChipBet, {
           toValue: 0,
           useNativeDriver: false,
-          duration: 300,
+          duration: 200,
         }),
         Animated.timing(PositionHorizontalChipBet, {
           toValue: 0,
           useNativeDriver: false,
-          duration: 300,
+          duration: 200,
+        }),
+        Animated.timing(PositionVerticalTotalBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 200,
+        }),
+        Animated.timing(PositionHorizontalTotalBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 200,
+        }),
+      ]),
+      Animated.parallel([
+        Animated.timing(OpacityBetChip, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 50,
+        }),
+        Animated.timing(OpacityTotalBetChip, {
+          delay: 100,
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 100,
+        }),
+      ]),
+      Animated.timing(OpacityTotalBetChip, {
+        delay: 100,
+
+        toValue: 1,
+        useNativeDriver: false,
+        duration: 30,
+      }),
+
+      Animated.parallel([
+        Animated.timing(PositionVerticalChipBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 50,
+        }),
+        Animated.timing(PositionHorizontalChipBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 50,
         }),
       ]),
     ]).start();
-  }, [profileUser.chips]);
+  }, [profileUser.betChips]);
   // console.log(profileUser, "Fake");
 
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;
+  const PositionVerticalTotalBet = useRef(new Animated.Value(-1)).current;
   const PositionVerticalRanking = useRef(new Animated.Value(-1)).current;
   const PositionHorizontalCard1 = useRef(new Animated.Value(0)).current;
   const PositionHorizontalCard2 = useRef(new Animated.Value(0)).current;
   const PositionHorizontalChipBet = useRef(new Animated.Value(0)).current;
+  const PositionHorizontalTotalBet = useRef(new Animated.Value(-1)).current;
   const PositionHorizontalRanking = useRef(new Animated.Value(0)).current;
   const SizeCard1 = useRef(new Animated.Value(35)).current;
   const SizeCard2 = useRef(new Animated.Value(35)).current;
@@ -428,6 +461,7 @@ export const UserReal = ({ StateCard, handleAction }) => {
   const Opacity2 = useRef(new Animated.Value(0)).current;
   const OpacityWinLose = useRef(new Animated.Value(0)).current;
   const OpacityBetChip = useRef(new Animated.Value(0)).current;
+  const OpacityTotalBetChip = useRef(new Animated.Value(0)).current;
   const OpacityRanking = useRef(new Animated.Value(0)).current;
   const UnOpacity1 = useRef(new Animated.Value(0)).current;
   const UnOpacity2 = useRef(new Animated.Value(0)).current;
@@ -478,15 +512,25 @@ export const UserReal = ({ StateCard, handleAction }) => {
   const UnOpacityCard2 = GetInterpolate(UnOpacity2, [0, 0, 1]);
   const bottomPercentBetChip = GetInterpolate(PositionVerticalChipBet, [
     "70%",
-    "-120%",
+    "-100%",
     "-360%",
   ]);
   const rightPercentBetChip = GetInterpolate(PositionHorizontalChipBet, [
-    "60%",
+    "120%",
+    "-120%",
+    "-220%",
+  ]);
+  const bottomPercentTotalBet = GetInterpolate(PositionVerticalTotalBet, [
+    "-120%",
+    "-360%",
+    "-360%",
+  ]);
+  const rightPercentTotalBet = GetInterpolate(PositionHorizontalTotalBet, [
+    "-220%",
     "-220%",
     "-220%",
   ]);
-
+  // console.log(rightPercentBetChip, "bottom");
   return (
     <View
       style={{
@@ -638,18 +682,34 @@ export const UserReal = ({ StateCard, handleAction }) => {
           }}
         />
         {/* chip Bet */}
+        <Animated.Image
+          source={require("../../../assets/chip.png")}
+          style={{
+            width: 20,
+            height: 20,
+            top: bottomPercentBetChip,
+            right: rightPercentBetChip,
+            opacity: OpacityBetChip,
+            position: "absolute",
+          }}
+        />
+        {/* total bet */}
         <Animated.Text
           style={{
             color: "white",
             position: "absolute",
-            top: bottomPercentBetChip,
-            right: rightPercentBetChip,
+            top: bottomPercentTotalBet,
+            right: rightPercentTotalBet,
             width: 70,
             zIndex: 10,
-            opacity: OpacityBetChip,
+            opacity: OpacityTotalBetChip,
           }}
         >
-          {profileUser ? profileUser.betChips / 1000 + " k" : "0k"}
+          {profileUser
+            ? profileUser.betChips - highBetWave === 0
+              ? ""
+              : profileUser.betChips - highBetWave
+            : ""}
         </Animated.Text>
         {/* Chip user */}
         <View

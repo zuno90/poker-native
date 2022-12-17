@@ -10,12 +10,26 @@ const gameSlice = createSlice({
         state.Total = action.payload;
       }
     },
+    updateCurrentBetChips(state, action: PayloadAction<number>) {
+      state.currentBetChips = action.payload;
+    },
+    updateWaveChipTotal(state, action: PayloadAction<number>) {
+      state.waveChipTotal = action.payload;
+    },
     updateRoundGame(state, action: PayloadAction<any>) {
       state.roundGame = action.payload;
     },
+    updateHighBetWave(state, action: PayloadAction<any>) {
+      state.highBetWave = action.payload;
+    },
     updateCountdown(state, action: PayloadAction<any>) {
-      // console.log(action.payload, "current");
       state.countDown = action.payload;
+    },
+    updateIsRunning(state, action: PayloadAction<any>) {
+      state.isRunning = action.payload;
+    },
+    updateRandomCountdown(state, action: PayloadAction<any>) {
+      state.randomCountDown = action.payload;
     },
     updateWaveGame(state, action: PayloadAction<any>) {
       state.waveGame = action.payload;

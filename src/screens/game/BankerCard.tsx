@@ -326,7 +326,7 @@ export const BankerCard = ({ ImageCard }) => {
     <View
       style={{
         position: "absolute",
-        bottom: "48%",
+        bottom: "50%",
         display: "flex",
         flexDirection: "row",
       }}

@@ -483,7 +483,7 @@ export const FakeUser3 = ({ handleAction }) => {
           zIndex: 2,
         }}
       >
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => {
             // handleAction("RAISE", { chips: 5000, id: "ạdháhdjkhkádukahsd" });
             profileFake3.send("CALL", 5000);
@@ -498,7 +498,7 @@ export const FakeUser3 = ({ handleAction }) => {
           }}
         >
           <Text style={{ color: "white" }}>asdasdasd</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <Image
           source={require("../../../assets/AvatarExample.png")}
           style={{

@@ -2,18 +2,28 @@ import { View } from "native-base";
 
 import { useEffect, useRef, useState, useContext } from "react";
 import { Animated, Image, Text, TouchableOpacity } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { GameContext } from "../../context/GameContext";
 import { GetInterpolate } from "../../utils/getInterpolate";
-import { selectGame } from "./GameSlice";
+import { gameAction, selectGame } from "./GameSlice";
 import { getImage } from "./get";
 
-export const FakeUser2 = ({ currentPlayer, handleAction }) => {
+export const FakeUser2 = ({
+  currentPlayer,
+  handleAction,
+  currentChips,
+  highestBet,
+}) => {
+  const { highBetWave } = useSelector(selectGame);
+
   const [count, setCount] = useState(0);
   const { waveGame } = useSelector(selectGame);
   const { profileUser2 } = useSelector(selectGame);
   const { profileFake2 } = useContext(GameContext);
-
+  const { currentBetChips } = useSelector(selectGame);
+  const { countDown } = useSelector(selectGame);
+  const { randomCountDown } = useSelector(selectGame);
+  const dispatch = useDispatch();
   const [getCard, setGetCard] = useState([
     { image: require("../../../assets/deckofcard/5♠.png") },
     { image: require("../../../assets/deckofcard/5♠.png") },
@@ -25,6 +35,58 @@ export const FakeUser2 = ({ currentPlayer, handleAction }) => {
     }
   }, [waveGame]);
   useEffect(() => {
+    if (countDown > -1 && currentPlayer === profileUser2.id) {
+      const timer = setTimeout(
+        () => {
+          dispatch(gameAction.updateCountdown(countDown - 1));
+        },
+        countDown === 9 ? 2000 : 1000
+      );
+      if (countDown === randomCountDown) {
+        // console.log(Math.floor(Math.random() * 9), "Random");
+        handleAction(
+          "CALL",
+          { chips: currentBetChips - profileUser2.betChips },
+          profileFake2,
+          profileUser2
+        );
+        clearTimeout(timer);
+      }
+    } else {
+      Animated.timing(OpacityCountdown, {
+        toValue: 0,
+        useNativeDriver: false,
+        duration: 200,
+      });
+    }
+  }, [countDown, currentPlayer]);
+  // useEffect(() => {
+  //   if (currentBetChips <= profileUser2.betChips) {
+  //     dispatch(gameAction.updateCurrentBetChips(profileUser2.betChips));
+  //   }
+  // }, [profileUser2]);
+  // console.log(currentChips, "current Fake 2");
+  useEffect(() => {
+    Animated.sequence([
+      Animated.parallel([
+        Animated.timing(PositionVerticalTotalBet, {
+          useNativeDriver: false,
+          toValue: 0,
+          duration: 300,
+        }),
+        Animated.timing(PositionHorizontalTotalBet, {
+          useNativeDriver: false,
+          toValue: 0,
+          duration: 300,
+        }),
+      ]),
+
+      Animated.timing(OpacityTotalBetChip, {
+        useNativeDriver: false,
+        toValue: 0,
+        duration: 300,
+      }),
+    ]).start();
     if (waveGame % 7 == 0) {
       Animated.sequence([
         Animated.sequence([
@@ -710,13 +772,78 @@ export const FakeUser2 = ({ currentPlayer, handleAction }) => {
       ]),
     ]).start();
   }, [profileUser2.chips]);
+  useEffect(() => {
+    Animated.sequence([
+      Animated.timing(OpacityBetChip, {
+        toValue: 1,
+        useNativeDriver: false,
+        duration: 300,
+      }),
+      Animated.parallel([
+        Animated.timing(PositionVerticalChipBet, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 200,
+        }),
+        Animated.timing(PositionHorizontalChipBet, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 200,
+        }),
+        Animated.timing(PositionVerticalTotalBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 200,
+        }),
+        Animated.timing(PositionHorizontalTotalBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 200,
+        }),
+      ]),
+      Animated.parallel([
+        Animated.timing(OpacityBetChip, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 50,
+        }),
+        Animated.timing(OpacityTotalBetChip, {
+          delay: 100,
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 100,
+        }),
+      ]),
+      Animated.timing(OpacityTotalBetChip, {
+        delay: 100,
+        toValue: 1,
+        useNativeDriver: false,
+        duration: 30,
+      }),
 
+      Animated.parallel([
+        Animated.timing(PositionVerticalChipBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 50,
+        }),
+        Animated.timing(PositionHorizontalChipBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 50,
+        }),
+      ]),
+    ]).start();
+  }, [profileUser2.betChips]);
+  // console.log(currentBetChips, "fake2");
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;
+  const PositionVerticalTotalBet = useRef(new Animated.Value(-1)).current;
   const PositionHorizontalCard1 = useRef(new Animated.Value(0)).current;
   const PositionHorizontalCard2 = useRef(new Animated.Value(0)).current;
   const PositionHorizontalChipBet = useRef(new Animated.Value(0)).current;
+  const PositionHorizontalTotalBet = useRef(new Animated.Value(-1)).current;
   const SizeCard1 = useRef(new Animated.Value(40)).current;
   const SizeCard2 = useRef(new Animated.Value(40)).current;
   const RotateCard1 = useRef(new Animated.Value(180)).current;
@@ -726,6 +853,7 @@ export const FakeUser2 = ({ currentPlayer, handleAction }) => {
   const Opacity1 = useRef(new Animated.Value(0)).current;
   const Opacity2 = useRef(new Animated.Value(0)).current;
   const OpacityWinLose = useRef(new Animated.Value(0)).current;
+  const OpacityCountdown = useRef(new Animated.Value(0)).current;
   const UnOpacity1 = useRef(new Animated.Value(0)).current;
   const UnOpacity2 = useRef(new Animated.Value(0)).current;
   const OpacityRanking = useRef(new Animated.Value(0)).current;
@@ -739,27 +867,28 @@ export const FakeUser2 = ({ currentPlayer, handleAction }) => {
   const OpacityCard1 = GetInterpolate(Opacity1, [0, 0, 1]);
   const OpacityCard2 = GetInterpolate(Opacity2, [0, 0, 1]);
   const OpacityBetChip = useRef(new Animated.Value(0)).current;
+  const OpacityTotalBetChip = useRef(new Animated.Value(0)).current;
   const UnOpacityCard1 = GetInterpolate(UnOpacity1, [0, 0, 1]);
   const UnOpacityCard2 = GetInterpolate(UnOpacity2, [0, 0, 1]);
   const topPercentCard1 = GetInterpolate(PositionVerticalCard1, [
-    "-35%",
+    "0%",
     "0%",
     "0%",
   ]);
   const rightPercentCard1 = GetInterpolate(PositionHorizontalCard1, [
-    "-850%",
-    "85%",
-    "0%",
+    "-0%", //none
+    "75%",
+    "-40%",
   ]);
   const topPercentCard2 = GetInterpolate(PositionVerticalCard2, [
-    "-35%",
+    "0%",
     "0%",
     "0%",
   ]);
   const rightPercentCard2 = GetInterpolate(PositionHorizontalCard2, [
-    "-850%",
+    "-0%", //none
     "85%",
-    "0%",
+    "-40%",
   ]);
   const bottomPercentBetChip = GetInterpolate(PositionVerticalChipBet, [
     "25%",
@@ -771,53 +900,75 @@ export const FakeUser2 = ({ currentPlayer, handleAction }) => {
     "120%",
     "380%",
   ]);
+  const bottomPercentTotalBet = GetInterpolate(PositionVerticalTotalBet, [
+    "40%",
+    "75%",
+    "0%", //none
+  ]);
+  const leftPercentTotalBet = GetInterpolate(PositionHorizontalTotalBet, [
+    "220%",
+    "380%",
+    "0%", //none
+  ]);
   return (
     <View
-      style={{ position: "absolute", bottom: "55%", left: "8%", zIndex: 4 }}
+      style={{ position: "absolute", bottom: "60%", left: "8%", zIndex: 4 }}
     >
-      {currentPlayer === profileUser2.id && (
-        <TouchableOpacity
-          onPress={() => {
-            // profileFake2.send("CALL", { chip: 5000 });
-            handleAction("CALL", { chips: 5000 }, profileFake2);
-          }}
-          style={{
-            position: "absolute",
-            top: "20%",
-            width: 50,
-            height: 50,
-            backgroundColor: "black",
-            zIndex: 20,
-          }}
-        >
-          <Text style={{ color: "white" }}>acTion</Text>
-        </TouchableOpacity>
-      )}
+      {/* {currentPlayer === profileUser2.id && ( */}
+      {/* <TouchableOpacity
+        onPress={() => {
+          // profileFake2.send("CALL", { chip: 5000 });
+          handleAction(
+            "RAISE",
+            { chips: currentBetChips - profileUser2.betChips },
+            profileFake2,
+            profileUser2
+          );
+        }}
+        style={{
+          position: "absolute",
+          top: "20%",
+          width: 50,
+          height: 50,
+          backgroundColor: "black",
+          zIndex: 20,
+        }}
+      >
+        <Text style={{ color: "white" }}>acTion</Text>
+      </TouchableOpacity> */}
+      {/* )} */}
+
+      {/* countdown */}
+      <Animated.Text
+        style={{
+          zIndex: 6,
+          fontSize: 60,
+          color: "white",
+          position: "absolute",
+          display: "flex",
+          top: -10,
+          left: 10,
+          opacity: countDown > -1 && currentPlayer === profileUser2.id ? 1 : 0,
+        }}
+      >
+        {countDown}
+      </Animated.Text>
+      {/* Card */}
       <View
         style={{
           display: "flex",
           flexDirection: "row",
-
           width: 50,
           height: 60,
-          zIndex: 2,
+          zIndex: 6,
         }}
       >
-        <Image
-          source={require("../../../assets/AvatarExample.png")}
-          style={{
-            width: 60,
-            height: 60,
-            position: "absolute",
-            zIndex: 13,
-          }}
-        />
         <View style={{ position: "relative", marginLeft: 28 }}>
           {/* Close */}
           <Animated.View
             style={{
               position: "absolute",
-              zIndex: 2,
+              zIndex: 8,
               width: SizeCard1,
               height: SizeCard1,
               transform: [{ rotateZ: DegCard1 }],
@@ -835,10 +986,10 @@ export const FakeUser2 = ({ currentPlayer, handleAction }) => {
           {/* Open */}
           <Animated.View
             style={{
-              zIndex: 2,
+              zIndex: 8,
               width: SizeCard1,
               height: SizeCard1,
-              transform: [{ rotateZ: DegCard1 }],
+              transform: [{ rotateZ: UnDegCard1 }],
               opacity: UnOpacityCard1,
               top: topPercentCard1,
               right: rightPercentCard1,
@@ -856,7 +1007,7 @@ export const FakeUser2 = ({ currentPlayer, handleAction }) => {
           <Animated.View
             style={{
               position: "absolute",
-              zIndex: 2,
+              zIndex: 8,
               width: SizeCard2,
               height: SizeCard2,
               transform: [{ rotateZ: DegCard2 }],
@@ -874,7 +1025,7 @@ export const FakeUser2 = ({ currentPlayer, handleAction }) => {
           {/* OpenCard2 */}
           <Animated.View
             style={{
-              zIndex: 2,
+              zIndex: 8,
               width: SizeCard2,
               height: SizeCard2,
               transform: [{ rotateY: UnDegCard2 }],
@@ -891,13 +1042,14 @@ export const FakeUser2 = ({ currentPlayer, handleAction }) => {
           </Animated.View>
         </View>
       </View>
+      {/* Ranking */}
       <Animated.Text
         style={{
           fontWeight: "500",
           color: "white",
           position: "absolute",
-          bottom: -10,
-          left: "0%",
+          bottom: -50,
+          left: "50%",
           width: 150,
           zIndex: 13,
           opacity: OpacityRanking,
@@ -913,7 +1065,7 @@ export const FakeUser2 = ({ currentPlayer, handleAction }) => {
           height: 150,
           zIndex: 14,
           top: "-60%",
-          right: "-50%",
+          left: "-60%",
           opacity: OpacityWinLose,
         }}
       >
@@ -930,45 +1082,95 @@ export const FakeUser2 = ({ currentPlayer, handleAction }) => {
           }}
         />
       </Animated.View>
-      <Text
-        numberOfLines={1}
+      {/* profile + chipbet */}
+
+      <View
         style={{
-          color: "white",
-          bottom: 0,
-          width: 80,
-          overflow: "hidden",
-          height: 20,
-        }}
-      >
-        {" "}
-        {profileUser2?.id ? profileUser2?.id : ""}
-      </Text>
-      <Text
-        style={{
-          color: "white",
+          width: 50,
+          height: 60,
+          zIndex: 5,
           position: "absolute",
-          bottom: 20,
-          width: 70,
-          left: -38,
-          zIndex: 10,
         }}
       >
-        {profileUser2?.chips > 1000
-          ? profileUser2?.chips / 1000 + " k"
-          : profileUser2?.chips}
-      </Text>
-      <Animated.Text
-        style={{
-          color: "white",
-          position: "absolute",
-          zIndex: 4,
-          bottom: bottomPercentBetChip,
-          left: leftPercentBetChip,
-          opacity: OpacityBetChip,
-        }}
-      >
-        {profileUser2?.betChips > 0 ? profileUser2?.betChips : "22"}
-      </Animated.Text>
+        {/* Avatar */}
+        <Image
+          source={require("../../../assets/AvatarExample.png")}
+          style={{
+            width: 60,
+            height: 60,
+            position: "absolute",
+          }}
+        />
+        {/* id */}
+        <Text
+          numberOfLines={1}
+          style={{
+            color: "white",
+            bottom: -60,
+            width: 80,
+            overflow: "hidden",
+            height: 20,
+          }}
+        >
+          {profileUser2?.id ? profileUser2?.id : ""}
+        </Text>
+        {/* chip user */}
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            bottom: -20,
+            left: -60,
+            width: 100,
+            zIndex: 10,
+            alignItems: "center",
+          }}
+        >
+          <Image
+            resizeMode="contain"
+            source={require("../../../assets/Coins.png")}
+            style={{
+              width: 20,
+              height: 20,
+            }}
+          />
+          <Text
+            style={{
+              color: "white",
+              fontSize: 12,
+            }}
+          >
+            {profileUser2 ? profileUser2.chips : "0"}
+          </Text>
+        </View>
+        {/* chip Bet  */}
+        <Animated.Image
+          source={require("../../../assets/chip.png")}
+          style={{
+            width: 20,
+            height: 20,
+            bottom: bottomPercentBetChip,
+            right: leftPercentBetChip,
+            opacity: OpacityBetChip,
+            position: "absolute",
+          }}
+        />
+        {/* total bet */}
+        <Animated.Text
+          style={{
+            color: "white",
+            position: "absolute",
+            zIndex: 4,
+            bottom: bottomPercentTotalBet,
+            left: leftPercentTotalBet,
+            opacity: OpacityTotalBetChip,
+          }}
+        >
+          {profileUser2?.betChips > 0
+            ? profileUser2?.betChips - highBetWave
+            : ""}
+        </Animated.Text>
+      </View>
     </View>
   );
 };
