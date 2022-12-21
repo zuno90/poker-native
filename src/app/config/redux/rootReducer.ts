@@ -1,7 +1,7 @@
-import gameReducer from "../../../screens/game/GameSlice";
+import gameReducer from "../../../module/game/GameSlice";
 
 const rootReducer = {
-  game: gameReducer,
+  game: gameReducer
 };
 
 export default rootReducer;
