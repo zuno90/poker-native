@@ -14,7 +14,7 @@ export const BankerCard = ({ ImageCard }) => {
   const { waveGame } = useSelector(selectGame);
 
   useEffect(() => {
-    if (waveGame % 7 === 1) {
+    if (waveGame % 8 === 2) {
       Animated.sequence([
         Animated.sequence([
           Animated.parallel([
@@ -138,7 +138,7 @@ export const BankerCard = ({ ImageCard }) => {
           ]),
         ]),
       ]).start();
-    } else if (waveGame % 7 == 6) {
+    } else if (waveGame % 8 == 7) {
       Animated.parallel([
         Animated.timing(PositionVerticalCard1, {
           useNativeDriver: false,
@@ -251,7 +251,7 @@ export const BankerCard = ({ ImageCard }) => {
       ]).start();
     }
   }, [waveGame]);
-
+  // console.log(waveGame % 8, "wave Banker");
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard3 = useRef(new Animated.Value(0)).current;
@@ -269,9 +269,9 @@ export const BankerCard = ({ ImageCard }) => {
   const UnRotateCard2 = useRef(new Animated.Value(0)).current;
   const UnRotateCard3 = useRef(new Animated.Value(0)).current;
 
-  const Opacity1 = useRef(new Animated.Value(0)).current;
-  const Opacity2 = useRef(new Animated.Value(0)).current;
-  const Opacity3 = useRef(new Animated.Value(0)).current;
+  const Opacity1 = useRef(new Animated.Value(-1)).current;
+  const Opacity2 = useRef(new Animated.Value(-1)).current;
+  const Opacity3 = useRef(new Animated.Value(-1)).current;
 
   const UnOpacity1 = useRef(new Animated.Value(0)).current;
   const UnOpacity2 = useRef(new Animated.Value(0)).current;

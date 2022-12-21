@@ -8,7 +8,7 @@ export const BankerCard5 = ({ ImageBanker5 }) => {
   const { waveGame } = useSelector(selectGame);
 
   useEffect(() => {
-    if (waveGame % 7 == 3) {
+    if (waveGame % 8 == 4) {
       Animated.sequence([
         Animated.parallel([
           Animated.timing(SizeCard5, {
@@ -50,7 +50,7 @@ export const BankerCard5 = ({ ImageBanker5 }) => {
           }),
         ]),
       ]).start();
-    } else if (waveGame % 7 == 6) {
+    } else if (waveGame % 8 == 7) {
       Animated.parallel([
         Animated.timing(RotateCard5, {
           useNativeDriver: false,

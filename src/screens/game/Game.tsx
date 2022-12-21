@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import { Room } from "colyseus.js";
 
 import { View } from "native-base";
@@ -29,14 +29,14 @@ const Game = (props: any) => {
   const [totalCard, setTotalCard] = useState<any>([]);
   const [highestBet, setHighestBet] = useState<number>(100);
   const dispatch = useDispatch();
+  const { countDown } = useSelector(selectGame);
   const [bankerCard, setBankerCard] = useState<any>([]);
-  let [count, setCount] = useState(1);
   const { waveGame } = useSelector(selectGame);
-  const [roundgame, setRoundGame] = useState(roundGame);
+  const [roundgame, setRoundGame] = useState([]);
   const [current, setCurrent] = useState<any>(null);
   const [playerWait, setPlayerWait] = useState([]);
   const { isRunning } = useSelector(selectGame);
-  const [allowPlay, setAllowPlay] = useState<boolean>(false);
+  const { countDownStartGame } = useSelector(selectGame);
   const client = new Colyseus.Client("ws://175.41.154.239");
   const a = useSelector(selectGame);
 
@@ -47,45 +47,59 @@ const Game = (props: any) => {
     dispatch(gameAction.updateProfileUser3(a.Total[(a.PositionArray + 3) % 5]));
     dispatch(gameAction.updateProfileUser4(a.Total[(a.PositionArray + 4) % 5]));
   }, [a]);
+
   useEffect(() => {
     setRoundGame(roundGame);
+    setCurrent(roundGame[0]);
+    setPlayerWait([]);
     setHighestBet(100);
 
-    switch (waveGame % 7) {
-      case 0:
+    switch (waveGame) {
+      case -1:
         dispatch(gameAction.updateCurrentBetChips(100));
-        break;
-      case 4:
         setTimeout(() => {
-          dispatch(gameAction.updateWaveGame(waveGame + 1));
+          dispatch(gameAction.updateWaveGame(0));
+        }, 3000);
+
+        break;
+      case 0:
+        setTimeout(() => {
+          dispatch(gameAction.updateWaveGame(1));
         }, 3000);
         break;
       case 5:
-        myroom.send("FINISH_GAME", "");
-
         setTimeout(() => {
-          dispatch(gameAction.updateWaveGame(waveGame + 1));
-          dispatch(gameAction.updateHighBetWave(0));
+          dispatch(gameAction.updateWaveGame(6));
         }, 3000);
         break;
       case 6:
+        myroom.send("FINISH_GAME", "");
+
+        setTimeout(() => {
+          dispatch(gameAction.updateWaveGame(7));
+          dispatch(gameAction.updateHighBetWave(0));
+        }, 3000);
+        break;
+      case 7:
         myroom.send("RESET_GAME", "");
         setTimeout(() => {
           dispatch(gameAction.updateIsRunning(false));
+          setTimeout(() => {
+            dispatch(gameAction.updateWaveGame(8));
+          }, 1000);
         }, 5000);
+
         break;
 
       default:
         break;
     }
+    if (profileUser.betChips > highBetWave) {
+      dispatch(gameAction.updateHighBetWave(profileUser.betChips));
+    }
+
     dispatch(gameAction.updateCurrentBetChips(profileUser.betChips));
   }, [waveGame]);
-  // useEffect(() => {
-  //   if (currentBetChips <= profileUser.betChips) {
-  //     dispatch(gameAction.updateCurrentBetChips(profileUser.betChips));
-  //   }
-  //   console.log("in effect");
-  // }, [profileUser]);
   useEffect(() => {
     try {
       if (room && room !== null) {
@@ -116,6 +130,12 @@ const Game = (props: any) => {
         myroom.onLeave((code) => {
           console.log("we left you idiot");
           props.navigation.navigate("HOME");
+          dispatch(gameAction.updateWaveGame(-2));
+          setRoundGame([]);
+          setCurrent([]);
+          setPlayerWait([]);
+          dispatch(gameAction.updateHighBetWave(0));
+          dispatch(gameAction.updateCountdownStartGame(9));
         });
 
         return () => {
@@ -124,342 +144,101 @@ const Game = (props: any) => {
       } else {
         props.navigation.navigate("HOME");
       }
-      if (user.id === current) {
-        setAllowPlay(true);
-      } else {
-        setAllowPlay(false);
-      }
     } catch {
       console.log("Error");
     }
   }, [room]);
   useEffect(() => {
-    if (count % 2 == 1) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(OpacityWinLose, {
-            toValue: 0.8,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-          Animated.timing(OpacityWinLose, {
-            toValue: 1,
-            useNativeDriver: false,
-            duration: 1000,
-          }),
-          Animated.timing(OpacityWinLose, {
-            toValue: 0.2,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-        ])
-      ).start();
-    } else if (count % 2 == 0) {
-      Animated.sequence([
-        Animated.parallel([
-          Animated.timing(PositionVerticalChipBet, {
-            toValue: 1,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-          Animated.timing(PositionHorizontalChipBet, {
-            toValue: 1,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-        ]),
-        Animated.timing(OpacityBetChip, {
-          toValue: 0,
-          useNativeDriver: false,
-          duration: 300,
-        }),
-        Animated.parallel([
-          Animated.timing(PositionVerticalChipBet, {
-            toValue: -1,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-          Animated.timing(PositionHorizontalChipBet, {
-            toValue: -1,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-        ]),
-      ]).start();
+    // if (profileUser !== undefined) {
+    //   if (profileUser.cards.length !== undefined)
+    //     dispatch(gameAction.updateWaveGame(1));
+    // }
+    console.log(profileUser);
+  }, [profileUser]);
+  useEffect(() => {
+    setTimeout(() => {
+      handleReady();
+    }, 6000);
+  }, [isRunning]);
+  const handleReady = async () => {
+    if (myroom && myroom !== null) {
+      console.log("STart game");
+      myroom.send("START_GAME");
+
+      const object_array = myroom.state.players.$items;
+      const arr = Array.from(object_array, ([_, value]) => {
+        return value.id;
+      });
+      console.log(arr, "check arr");
+      dispatch(gameAction.updateRoundGame(arr));
     }
-  }, [count]);
-
-  const handleReady = () => {
-    myroom.send("START_GAME");
-    dispatch(gameAction.updateCurrentBetChips(100));
-
-    const object_array = myroom.state.players.$items;
-    const arr = Array.from(object_array, ([_, value]) => {
-      return value.id;
-    });
-    setCurrent(arr[0]);
-    setPlayerWait([]);
-    setRoundGame(arr);
   };
   const handleLeaveRoom = () => {
     myroom.leave();
   };
-
-  useEffect(() => {
-    if (count % 6 == 1) {
-      Animated.sequence([
-        Animated.sequence([
-          Animated.parallel([
-            Animated.timing(SizeCard1, {
-              delay: 700,
-              useNativeDriver: false,
-              toValue: 90,
-              duration: 300,
-            }),
-            Animated.timing(PositionVerticalCard1, {
-              useNativeDriver: false,
-              delay: 700,
-
-              toValue: 1,
-              duration: 300,
-            }),
-            Animated.timing(PositionHorizontalCard1, {
-              useNativeDriver: false,
-              delay: 700,
-
-              toValue: 1,
-              duration: 300,
-            }),
-          ]),
-          Animated.parallel([
-            Animated.timing(RotateCard1, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-            Animated.timing(UnRotateCard1, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-            Animated.timing(Opacity1, {
-              useNativeDriver: false,
-              toValue: 0,
-              duration: 400,
-            }),
-            Animated.timing(UnOpacity1, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-          ]),
-        ]),
-        Animated.sequence([
-          Animated.parallel([
-            Animated.timing(SizeCard2, {
-              useNativeDriver: false,
-              toValue: 90,
-              duration: 300,
-            }),
-            Animated.timing(PositionVerticalCard2, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 300,
-            }),
-
-            Animated.timing(PositionHorizontalCard2, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 300,
-            }),
-          ]),
-          Animated.parallel([
-            Animated.timing(RotateCard2, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-            Animated.timing(UnRotateCard2, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-            Animated.timing(Opacity2, {
-              useNativeDriver: false,
-              toValue: 0,
-              duration: 400,
-            }),
-            Animated.timing(UnOpacity2, {
-              useNativeDriver: false,
-              toValue: 1,
-              duration: 400,
-            }),
-          ]),
-        ]),
-      ]).start();
-    } else if (count % 6 == 0) {
-      Animated.timing(SizeCard1, {
-        useNativeDriver: false,
-        toValue: 10,
-        duration: 300,
-      }).start();
-      Animated.timing(SizeCard2, {
-        useNativeDriver: false,
-        toValue: 10,
-        duration: 300,
-      }).start();
-      Animated.timing(PositionVerticalCard1, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-      Animated.timing(PositionHorizontalCard1, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-
-      Animated.timing(PositionVerticalCard2, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-
-      Animated.timing(PositionHorizontalCard2, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-      Animated.timing(RotateCard1, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-      Animated.timing(UnRotateCard1, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 400,
-      }).start();
-      Animated.timing(RotateCard2, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-      Animated.timing(UnRotateCard2, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 400,
-      }).start();
-      Animated.timing(Opacity1, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-      Animated.timing(UnOpacity1, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-      Animated.timing(Opacity2, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-      Animated.timing(UnOpacity2, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }).start();
-    }
-  }, [count]);
-  useEffect(() => {
-    if (!isRunning) {
-      console.log(isRunning, "runnnig effect");
-
-      setTimeout(() => {
-        console.log("Start games");
-        handleReady();
-        dispatch(gameAction.updateIsRunning(true));
-        if (waveGame > 0) {
-          dispatch(gameAction.updateWaveGame(waveGame + 1));
-        }
-      }, 1000);
-    }
-  }, [isRunning]);
-
   // myroom.onMessage("CONGRATULATION", (message) => {
   //   console.log(message, "mess back");
   // });
   // console.log(room.onMessageHandlers.events.CONGRATULATION, "muyrom");
-  const handlePlayerAction = (
-    actionType: "CALL" | "FOLD" | "RAISE" | "CHECK" | "ALLIN" | "",
-    Chip,
-    profile,
-    profileUser
-  ) => {
-    profile.send(actionType, Chip);
+  const handlePlayerAction = useCallback(
+    (
+      actionType: "CALL" | "FOLD" | "RAISE" | "CHECK" | "ALLIN" | "",
+      Chip,
+      profile,
+      profileUser
+    ) => {
+      if (profile && profile !== null) {
+        profile.send(actionType, Chip);
 
-    const newarr = roundgame.filter((item) => item !== roundgame[0]);
-    if (
-      newarr.length === 1 &&
-      (actionType === "CHECK" || actionType === "CALL")
-    ) {
-      actionType = "";
-      handeEndTurn(profileUser);
-    }
-    setCurrent(newarr[0]);
-    if (profileUser.betChips > highBetWave) {
-      dispatch(gameAction.updateHighBetWave(currentBetChips));
-    }
-    if (actionType === "ALLIN" || actionType === "RAISE") {
-      setHighestBet(highestBet * 2);
-      setRoundGame([...newarr, ...playerWait, roundgame[0]]);
-      setPlayerWait([]);
-      dispatch(gameAction.updateCurrentBetChips(currentBetChips + highestBet));
-    } else {
-      setPlayerWait([...playerWait, roundgame[0]]);
-      setRoundGame(newarr);
-    }
-    dispatch(gameAction.updateCountdown(9));
-    dispatch(
-      gameAction.updateRandomCountdown(Math.floor(Math.random() * 7) + 1)
-    );
-  };
+        const newarr = roundgame.filter((item) => item !== roundgame[0]);
+        if (
+          newarr.length === 0 &&
+          (actionType === "CHECK" || actionType === "CALL")
+        )
+          handeEndTurn(profileUser);
+        setCurrent(newarr[0]);
+
+        if (actionType === "RAISE") {
+          setHighestBet(highestBet * 2);
+          setRoundGame([...newarr, ...playerWait, roundgame[0]]);
+          setPlayerWait([newarr]);
+
+          dispatch(
+            gameAction.updateCurrentBetChips(currentBetChips + highestBet)
+          );
+        }
+        if (actionType === "ALLIN") {
+          setRoundGame([...newarr, ...playerWait, roundgame[0]]);
+          setPlayerWait([newarr]);
+          dispatch(gameAction.updateCurrentBetChips(Chip.chips));
+        }
+        if (actionType === "CALL" || "CHECK") {
+          setPlayerWait([...playerWait, roundgame[0]]);
+          setRoundGame(newarr);
+        }
+        dispatch(gameAction.updateCountdown(9));
+        dispatch(
+          gameAction.updateRandomCountdown(Math.floor(Math.random() * 7) + 1)
+        );
+        console.log(Chip.chips, "chip action");
+      }
+    },
+    [current]
+  );
   const handeEndTurn = (profileUserBack) => {
-    console.log(profileUserBack, "profile end turn");
-    const object_array = room.state.players.$items;
-    const arr = Array.from(object_array, ([_, value]) => {
-      return value.id;
-    });
-    setCurrent(arr[0]);
-    setPlayerWait([]);
-    dispatch(gameAction.updateRoundGame(arr));
-    dispatch(gameAction.updateWaveGame(waveGame + 1));
-    dispatch(gameAction.updateWaveChipTotal(profileUserBack.betChips));
+    // console.log(profileUserBack, "profile end turn");
+    if (myroom) {
+      const object_array = myroom.state.players.$items;
+      const arr = Array.from(object_array, ([_, value]) => {
+        return value.id;
+      });
+      setCurrent(arr[0]);
+      setPlayerWait([]);
+      dispatch(gameAction.updateRoundGame(arr));
+      // dispatch(gameAction.updateWaveGame(waveGame + 1));
+      dispatch(gameAction.updateWaveChipTotal(profileUserBack.betChips));
+    }
   };
-  // --- end of Quang code ----
-
-  // console.log(myroom, "waveGame");
-
-  const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
-  const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
-  const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;
-  const PositionHorizontalCard1 = useRef(new Animated.Value(0)).current;
-  const PositionHorizontalCard2 = useRef(new Animated.Value(0)).current;
-  const PositionHorizontalChipBet = useRef(new Animated.Value(0)).current;
-  const SizeCard1 = useRef(new Animated.Value(35)).current;
-  const SizeCard2 = useRef(new Animated.Value(35)).current;
-  const RotateCard1 = useRef(new Animated.Value(0)).current;
-  const RotateCard2 = useRef(new Animated.Value(0)).current;
-  const UnRotateCard1 = useRef(new Animated.Value(0)).current;
-  const UnRotateCard2 = useRef(new Animated.Value(0)).current;
-  const Opacity1 = useRef(new Animated.Value(0)).current;
-  const Opacity2 = useRef(new Animated.Value(0)).current;
-  const OpacityWinLose = useRef(new Animated.Value(0)).current;
-  const OpacityBetChip = useRef(new Animated.Value(0)).current;
-  const UnOpacity1 = useRef(new Animated.Value(0)).current;
-  const UnOpacity2 = useRef(new Animated.Value(0)).current;
-  // console.log(highestBet, "hight");
   useEffect(() => {
     if (myroom) {
       myroom.onMessage("FINISH_GAME", (message) => {
@@ -470,7 +249,11 @@ const Game = (props: any) => {
       });
     }
   }, [myroom]);
-  // console.log(room);
+  console.log(myroom, "myroom");
+  console.log(current, "current");
+
+  // console.log(playerWait, "playerWait");
+
   return (
     <View
       style={{
@@ -483,7 +266,11 @@ const Game = (props: any) => {
     >
       <TouchableOpacity
         onPress={() => {
-          myroom.send("FINISH_GAME", "");
+          // myroom.send("FINISH_GAME", "");
+          handleReady();
+
+          // dispatch(gameAction.updateCurrentBetChips(0));
+          // dispatch(gameAction.updateWaveGame(0));
         }}
         style={{
           position: "absolute",
@@ -496,17 +283,6 @@ const Game = (props: any) => {
       >
         <Text style={{ color: "white" }}>ACtion</Text>
       </TouchableOpacity>
-      {/* <TouchableOpacity
-        onPress={handleReady}
-        style={{
-          position: "absolute",
-          top: "40%",
-          width: 50,
-          height: 50,
-          backgroundColor: "black",
-          zIndex: 20,
-        }}
-      ></TouchableOpacity> */}
       {/* Background */}
       <Image
         resizeMode="cover"
@@ -514,7 +290,7 @@ const Game = (props: any) => {
         style={{ width: "101%", height: "101%" }}
       />
       {/* QuitRoom */}
-      {/* <TouchableOpacity
+      <TouchableOpacity
         onPress={handleLeaveRoom}
         style={{
           position: "absolute",
@@ -532,7 +308,7 @@ const Game = (props: any) => {
           resizeMode="contain"
           source={require("../../../assets/QuitRoom.png")}
         />
-      </TouchableOpacity> */}
+      </TouchableOpacity>
       <TouchableOpacity
         style={{
           position: "absolute",
@@ -581,11 +357,11 @@ const Game = (props: any) => {
           zIndex: 6,
         }}
       >
-        70.0k
+        {myroom ? (myroom.state.totalBet > 0 ? myroom.state.totalBet : "") : ""}
       </Text>
       <BankerCard ImageCard={bankerCard} />
       {/* User  */}
-      <UserReal StateCard={count} handleAction={handlePlayerAction} />
+      <UserReal currentPlayer={current} />
       <FakeUser1
         currentPlayer={current}
         handleAction={handlePlayerAction}
@@ -600,88 +376,104 @@ const Game = (props: any) => {
       {/* <FakeUser3 handleAction={handlePlayerAction} /> */}
       {/* <FakeUser4 StateCard={count} currentPlayer={current} /> */}
       {/* Bet */}
-      {current === profileUser.id && (
-        <View
-          style={{
-            position: "absolute",
-            right: 0,
-            bottom: "-1%",
-            display: "flex",
-            width: "40%",
-            height: "17%",
-            flexDirection: "row",
-          }}
-        >
-          <Image
-            resizeMode="cover"
-            source={require("../../../assets/betFrame.png")}
-            style={{
-              width: "100%",
-              height: "100%",
-              zIndex: 6,
-              position: "absolute",
-            }}
-          />
+      {current === profileUser.id &&
+        waveGame % 8 < 6 &&
+        profileUser.chips > 0 && (
           <View
             style={{
-              zIndex: 7,
-              width: "100%",
-              height: "100%",
+              position: "absolute",
+              right: 0,
+              bottom: "-1%",
               display: "flex",
+              width: "40%",
+              height: "17%",
               flexDirection: "row",
-              justifyContent: "space-around",
             }}
           >
-            {/* Call */}
-            <Action
-              action={() => {
-                handlePlayerAction("FOLD", { chips: 0 }, myroom, profileUser);
+            <Image
+              resizeMode="cover"
+              source={require("../../../assets/betFrame.png")}
+              style={{
+                width: "100%",
+                height: "100%",
+                zIndex: 6,
+                position: "absolute",
               }}
-              ImageAction={require("../../../assets/Fold.png")}
-              title="FOLD"
             />
-            {/* Check */}
-            <Action
-              action={() => {
-                handlePlayerAction("CHECK", { chips: 0 }, myroom, profileUser);
+            <View
+              style={{
+                zIndex: 7,
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-around",
               }}
-              ImageAction={require("../../../assets/Check.png")}
-              title="CHECK"
-            />
-            {/* Raise */}
-            <Action
-              action={() =>
-                handlePlayerAction(
-                  "RAISE",
-                  {
-                    chips: currentBetChips - profileUser.betChips + highestBet,
-                  },
-                  myroom,
-                  profileUser
-                )
-              }
-              ImageAction={require("../../../assets/Raise.png")}
-              title="Raise"
-            />
-            {/* ALL In */}
-            <Action
-              action={() => {
-                dispatch(gameAction.updateWaveGame(waveGame + 1));
-                // handlePlayerAction(
-                //   "RAISE",
-                //   {
-                //     chips: profileUser.chips,
-                //   },
-                //   myroom,
-                //   profileUser
-                // );
-              }}
-              ImageAction={require("../../../assets/Allin.png")}
-              title="ALL IN"
-            />
+            >
+              {/* Call */}
+              <Action
+                action={() => {
+                  handlePlayerAction("FOLD", { chips: 0 }, myroom, profileUser);
+                }}
+                ImageAction={require("../../../assets/Fold.png")}
+                title="FOLD"
+              />
+              {/* Check */}
+              <Action
+                action={() => {
+                  handlePlayerAction(
+                    "CHECK",
+                    { chips: 0 },
+                    myroom,
+                    profileUser
+                  );
+                }}
+                ImageAction={require("../../../assets/Check.png")}
+                title="CHECK"
+              />
+              {/* Raise */}
+              <Action
+                action={() =>
+                  // handlePlayerAction(
+                  //   "RAISE",
+                  //   {
+                  //     chips:
+                  //       currentBetChips - profileUser.betChips + highestBet,
+                  //   },
+                  //   myroom,
+                  //   profileUser
+                  // )
+                  handlePlayerAction(
+                    "CALL",
+                    {
+                      chips: 100,
+                    },
+                    myroom,
+                    profileUser
+                  )
+                }
+                ImageAction={require("../../../assets/Raise.png")}
+                title="Raise"
+              />
+              {/* ALL In */}
+              <Action
+                action={() => {
+                  // dispatch(gameAction.updateWaveGame(waveGame + 1));
+                  handlePlayerAction(
+                    "ALLIN",
+                    {
+                      chips: profileUser.chips,
+                    },
+                    myroom,
+                    profileUser
+                  );
+                }}
+                ImageAction={require("../../../assets/Allin.png")}
+                title="ALL IN"
+              />
+            </View>
           </View>
-        </View>
-      )}
+        )}
     </View>
   );
 };

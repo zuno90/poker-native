@@ -15,6 +15,7 @@ export const FakeUser2 = ({
   highestBet,
 }) => {
   const { highBetWave } = useSelector(selectGame);
+  const { roundGame } = useSelector(selectGame);
 
   const [count, setCount] = useState(0);
   const { waveGame } = useSelector(selectGame);
@@ -46,7 +47,8 @@ export const FakeUser2 = ({
         // console.log(Math.floor(Math.random() * 9), "Random");
         handleAction(
           "CALL",
-          { chips: currentBetChips - profileUser2.betChips },
+          { chips: currentBetChips - (profileUser2.betChips - highBetWave) },
+
           profileFake2,
           profileUser2
         );
@@ -59,7 +61,7 @@ export const FakeUser2 = ({
         duration: 200,
       });
     }
-  }, [countDown, currentPlayer]);
+  }, [countDown, waveGame]);
   // useEffect(() => {
   //   if (currentBetChips <= profileUser2.betChips) {
   //     dispatch(gameAction.updateCurrentBetChips(profileUser2.betChips));
@@ -67,27 +69,30 @@ export const FakeUser2 = ({
   // }, [profileUser2]);
   // console.log(currentChips, "current Fake 2");
   useEffect(() => {
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(PositionVerticalTotalBet, {
-          useNativeDriver: false,
-          toValue: 0,
-          duration: 300,
-        }),
-        Animated.timing(PositionHorizontalTotalBet, {
-          useNativeDriver: false,
-          toValue: 0,
-          duration: 300,
-        }),
-      ]),
+    if (waveGame % 8 > 1) {
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(PositionVerticalTotalBet, {
+            useNativeDriver: false,
+            toValue: 0,
+            duration: 300,
+          }),
+          Animated.timing(PositionHorizontalTotalBet, {
+            useNativeDriver: false,
+            toValue: 0,
+            duration: 300,
+          }),
+        ]),
 
-      Animated.timing(OpacityTotalBetChip, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }),
-    ]).start();
-    if (waveGame % 7 == 0) {
+        Animated.timing(OpacityTotalBetChip, {
+          useNativeDriver: false,
+          toValue: 0,
+          duration: 300,
+        }),
+      ]).start();
+    }
+
+    if (waveGame % 8 == 1) {
       Animated.sequence([
         Animated.sequence([
           Animated.parallel([
@@ -168,7 +173,7 @@ export const FakeUser2 = ({
           ]),
         ]),
       ]).start();
-    } else if (waveGame % 7 == 4) {
+    } else if (waveGame % 8 == 5) {
       Animated.sequence([
         Animated.sequence([
           Animated.parallel([
@@ -259,7 +264,7 @@ export const FakeUser2 = ({
           duration: 300,
         }),
       ]).start();
-    } else if (waveGame % 7 == 5) {
+    } else if (waveGame % 8 == 6) {
       Animated.loop(
         Animated.sequence([
           Animated.timing(OpacityWinLose, {
@@ -279,7 +284,7 @@ export const FakeUser2 = ({
           }),
         ])
       ).start();
-    } else if (waveGame % 7 == 6) {
+    } else if (waveGame % 8 == 7) {
       Animated.timing(OpacityRanking, {
         toValue: 0,
         useNativeDriver: false,

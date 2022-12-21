@@ -1,14 +1,13 @@
-import { useContext, useEffect, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useContext } from "react";
 import * as Colyseus from "colyseus.js"; // not necessary if included via <script> tag.
 
 import { Alert, TouchableOpacity, View } from "react-native";
-import { Text, Image, Button } from "native-base";
+import { Text, Image } from "native-base";
 
 import { useAuth } from "../context/AuthContext";
 import { GameContext } from "../context/GameContext";
-import { gameAction, selectGame } from "./game/GameSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { gameAction } from "./game/GameSlice";
+import { useDispatch } from "react-redux";
 interface InfoUser {
   id?: string;
   isHost?: false;
@@ -64,7 +63,6 @@ const Home: React.FC = (props: any) => {
           if (room && room !== null) {
             roomContext.handleProfileFake1(profileFake1);
             roomContext.handleProfileFake2(profileFake2);
-            dispatch(gameAction.updateIsRunning(false));
             room && props.navigation.navigate("GAME");
           }
         } catch (error) {
@@ -74,6 +72,7 @@ const Home: React.FC = (props: any) => {
     } else {
       createRoom();
     }
+    console.log("check aysnc avai");
     return room;
   };
 
@@ -158,6 +157,8 @@ const Home: React.FC = (props: any) => {
             role: "Bot",
             cards: [],
             betChips: 0,
+          }).then(() => {
+            console.log("check async");
           });
         }}
       >

@@ -21,7 +21,7 @@ export const FakeUser4 = ({ StateCard, ImageCard, profile }) => {
     }
   }, [waveGame]);
   useEffect(() => {
-    if (waveGame % 7 == 0) {
+    if (waveGame % 8 == 1) {
       Animated.sequence([
         Animated.sequence([
           Animated.parallel([
@@ -102,7 +102,7 @@ export const FakeUser4 = ({ StateCard, ImageCard, profile }) => {
           ]),
         ]),
       ]).start();
-    } else if (waveGame % 7 == 4) {
+    } else if (waveGame % 8 == 5) {
       Animated.sequence([
         Animated.sequence([
           Animated.parallel([
@@ -193,7 +193,7 @@ export const FakeUser4 = ({ StateCard, ImageCard, profile }) => {
           duration: 300,
         }),
       ]).start();
-    } else if (waveGame % 7 == 5) {
+    } else if (waveGame % 8 == 6) {
       Animated.loop(
         Animated.sequence([
           Animated.timing(OpacityWinLose, {
@@ -213,7 +213,7 @@ export const FakeUser4 = ({ StateCard, ImageCard, profile }) => {
           }),
         ])
       ).start();
-    } else if (waveGame % 7 == 6) {
+    } else if (waveGame % 8 == 7) {
       Animated.timing(OpacityRanking, {
         toValue: 0,
         useNativeDriver: false,

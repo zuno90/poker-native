@@ -48,7 +48,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
         // console.log(Math.floor(Math.random() * 9), "Random");
         handleAction(
           "CALL",
-          { chips: currentBetChips - profileUser1.betChips },
+          { chips: currentBetChips - (profileUser1.betChips - highBetWave) },
           profileFake1,
           profileUser1
         );
@@ -61,31 +61,31 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
         duration: 200,
       });
     }
-  }, [countDown, currentPlayer]);
-  const [count, setCount] = useState(0);
-
+  }, [countDown, waveGame]);
   useEffect(() => {
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(PositionVerticalTotalBet, {
-          useNativeDriver: false,
-          toValue: 0,
-          duration: 300,
-        }),
-        Animated.timing(PositionHorizontalTotalBet, {
-          useNativeDriver: false,
-          toValue: 0,
-          duration: 300,
-        }),
-      ]),
+    if (waveGame % 8 > 1) {
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(PositionVerticalTotalBet, {
+            useNativeDriver: false,
+            toValue: 0,
+            duration: 300,
+          }),
+          Animated.timing(PositionHorizontalTotalBet, {
+            useNativeDriver: false,
+            toValue: 0,
+            duration: 300,
+          }),
+        ]),
 
-      Animated.timing(OpacityTotalBetChip, {
-        useNativeDriver: false,
-        toValue: 0,
-        duration: 300,
-      }),
-    ]).start();
-    if (waveGame % 7 == 0) {
+        Animated.timing(OpacityTotalBetChip, {
+          useNativeDriver: false,
+          toValue: 0,
+          duration: 300,
+        }),
+      ]).start();
+    }
+    if (waveGame % 8 == 1) {
       Animated.sequence([
         Animated.sequence([
           Animated.parallel([
@@ -166,7 +166,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
           ]),
         ]),
       ]).start();
-    } else if (waveGame % 7 == 4) {
+    } else if (waveGame % 8 == 5) {
       Animated.sequence([
         Animated.sequence([
           Animated.parallel([
@@ -257,7 +257,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
           duration: 100,
         }),
       ]).start();
-    } else if (waveGame % 7 == 5) {
+    } else if (waveGame % 8 == 6) {
       Animated.loop(
         Animated.sequence([
           Animated.timing(OpacityWinLose, {
@@ -277,7 +277,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
           }),
         ])
       ).start();
-    } else if (waveGame % 7 == 6) {
+    } else if (waveGame % 8 == 7) {
       Animated.timing(OpacityRanking, {
         toValue: 0,
         useNativeDriver: false,
@@ -362,329 +362,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
       }).start();
     }
   }, [waveGame]);
-  useEffect(() => {
-    if (count % 3 == 1) {
-      Animated.sequence([
-        Animated.timing(OpacityBetChip, {
-          toValue: 1,
-          useNativeDriver: false,
-          duration: 300,
-        }),
-        Animated.parallel([
-          Animated.timing(PositionVerticalChipBet, {
-            toValue: 0,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-          Animated.timing(PositionHorizontalChipBet, {
-            toValue: 0,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-        ]),
-      ]).start();
-    } else if (count % 3 == 2) {
-      Animated.parallel([
-        Animated.timing(PositionVerticalChipBet, {
-          toValue: 1,
-          useNativeDriver: false,
-          duration: 300,
-        }),
-        Animated.timing(PositionHorizontalChipBet, {
-          toValue: 1,
-          useNativeDriver: false,
-          duration: 300,
-        }),
-      ]).start();
-    } else if (count % 3 == 0) {
-      Animated.sequence([
-        Animated.timing(OpacityBetChip, {
-          toValue: 0,
-          useNativeDriver: false,
-          duration: 300,
-        }),
-        Animated.parallel([
-          Animated.timing(PositionVerticalChipBet, {
-            toValue: -1,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-          Animated.timing(PositionHorizontalChipBet, {
-            toValue: -1,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-        ]),
-      ]).start();
-    }
-  }, [count]);
-  // useEffect(() => {
-  //   if (waveGame % 6 == 1) {
-  //     Animated.sequence([
-  //       Animated.sequence([
-  //         Animated.parallel([
-  //           Animated.timing(SizeCard1, {
-  //             delay: 1100,
-  //             toValue: 35,
-  //             useNativeDriver: false,
-  //             duration: 300,
-  //           }),
-  //           Animated.timing(PositionVerticalCard1, {
-  //             delay: 1100,
 
-  //             useNativeDriver: false,
-  //             toValue: 1,
-  //             duration: 300,
-  //           }),
-  //           Animated.timing(PositionHorizontalCard1, {
-  //             delay: 1100,
-
-  //             useNativeDriver: false,
-  //             toValue: 1,
-  //             duration: 300,
-  //           }),
-  //         ]),
-  //         Animated.parallel([
-  //           Animated.timing(RotateCard1, {
-  //             useNativeDriver: false,
-  //             toValue: 1,
-  //             duration: 400,
-  //           }),
-  //           Animated.timing(UnRotateCard1, {
-  //             useNativeDriver: false,
-  //             toValue: 1,
-  //             duration: 400,
-  //           }),
-  //           Animated.timing(Opacity1, {
-  //             useNativeDriver: false,
-  //             toValue: 1,
-  //             duration: 400,
-  //           }),
-  //         ]),
-  //       ]),
-  //       Animated.sequence([
-  //         Animated.parallel([
-  //           Animated.timing(SizeCard2, {
-  //             useNativeDriver: false,
-  //             toValue: 35,
-  //             duration: 300,
-  //           }),
-  //           Animated.timing(PositionVerticalCard2, {
-  //             useNativeDriver: false,
-  //             toValue: 1,
-  //             duration: 300,
-  //           }),
-
-  //           Animated.timing(PositionHorizontalCard2, {
-  //             useNativeDriver: false,
-  //             toValue: 1,
-  //             duration: 300,
-  //           }),
-  //         ]),
-  //         Animated.parallel([
-  //           Animated.timing(RotateCard2, {
-  //             useNativeDriver: false,
-  //             toValue: 1,
-  //             duration: 400,
-  //           }),
-  //           Animated.timing(UnRotateCard2, {
-  //             useNativeDriver: false,
-  //             toValue: 1,
-  //             duration: 400,
-  //           }),
-  //           Animated.timing(Opacity2, {
-  //             useNativeDriver: false,
-  //             toValue: 1,
-  //             duration: 400,
-  //           }),
-  //         ]),
-  //       ]),
-  //     ]).start();
-  //   } else if (waveGame % 6 == 5) {
-  //     Animated.sequence([
-  //       Animated.sequence([
-  //         Animated.parallel([
-  //           Animated.timing(SizeCard1, {
-  //             useNativeDriver: false,
-  //             toValue: 85,
-  //             duration: 300,
-  //           }),
-  //           Animated.timing(PositionVerticalCard1, {
-  //             useNativeDriver: false,
-  //             toValue: -1,
-  //             duration: 300,
-  //           }),
-  //           Animated.timing(PositionHorizontalCard1, {
-  //             useNativeDriver: false,
-  //             toValue: 0,
-  //             duration: 300,
-  //           }),
-  //         ]),
-  //         Animated.parallel([
-  //           Animated.timing(RotateCard1, {
-  //             useNativeDriver: false,
-  //             toValue: -1,
-  //             duration: 400,
-  //           }),
-  //           Animated.timing(UnRotateCard1, {
-  //             useNativeDriver: false,
-  //             toValue: 1,
-  //             duration: 400,
-  //           }),
-  //           Animated.timing(Opacity1, {
-  //             useNativeDriver: false,
-  //             toValue: 1,
-  //             duration: 400,
-  //           }),
-  //           Animated.timing(UnOpacity1, {
-  //             useNativeDriver: false,
-  //             toValue: 1,
-  //             duration: 400,
-  //           }),
-  //         ]),
-  //       ]),
-  //       Animated.sequence([
-  //         Animated.parallel([
-  //           Animated.timing(SizeCard2, {
-  //             useNativeDriver: false,
-  //             toValue: 85,
-  //             duration: 300,
-  //           }),
-  //           Animated.timing(PositionVerticalCard2, {
-  //             useNativeDriver: false,
-  //             toValue: -1,
-  //             duration: 300,
-  //           }),
-
-  //           Animated.timing(PositionHorizontalCard2, {
-  //             useNativeDriver: false,
-  //             toValue: 0,
-  //             duration: 300,
-  //           }),
-  //         ]),
-  //         Animated.parallel([
-  //           Animated.timing(RotateCard2, {
-  //             useNativeDriver: false,
-  //             toValue: -1,
-  //             duration: 400,
-  //           }),
-  //           Animated.timing(UnRotateCard2, {
-  //             useNativeDriver: false,
-  //             toValue: 1,
-  //             duration: 400,
-  //           }),
-  //           Animated.timing(Opacity2, {
-  //             useNativeDriver: false,
-  //             toValue: 1,
-  //             duration: 400,
-  //           }),
-  //           Animated.timing(UnOpacity2, {
-  //             useNativeDriver: false,
-  //             toValue: 1,
-  //             duration: 400,
-  //           }),
-  //         ]),
-  //       ]),
-  //     ]).start();
-  //   } else if (waveGame % 6 == 0) {
-  //     Animated.timing(SizeCard1, {
-  //       useNativeDriver: false,
-  //       toValue: 0,
-  //       duration: 300,
-  //     }).start();
-  //     Animated.timing(SizeCard2, {
-  //       useNativeDriver: false,
-  //       toValue: 0,
-  //       duration: 300,
-  //     }).start();
-  //     Animated.timing(PositionVerticalCard1, {
-  //       useNativeDriver: false,
-  //       toValue: 0,
-  //       duration: 300,
-  //     }).start();
-  //     Animated.timing(PositionHorizontalCard1, {
-  //       useNativeDriver: false,
-  //       toValue: -1,
-  //       duration: 300,
-  //     }).start();
-
-  //     Animated.timing(PositionVerticalCard2, {
-  //       useNativeDriver: false,
-  //       toValue: 0,
-  //       duration: 300,
-  //     }).start();
-
-  //     Animated.timing(PositionHorizontalCard2, {
-  //       useNativeDriver: false,
-  //       toValue: -1,
-  //       duration: 300,
-  //     }).start();
-  //     Animated.timing(RotateCard1, {
-  //       useNativeDriver: false,
-  //       toValue: 0,
-  //       duration: 300,
-  //     }).start();
-  //     Animated.timing(UnRotateCard1, {
-  //       useNativeDriver: false,
-  //       toValue: 0,
-  //       duration: 400,
-  //     }).start();
-  //     Animated.timing(RotateCard2, {
-  //       useNativeDriver: false,
-  //       toValue: 0,
-  //       duration: 300,
-  //     }).start();
-  //     Animated.timing(UnRotateCard2, {
-  //       useNativeDriver: false,
-  //       toValue: 0,
-  //       duration: 400,
-  //     }).start();
-  //     Animated.timing(Opacity1, {
-  //       useNativeDriver: false,
-  //       toValue: 0,
-  //       duration: 300,
-  //     }).start();
-  //     Animated.timing(UnOpacity1, {
-  //       useNativeDriver: false,
-  //       toValue: 0,
-  //       duration: 300,
-  //     }).start();
-  //     Animated.timing(Opacity2, {
-  //       useNativeDriver: false,
-  //       toValue: 0,
-  //       duration: 300,
-  //     }).start();
-  //     Animated.timing(UnOpacity2, {
-  //       useNativeDriver: false,
-  //       toValue: 0,
-  //       duration: 300,
-  //     }).start();
-  //   }
-  // }, [waveGame]);
-  useEffect(() => {
-    if (count % 2 == 1) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(OpacityWinLose, {
-            toValue: 0.8,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-          Animated.timing(OpacityWinLose, {
-            toValue: 1,
-            useNativeDriver: false,
-            duration: 1000,
-          }),
-          Animated.timing(OpacityWinLose, {
-            toValue: 0.2,
-            useNativeDriver: false,
-            duration: 300,
-          }),
-        ])
-      ).start();
-    } else if (count % 2 == 0) {
-    }
-  }, [count]);
   useEffect(() => {
     Animated.sequence([
       Animated.timing(OpacityBetChip, {
