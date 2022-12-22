@@ -594,10 +594,8 @@ export const UserReal = ({ currentPlayer }) => {
             opacity: OpacityTotalBetChip,
           }}
         >
-          {profileUser
-            ? profileUser.betChips - highBetWave === 0
-              ? ""
-              : profileUser.betChips - highBetWave
+          {profileUser?.betChips - highBetWave > 0
+            ? profileUser?.betChips - highBetWave
             : ""}
         </Animated.Text>
         {/* Chip user */}

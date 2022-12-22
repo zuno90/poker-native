@@ -13,14 +13,12 @@ const gameSlice = createSlice({
     updateCurrentBetChips(state, action: PayloadAction<number>) {
       state.currentBetChips = action.payload;
     },
-    updateWaveChipTotal(state, action: PayloadAction<number>) {
-      state.waveChipTotal = action.payload;
-    },
+
     updateRoundGame(state, action: PayloadAction<any>) {
-      console.log(action.payload, "check roundgame store");
       state.roundGame = action.payload;
     },
-    updateHighBetWave(state, action: PayloadAction<any>) {
+    updateHighBetWave(state, action: PayloadAction<number>) {
+      console.log("check store hightbetWave");
       state.highBetWave = action.payload;
     },
     updateCountdownStartGame(state, action: PayloadAction<any>) {

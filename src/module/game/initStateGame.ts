@@ -46,5 +46,5 @@ export const GAME_INIT: init = {
   roundGame: [],
   currentBetChips: 100,
   waveChipTotal: 100,
-  highBetWave: 0
+  highBetWave: 0,
 };
