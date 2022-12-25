@@ -21,6 +21,7 @@ type TAuthContext = {
   authState: TAuthState;
   signIn: (token: string) => void;
   signOut: () => void;
+  checkAuth: () => void;
 };
 
 const AuthContext = createContext<TAuthContext>(null);
@@ -89,7 +90,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const authContextValue = { authState, signIn, signOut };
+  const authContextValue = { authState, signIn, signOut, checkAuth };
   return (
     <AuthContext.Provider value={authContextValue}>
       {children}

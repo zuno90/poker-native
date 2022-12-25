@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useState, useCallback } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import { Room } from "colyseus.js";
 
 import { View } from "native-base";
@@ -15,19 +21,21 @@ import { UserReal } from "./UserReal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "react-native-dotenv";
 import axios from "axios";
+
 interface ROOM_CHAT {
   ROOM_CHAT: "ROOM_CHAT";
   message: string;
 }
 const Game = (props: any) => {
   const { room } = useContext(GameContext);
+
   const { profileFake1 } = useSelector(selectGame);
   const { profileFake2 } = useSelector(selectGame);
   const {
     authState: { user },
+    checkAuth,
   } = useAuth();
   const { profileUser } = useSelector(selectGame);
-
   const { currentBetChips } = useSelector(selectGame);
   const { highBetWave } = useSelector(selectGame);
   const { roundGame } = useSelector(selectGame);
@@ -91,36 +99,11 @@ const Game = (props: any) => {
         break;
       case 6:
         myroom.send("FINISH_GAME", "");
-        const checkAuth = async () => {
-          const accessToken = await AsyncStorage.getItem("accessToken");
-          if (!accessToken) return;
-          try {
-            const res = await axios.get(`${API_URL}/user/info`, {
-              headers: { Authorization: `Bearer ${accessToken}` },
-            });
-            const { success, data } = res.data;
-            if (!success) throw new Error("Bad request!");
-            return {
-              isAuth: true,
-              user: {
-                id: data._id,
-                email: data.email,
-                username: data.username,
-                name: data.name,
-                avatar: data.avatar,
-                chips: data.chips,
-              },
-            };
-          } catch (error) {}
-        };
-        checkAuth().then((value) => {
-          console.log(value, "updated");
-          dispatch(gameAction.updateCurrentBetChips(100));
-          setTimeout(() => {
-            dispatch(gameAction.updateWaveGame(7));
-            dispatch(gameAction.updateHighBetWave(0));
-          }, 2000);
-        });
+        dispatch(gameAction.updateCurrentBetChips(100));
+        setTimeout(() => {
+          dispatch(gameAction.updateWaveGame(7));
+          dispatch(gameAction.updateHighBetWave(0));
+        }, 2000);
 
         break;
       case 7:
@@ -191,7 +174,7 @@ const Game = (props: any) => {
     if (isRunning === false) {
       setTimeout(() => {
         handleReady();
-      }, 3000);
+      }, 5000);
     }
   }, [isRunning]);
 
@@ -211,7 +194,10 @@ const Game = (props: any) => {
     }
   };
   const handleLeaveRoom = () => {
+    checkAuth();
+
     myroom.leave();
+
     // profileFake1.leave();
     // profileFake2.leave();
   };

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useMemo } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Colyseus from "colyseus.js"; // not necessary if included via <script> tag.
 
@@ -9,6 +9,9 @@ import { useAuth } from "../context/AuthContext";
 import { GameContext } from "../context/GameContext";
 import { gameAction } from "../module/game/GameSlice";
 import { useDispatch } from "react-redux";
+import { API_URL } from "react-native-dotenv";
+import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 interface InfoUser {
   id?: string;
   isHost?: false;
@@ -21,10 +24,11 @@ interface InfoUser {
 const Home: React.FC = (props: any) => {
   const {
     authState: { user },
-
+    checkAuth,
     signOut,
   } = useAuth();
-
+  const navigation = useNavigation();
+  const isFocused = useMemo(() => navigation.isFocused(), []);
   const roomContext = useContext(GameContext);
   const dispatch = useDispatch();
   const client = new Colyseus.Client("ws://175.41.154.239");
@@ -77,7 +81,14 @@ const Home: React.FC = (props: any) => {
     }
     return room;
   };
-
+  // useEffect(() => {
+  //   checkAuth();
+  // }, []);
+  useEffect(() => {
+    if (isFocused) {
+      checkAuth();
+    }
+  }, [isFocused]);
   const createRoom = async () => {
     const params = {
       id: user.id,
@@ -166,6 +177,7 @@ const Home: React.FC = (props: any) => {
           } else {
             Alert.alert("not enough money to play game");
           }
+          // handleLeaveRoom();
         }}
       >
         <Image
