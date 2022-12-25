@@ -95,7 +95,7 @@ export const BankerCard4 = ({ ImageBanker4 }) => {
 
   const RotateCard4 = useRef(new Animated.Value(0)).current;
   const UnRotateCard4 = useRef(new Animated.Value(0)).current;
-  const Opacity4 = useRef(new Animated.Value(0)).current;
+  const Opacity4 = useRef(new Animated.Value(-1)).current;
   const UnOpacity4 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard4 = useRef(new Animated.Value(0)).current;
   const PositionHorizontalCard4 = useRef(new Animated.Value(0)).current;

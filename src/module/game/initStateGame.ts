@@ -21,8 +21,10 @@ interface init {
   waveGame: number;
   currentPlayer?: string;
   countDown: number;
+  countdownReal: number;
   countDownStartGame: number;
   isRunning: boolean;
+  stateClearTimeout: boolean;
   randomCountDown: number;
   currentBetChips: number;
   highBetWave: number;
@@ -39,7 +41,9 @@ export const GAME_INIT: init = {
   profileUser4: {},
   waveGame: -2,
   countDown: 9,
+  countdownReal: 9,
   countDownStartGame: 10,
+  stateClearTimeout: true,
   isRunning: true,
   randomCountDown: 2,
   currentPlayer: "",

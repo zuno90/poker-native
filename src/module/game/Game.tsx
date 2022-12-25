@@ -12,6 +12,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { gameAction, selectGame } from "./GameSlice";
 import { useAuth } from "../../context/AuthContext";
 import { UserReal } from "./UserReal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_URL } from "react-native-dotenv";
+import axios from "axios";
 interface ROOM_CHAT {
   ROOM_CHAT: "ROOM_CHAT";
   message: string;
@@ -31,6 +34,7 @@ const Game = (props: any) => {
   const myroom = room as Room;
   const [totalCard, setTotalCard] = useState<any>([]);
   const [totalBet, setTotalBet] = useState<number>(0);
+  const [countDownGlobal, setCountDownGlobal] = useState<number>(9);
   const [highestBet, setHighestBet] = useState<number>(100);
   const dispatch = useDispatch();
   const { countDown } = useSelector(selectGame);
@@ -40,6 +44,7 @@ const Game = (props: any) => {
   const [roundgame, setRoundGame] = useState([]);
   const [current, setCurrent] = useState<any>(null);
   const [playerWait, setPlayerWait] = useState([]);
+  const { countdownReal } = useSelector(selectGame);
   const { isRunning } = useSelector(selectGame);
   const { countDownStartGame } = useSelector(selectGame);
   const client = new Colyseus.Client("ws://175.41.154.239");
@@ -54,6 +59,11 @@ const Game = (props: any) => {
   }, [a]);
 
   useEffect(() => {
+    try {
+      if (waveGame > 0) setTotalBet(myroom.state.totalBet);
+    } catch (error) {
+      console.log("error totalBet end turn");
+    }
     setRoundGame(roundGame);
     setCurrent(roundGame[0]);
     setPlayerWait([]);
@@ -71,25 +81,54 @@ const Game = (props: any) => {
           dispatch(gameAction.updateWaveGame(1));
         }, 3000);
         break;
+      case 1:
+        dispatch(gameAction.updateCountdownReal(9));
+        break;
       case 5:
         setTimeout(() => {
           dispatch(gameAction.updateWaveGame(6));
-        }, 3000);
+        }, 4000);
         break;
       case 6:
         myroom.send("FINISH_GAME", "");
-        dispatch(gameAction.updateCurrentBetChips(100));
-        setTimeout(() => {
-          dispatch(gameAction.updateWaveGame(7));
-          dispatch(gameAction.updateHighBetWave(0));
-        }, 3000);
+        const checkAuth = async () => {
+          const accessToken = await AsyncStorage.getItem("accessToken");
+          if (!accessToken) return;
+          try {
+            const res = await axios.get(`${API_URL}/user/info`, {
+              headers: { Authorization: `Bearer ${accessToken}` },
+            });
+            const { success, data } = res.data;
+            if (!success) throw new Error("Bad request!");
+            return {
+              isAuth: true,
+              user: {
+                id: data._id,
+                email: data.email,
+                username: data.username,
+                name: data.name,
+                avatar: data.avatar,
+                chips: data.chips,
+              },
+            };
+          } catch (error) {}
+        };
+        checkAuth().then((value) => {
+          console.log(value, "updated");
+          dispatch(gameAction.updateCurrentBetChips(100));
+          setTimeout(() => {
+            dispatch(gameAction.updateWaveGame(7));
+            dispatch(gameAction.updateHighBetWave(0));
+          }, 2000);
+        });
+
         break;
       case 7:
         myroom.send("RESET_GAME", "");
         setTotalBet(0);
         setTimeout(() => {
           dispatch(gameAction.updateIsRunning(false));
-        }, 5000);
+        }, 3000);
 
         break;
       default:
@@ -131,7 +170,6 @@ const Game = (props: any) => {
           setCurrent([]);
           setPlayerWait([]);
           dispatch(gameAction.updateHighBetWave(0));
-          dispatch(gameAction.updateCountdownStartGame(9));
         });
         profileFake1.onLeave((code) => {});
         profileFake2.onLeave((code) => {});
@@ -150,12 +188,14 @@ const Game = (props: any) => {
   }, [room]);
 
   useEffect(() => {
-    setTimeout(() => {
-      handleReady();
-    }, 3000);
+    if (isRunning === false) {
+      setTimeout(() => {
+        handleReady();
+      }, 3000);
+    }
   }, [isRunning]);
 
-  const handleReady = async () => {
+  const handleReady = () => {
     if (myroom && myroom !== null) {
       console.log("STart game");
       myroom.send("START_GAME");
@@ -164,9 +204,9 @@ const Game = (props: any) => {
       const arr = Array.from(object_array, ([_, value]) => {
         return value.id;
       });
-      console.log(arr, "check arr");
       dispatch(gameAction.updateRoundGame(arr));
       dispatch(gameAction.updateWaveGame(-1));
+      dispatch(gameAction.updateCountdownReal(9));
       dispatch(gameAction.updateIsRunning(true));
     }
   };
@@ -183,12 +223,10 @@ const Game = (props: any) => {
   const handlePlayerAction = (
     actionType: "CALL" | "FOLD" | "RAISE" | "CHECK" | "ALLIN" | "",
     Chip,
-    profile,
-    profileUser
+    profile
   ) => {
-    if (profile && profile !== null) {
+    if (profile && profile !== null && waveGame > 0 && waveGame < 6) {
       profile.send(actionType, Chip);
-
       const newarr = roundgame.filter((item) => item !== roundgame[0]);
       if (
         newarr.length === 0 &&
@@ -196,38 +234,42 @@ const Game = (props: any) => {
       ) {
         handeEndTurn();
       }
-      setCurrent(newarr[0]);
-
+      if (actionType === "FOLD") {
+        dispatch(gameAction.updateRoundGame(newarr));
+        setRoundGame(newarr);
+      }
       if (actionType === "RAISE") {
         if (countRaiseInWave > 0) {
           setHighestBet(highestBet * 2);
         }
         setCountRaiseInWave(countRaiseInWave + 1);
         setRoundGame([...newarr, ...playerWait, roundgame[0]]);
-        setPlayerWait([newarr]);
+        setPlayerWait(newarr);
         dispatch(
           gameAction.updateCurrentBetChips(currentBetChips + Chip.chips)
         );
       }
       if (actionType === "ALLIN") {
         setRoundGame([...newarr, ...playerWait, roundgame[0]]);
-        setPlayerWait([newarr]);
+        setPlayerWait(newarr);
         dispatch(gameAction.updateCurrentBetChips(Chip.chips));
       }
       if (actionType === "CALL" || "CHECK") {
         setPlayerWait([...playerWait, roundgame[0]]);
         setRoundGame(newarr);
       }
+
       dispatch(gameAction.updateCountdown(9));
+      dispatch(gameAction.updateStateClearTimeout(true));
       dispatch(
         gameAction.updateRandomCountdown(Math.floor(Math.random() * 7) + 1)
       );
-      console.log(Chip.chips, "chip action");
+      setCurrent(newarr[0]);
     }
   };
 
   const handeEndTurn = () => {
-    // console.log(profileUserBack, "profile end turn");
+    console.log("end turn");
     if (myroom) {
       const object_array = myroom.state.players.$items;
       const arr = Array.from(object_array, ([_, value]) => {
@@ -235,11 +277,14 @@ const Game = (props: any) => {
       });
       setCurrent(arr[0]);
       setPlayerWait([]);
-      setTotalBet(myroom.state.totalBet);
+
       setCountRaiseInWave(0);
       dispatch(gameAction.updateHighBetWave(profileUser.betChips));
       dispatch(gameAction.updateCurrentBetChips(0));
       dispatch(gameAction.updateRoundGame(arr));
+      if (profileUser.isFold) dispatch(gameAction.updateCountdownReal(-2));
+      else dispatch(gameAction.updateCountdownReal(9));
+
       const timeoutEndTurn = setTimeout(() => {
         dispatch(gameAction.updateWaveGame(waveGame + 1));
         return clearTimeout(timeoutEndTurn);
@@ -247,21 +292,26 @@ const Game = (props: any) => {
     }
   };
   useEffect(() => {
-    if (myroom) {
+    try {
       myroom.onMessage("FINISH_GAME", (message) => {
         console.log(message, "mess back  finish game");
       });
       myroom.onMessage("RESET_GAME", (message) => {
         console.log(message, "mess back  RESET_GAME game");
       });
+    } catch (error) {
+      console.log("error Finish game");
     }
   }, [myroom]);
+
   // console.log(myroom);
-  console.log(highestBet, "highestBet");
-  console.log(current, "check wave");
-  console.log(currentBetChips, "fake1");
-  console.log(highBetWave, "highBetWave");
-  console.log(waveGame, "highBetWave");
+  // console.log(isRunning, "isRunning");
+  // console.log(highestBet, "highestBet");
+  // console.log(roundGame, "check roundGame");
+  // console.log(playerWait, "playerWait");
+  // console.log(highBetWave, "highBetWave");
+  // console.log(current, "check current");
+  // console.log(waveGame, "waveGame");
 
   return (
     <View
@@ -275,7 +325,8 @@ const Game = (props: any) => {
     >
       {/* <TouchableOpacity
         onPress={() => {
-          handeEndTurn();
+          handleReady();
+          // handeEndTurn();
         }}
         style={{
           position: "absolute",
@@ -362,11 +413,16 @@ const Game = (props: any) => {
           zIndex: 6,
         }}
       >
-        {totalBet > 0 ? totalBet : ""}
+        {totalBet > 0 && waveGame > 1 ? totalBet : ""}
       </Text>
       <BankerCard ImageCard={bankerCard} />
       {/* User  */}
-      <UserReal currentPlayer={current} />
+      <UserReal
+        currentPlayer={current}
+        handleAction={handlePlayerAction}
+        highestBet={highestBet}
+        countRaiseInWave={countRaiseInWave}
+      />
       <FakeUser1
         currentPlayer={current}
         handleAction={handlePlayerAction}
@@ -381,99 +437,6 @@ const Game = (props: any) => {
       {/* <FakeUser3 handleAction={handlePlayerAction} /> */}
       {/* <FakeUser4 StateCard={count} currentPlayer={current} /> */}
       {/* Bet */}
-      {current === profileUser.id &&
-        waveGame % 8 < 6 &&
-        waveGame % 8 > 0 &&
-        profileUser.chips > 0 && (
-          <View
-            style={{
-              position: "absolute",
-              right: 0,
-              bottom: "-1%",
-              display: "flex",
-              width: "40%",
-              height: "17%",
-              flexDirection: "row",
-            }}
-          >
-            <Image
-              resizeMode="cover"
-              source={require("../../../assets/betFrame.png")}
-              style={{
-                width: "100%",
-                height: "100%",
-                zIndex: 6,
-                position: "absolute",
-              }}
-            />
-            <View
-              style={{
-                zIndex: 7,
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-around",
-              }}
-            >
-              {/* Call */}
-              <Action
-                action={() => {
-                  handlePlayerAction("FOLD", { chips: 0 }, myroom, profileUser);
-                }}
-                ImageAction={require("../../../assets/Fold.png")}
-                title="FOLD"
-              />
-              {/* Check */}
-              <Action
-                action={() => {
-                  handlePlayerAction(
-                    "CHECK",
-                    { chips: 0 },
-                    myroom,
-                    profileUser
-                  );
-                }}
-                ImageAction={require("../../../assets/Check.png")}
-                title="CHECK"
-              />
-              {/* Raise */}
-              <Action
-                action={() =>
-                  handlePlayerAction(
-                    "RAISE",
-                    {
-                      chips:
-                        waveGame > 1 || countRaiseInWave > 0
-                          ? profileUser.betChips - highBetWave + highestBet
-                          : profileUser.betChips - highBetWave,
-                    },
-                    myroom,
-                    profileUser
-                  )
-                }
-                ImageAction={require("../../../assets/Raise.png")}
-                title="Raise"
-              />
-              {/* ALL In */}
-              <Action
-                action={() => {
-                  // dispatch(gameAction.updateWaveGame(waveGame + 1));
-                  handlePlayerAction(
-                    "ALLIN",
-                    {
-                      chips: profileUser.chips,
-                    },
-                    myroom,
-                    profileUser
-                  );
-                }}
-                ImageAction={require("../../../assets/Allin.png")}
-                title="ALL IN"
-              />
-            </View>
-          </View>
-        )}
     </View>
   );
 };

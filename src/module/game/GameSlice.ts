@@ -18,14 +18,19 @@ const gameSlice = createSlice({
       state.roundGame = action.payload;
     },
     updateHighBetWave(state, action: PayloadAction<number>) {
-      console.log("check store hightbetWave");
       state.highBetWave = action.payload;
+    },
+    updateStateClearTimeout(state, action: PayloadAction<any>) {
+      state.stateClearTimeout = action.payload;
     },
     updateCountdownStartGame(state, action: PayloadAction<any>) {
       state.countDownStartGame = action.payload;
     },
     updateCountdown(state, action: PayloadAction<any>) {
       state.countDown = action.payload;
+    },
+    updateCountdownReal(state, action: PayloadAction<any>) {
+      state.countdownReal = action.payload;
     },
     updateIsRunning(state, action: PayloadAction<any>) {
       state.isRunning = action.payload;

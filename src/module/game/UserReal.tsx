@@ -11,25 +11,21 @@ import { Action } from "./Action";
 import { gameAction, selectGame } from "./GameSlice";
 import { getImage } from "./get";
 
-export const UserReal = ({ currentPlayer }) => {
+export const UserReal = ({
+  currentPlayer,
+  handleAction,
+  highestBet,
+  countRaiseInWave,
+}) => {
   const dispatch = useDispatch();
   const { profileUser } = useSelector(selectGame);
   const { waveGame } = useSelector(selectGame);
-  const { currentBetChips } = useSelector(selectGame);
+  const { stateClearTimeout } = useSelector(selectGame);
+  const { countdownReal } = useSelector(selectGame);
   const { highBetWave } = useSelector(selectGame);
   const { isRunning } = useSelector(selectGame);
 
-  const handleReady = () => {
-    myroom.send("START_GAME");
-  };
-  const handleLeaveRoom = () => {
-    myroom.leave();
-  };
-
   const { room } = useContext(GameContext);
-  const {
-    authState: { user },
-  } = useAuth();
   const myroom = room as Room;
   const [getCard, setGetCard] = useState([
     { image: require("../../../assets/deckofcard/5♠.png") },
@@ -330,6 +326,35 @@ export const UserReal = ({ currentPlayer }) => {
       ]),
     ]).start();
   }, [profileUser.betChips]);
+  useEffect(() => {
+    if (currentPlayer === profileUser.id && waveGame > 0 && waveGame < 6) {
+      if (countdownReal > -1) {
+        var timer = setTimeout(() => {
+          dispatch(gameAction.updateCountdownReal(countdownReal - 1));
+        }, 700);
+
+        if (countdownReal === 0 && waveGame < 6) {
+          profileUser.chips > 0
+            ? handleAction("FOLD", { chips: 0 }, myroom)
+            : handleAction("CALL", { chips: 0 }, myroom);
+          clearTimeout(timer);
+          dispatch(gameAction.updateCountdownReal(-2));
+        }
+      } else {
+        dispatch(gameAction.updateCountdownReal(-2));
+      }
+
+      if (currentPlayer === profileUser.id && waveGame < 6) {
+        if (profileUser.chips <= 0 || profileUser.isFold) {
+          setTimeout(() => {
+            handleAction("CALL", { chips: 0 }, myroom);
+          }, 1000);
+        }
+      }
+    } else {
+    }
+  }, [countdownReal, currentPlayer, waveGame, isRunning]);
+
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;
@@ -351,6 +376,7 @@ export const UserReal = ({ currentPlayer }) => {
   const OpacityWinLose = useRef(new Animated.Value(0)).current;
   const OpacityBetChip = useRef(new Animated.Value(0)).current;
   const OpacityTotalBetChip = useRef(new Animated.Value(0)).current;
+  const OpacityCountdown = useRef(new Animated.Value(0)).current;
   const OpacityRanking = useRef(new Animated.Value(0)).current;
   const UnOpacity1 = useRef(new Animated.Value(0)).current;
   const UnOpacity2 = useRef(new Animated.Value(0)).current;
@@ -419,229 +445,348 @@ export const UserReal = ({ currentPlayer }) => {
     "-220%",
     "-220%",
   ]);
-  // console.log(rightPercentBetChip, "bottom");
+
   return (
-    <View
-      style={{
-        position: "relative",
-        left: "50%",
-        bottom: "10%",
-      }}
-    >
-      {/* User */}
-
-      {/* Card1 */}
-      {/* Close */}
-      <Animated.View
-        style={{
-          zIndex: 2,
-          width: SizeCard1,
-          height: SizeCard1,
-          transform: [{ rotateY: DegCard1 }],
-          opacity: OpacityCard1,
-          position: "absolute",
-          bottom: bottomPercentCard1,
-          right: rightPercentCard1,
-        }}
-      >
-        <Image
-          resizeMode="contain"
-          source={require("../../../assets/deckofcard/CloseCard.png")}
-          style={{ width: "100%", height: "100%" }}
-        />
-      </Animated.View>
-      {/* Open */}
-      <Animated.View
-        style={{
-          position: "absolute",
-          zIndex: 2,
-          width: 90,
-          height: 90,
-          transform: [{ rotateY: UnDegCard1 }, { rotateZ: "-5deg" }],
-          opacity: UnOpacityCard1,
-          bottom: bottomPercentCard1,
-          right: rightPercentCard1,
-        }}
-      >
-        <Image
-          resizeMode="contain"
-          source={getCard ? getCard[1]?.image : ""}
-          style={{ width: "100%", height: "100%" }}
-        />
-      </Animated.View>
-
-      {/* Card2 */}
-      {/* Close Card2 */}
-      <Animated.View
-        style={{
-          width: SizeCard2,
-          height: SizeCard2,
-          transform: [{ rotateY: DegCard2 }, { rotateZ: "-10deg" }],
-          opacity: OpacityCard2,
-          position: "absolute",
-          bottom: bottomPercentCard2,
-          right: rightPercentCard2,
-          zIndex: 10,
-          // backgroundColor: "white",
-        }}
-      >
-        <Image
-          resizeMode="contain"
-          source={require("../../../assets/deckofcard/CloseCard.png")}
-          style={{ width: "100%", height: "100%" }}
-        />
-      </Animated.View>
-      {/* OpenCard2 */}
-      <Animated.View
-        style={{
-          position: "absolute",
-          zIndex: 2,
-          width: 90,
-          height: 90,
-          transform: [{ rotateY: UnDegCard2 }, { rotateZ: "10deg" }],
-          opacity: UnOpacityCard2,
-          bottom: bottomPercentCard2,
-          right: rightPercentCard2,
-        }}
-      >
-        <Image
-          resizeMode="contain"
-          source={getCard ? getCard[0]?.image : ""}
-          style={{ width: "100%", height: "100%" }}
-        />
-      </Animated.View>
-      {/* Ranking */}
-      <Animated.Text
-        style={{
-          fontWeight: "500",
-          color: "white",
-          position: "absolute",
-          bottom: -20,
-          left: "-48%",
-          width: 150,
-          zIndex: 13,
-          opacity: OpacityRanking,
-        }}
-      >
-        {profileUser.cardRank}
-      </Animated.Text>
-      {/* Win | Lose */}
-
-      <Animated.View
-        style={{
-          position: "absolute",
-          width: 150,
-          height: 150,
-          zIndex: 14,
-          bottom: -50,
-          right: "45%",
-          opacity: OpacityWinLose,
-        }}
-      >
-        <Image
-          resizeMode="contain"
-          source={
-            profileUser.isWinner === false
-              ? require("../../../assets/Lose.png")
-              : require("../../../assets/Win.png")
-          }
-          style={{
-            width: "100%",
-            height: "100%",
-          }}
-        />
-      </Animated.View>
-
-      {/* profile User */}
+    <>
       <View
         style={{
-          position: "absolute",
-          bottom: "5%",
-          right: "56%",
-          width: 50,
-          height: 60,
-          zIndex: 5,
+          position: "relative",
+          left: "50%",
+          bottom: "10%",
+          opacity: profileUser?.isFold ? 0.5 : 1,
+          zIndex: 8,
         }}
       >
-        <Image
-          source={require("../../../assets/AvatarExample.png")}
+        {/* User */}
+        <Text
           style={{
-            width: 60,
-            height: 60,
-          }}
-        />
-        {/* chip Bet */}
-        <Animated.Image
-          source={require("../../../assets/chip.png")}
-          style={{
-            width: 20,
-            height: 20,
-            top: bottomPercentBetChip,
-            right: rightPercentBetChip,
-            opacity: OpacityBetChip,
-            position: "absolute",
-          }}
-        />
-        {/* total bet */}
-        <Animated.Text
-          style={{
+            zIndex: 20,
+            fontSize: 60,
+            bottom: -10,
+            left: "-60%",
+            opacity:
+              profileUser.isFold === false &&
+              waveGame > 0 &&
+              waveGame < 6 &&
+              countdownReal > -1 &&
+              profileUser.chips > 0 &&
+              currentPlayer === profileUser.id
+                ? 1
+                : 0,
+
             color: "white",
             position: "absolute",
-            top: bottomPercentTotalBet,
-            right: rightPercentTotalBet,
-            width: 70,
-            zIndex: 10,
-            opacity: OpacityTotalBetChip,
           }}
         >
-          {profileUser?.betChips - highBetWave > 0
-            ? profileUser?.betChips - highBetWave
-            : ""}
-        </Animated.Text>
-        {/* Chip user */}
-        <View
+          {countdownReal ? countdownReal : ""}
+        </Text>
+        {/* Card1 */}
+        {/* Close */}
+        <Animated.View
           style={{
-            display: "flex",
-            flexDirection: "row",
-            bottom: 20,
-            left: -60,
-            width: 100,
-            zIndex: 10,
-            alignItems: "center",
+            zIndex: 2,
+            width: SizeCard1,
+            height: SizeCard1,
+            transform: [{ rotateY: DegCard1 }],
+            opacity: OpacityCard1,
+            position: "absolute",
+            bottom: bottomPercentCard1,
+            right: rightPercentCard1,
           }}
         >
           <Image
             resizeMode="contain"
-            source={require("../../../assets/Coins.png")}
-            style={{
-              width: 20,
-              height: 20,
-            }}
+            source={require("../../../assets/deckofcard/CloseCard.png")}
+            style={{ width: "100%", height: "100%" }}
           />
-          <Text
-            style={{
-              color: "white",
-              fontSize: 12,
-            }}
-          >
-            {profileUser ? profileUser.chips : "0"}
-          </Text>
-        </View>
-
-        {/* Profile */}
-        <Text
+        </Animated.View>
+        {/* Open */}
+        <Animated.View
           style={{
+            position: "absolute",
+            zIndex: 2,
+            width: 90,
+            height: 90,
+            transform: [{ rotateY: UnDegCard1 }, { rotateZ: "-5deg" }],
+            opacity: UnOpacityCard1,
+            bottom: bottomPercentCard1,
+            right: rightPercentCard1,
+          }}
+        >
+          <Image
+            resizeMode="contain"
+            source={getCard ? getCard[1]?.image : ""}
+            style={{ width: "100%", height: "100%" }}
+          />
+        </Animated.View>
+
+        {/* Card2 */}
+        {/* Close Card2 */}
+        <Animated.View
+          style={{
+            width: SizeCard2,
+            height: SizeCard2,
+            transform: [{ rotateY: DegCard2 }, { rotateZ: "-10deg" }],
+            opacity: OpacityCard2,
+            position: "absolute",
+            bottom: bottomPercentCard2,
+            right: rightPercentCard2,
+            zIndex: 10,
+            // backgroundColor: "white",
+          }}
+        >
+          <Image
+            resizeMode="contain"
+            source={require("../../../assets/deckofcard/CloseCard.png")}
+            style={{ width: "100%", height: "100%" }}
+          />
+        </Animated.View>
+        {/* OpenCard2 */}
+        <Animated.View
+          style={{
+            position: "absolute",
+            zIndex: 2,
+            width: 90,
+            height: 90,
+            transform: [{ rotateY: UnDegCard2 }, { rotateZ: "10deg" }],
+            opacity: UnOpacityCard2,
+            bottom: bottomPercentCard2,
+            right: rightPercentCard2,
+          }}
+        >
+          <Image
+            resizeMode="contain"
+            source={getCard ? getCard[0]?.image : ""}
+            style={{ width: "100%", height: "100%" }}
+          />
+        </Animated.View>
+        {/* Ranking */}
+        <Animated.Text
+          style={{
+            fontWeight: "500",
             color: "white",
             position: "absolute",
             bottom: -20,
-            width: 70,
-            overflow: "hidden",
-            height: 20,
+            left: "-48%",
+            width: 150,
+            zIndex: 13,
+            opacity: profileUser.isFold ? 0 : OpacityRanking,
           }}
         >
-          {profileUser ? profileUser.id : "User"}
-        </Text>
+          {profileUser.cardRank}
+        </Animated.Text>
+        {/* Win | Lose */}
+
+        <Animated.View
+          style={{
+            position: "absolute",
+            width: 150,
+            height: 150,
+            zIndex: 14,
+            bottom: -50,
+            right: "45%",
+            opacity: profileUser.isFold ? 0 : OpacityWinLose,
+          }}
+        >
+          <Image
+            resizeMode="contain"
+            source={
+              profileUser.isWinner === false
+                ? require("../../../assets/Lose.png")
+                : require("../../../assets/Win.png")
+            }
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+          />
+        </Animated.View>
+
+        {/* profile User */}
+        <View
+          style={{
+            position: "absolute",
+            bottom: "5%",
+            right: "56%",
+            width: 50,
+            height: 60,
+            zIndex: 15,
+          }}
+        >
+          <Image
+            source={require("../../../assets/AvatarExample.png")}
+            style={{
+              width: 60,
+              height: 60,
+            }}
+          />
+          {/* chip Bet */}
+          <Animated.Image
+            source={require("../../../assets/chip.png")}
+            style={{
+              width: 30,
+              height: 30,
+              top: bottomPercentBetChip,
+              right: rightPercentBetChip,
+              opacity: OpacityBetChip,
+              position: "absolute",
+            }}
+          />
+          {/* total bet */}
+          <Animated.Text
+            style={{
+              color: "white",
+              position: "absolute",
+              top: bottomPercentTotalBet,
+              right: rightPercentTotalBet,
+              width: 70,
+              zIndex: 10,
+              opacity: OpacityTotalBetChip,
+            }}
+          >
+            {profileUser?.betChips - highBetWave > 0
+              ? profileUser?.betChips - highBetWave
+              : ""}
+          </Animated.Text>
+          {/* Chip user */}
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              bottom: 20,
+              left: -60,
+              width: 100,
+              zIndex: 10,
+              alignItems: "center",
+            }}
+          >
+            <Image
+              resizeMode="contain"
+              source={require("../../../assets/Coins.png")}
+              style={{
+                width: 20,
+                height: 20,
+              }}
+            />
+            <Text
+              style={{
+                color: "white",
+                fontSize: 12,
+              }}
+            >
+              {profileUser ? profileUser.chips : "0"}
+            </Text>
+          </View>
+
+          {/* Profile */}
+          <Text
+            style={{
+              color: "white",
+              position: "absolute",
+              bottom: -20,
+              width: 70,
+              overflow: "hidden",
+              height: 20,
+            }}
+          >
+            {profileUser ? profileUser.id : "User"}
+          </Text>
+        </View>
       </View>
-    </View>
+      {profileUser.isFold === false &&
+        currentPlayer === profileUser.id &&
+        waveGame % 8 < 6 &&
+        waveGame % 8 > 0 &&
+        profileUser.chips > 0 && (
+          <View
+            style={{
+              position: "absolute",
+              right: 0,
+              bottom: "-1%",
+              display: "flex",
+              width: "40%",
+              height: "17%",
+              flexDirection: "row",
+            }}
+          >
+            <Image
+              resizeMode="cover"
+              source={require("../../../assets/betFrame.png")}
+              style={{
+                width: "100%",
+                height: "100%",
+                zIndex: 6,
+                position: "absolute",
+              }}
+            />
+            <View
+              style={{
+                zIndex: 7,
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-around",
+              }}
+            >
+              {/* Call */}
+              <Action
+                action={() => {
+                  dispatch(gameAction.updateCountdownReal(-2));
+
+                  handleAction("FOLD", { chips: 0 }, myroom);
+                }}
+                ImageAction={require("../../../assets/Fold.png")}
+                title="FOLD"
+              />
+              {/* Check */}
+              <Action
+                action={() => {
+                  dispatch(gameAction.updateCountdownReal(-2));
+
+                  handleAction("CHECK", {}, myroom);
+                }}
+                ImageAction={require("../../../assets/Check.png")}
+                title="CHECK"
+              />
+              {/* Raise */}
+              <Action
+                action={() => {
+                  dispatch(gameAction.updateCountdownReal(-2));
+
+                  handleAction(
+                    "RAISE",
+                    {
+                      chips:
+                        waveGame > 1 || countRaiseInWave > 0
+                          ? profileUser.betChips - highBetWave + highestBet
+                          : profileUser.betChips - highBetWave,
+                    },
+                    myroom
+                  );
+                }}
+                ImageAction={require("../../../assets/Raise.png")}
+                title="Raise"
+              />
+              {/* ALL In */}
+              <Action
+                action={() => {
+                  dispatch(gameAction.updateCountdownReal(-2));
+
+                  handleAction(
+                    "ALLIN",
+                    {
+                      chips: profileUser.chips,
+                    },
+                    myroom
+                  );
+                }}
+                ImageAction={require("../../../assets/Allin.png")}
+                title="ALL IN"
+              />
+            </View>
+          </View>
+        )}
+    </>
   );
 };

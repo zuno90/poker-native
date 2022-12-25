@@ -24,38 +24,44 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
     { image: require("../../../assets/deckofcard/5♠.png") },
     { image: require("../../../assets/deckofcard/5♠.png") },
   ]);
+
+  //get Card
   useEffect(() => {
     if (profileUser1.cards) {
       setGetCard(getImage(profileUser1.cards));
     }
   }, [waveGame]);
+  // Auto bet
   useEffect(() => {
-    if (countDown > -1 && currentPlayer === profileUser1.id) {
-      const timer = setTimeout(
-        () => {
-          dispatch(gameAction.updateCountdown(countDown - 1));
-        },
-        countDown === 9 ? 2000 : 1000
-      );
-      if (countDown === randomCountDown) {
-        // console.log(Math.floor(Math.random() * 9), "Random");
-        handleAction(
-          "CALL",
-          { chips: currentBetChips - profileUser1.betChips + highBetWave },
-          profileFake1,
-          profileUser1
+    if (profileUser1.chips > 100 && waveGame < 6) {
+      if (countDown > -1 && currentPlayer === profileUser1.id) {
+        const timer = setTimeout(
+          () => {
+            dispatch(gameAction.updateCountdown(countDown - 1));
+          },
+          countDown === 8 ? 700 : 700
         );
-        clearTimeout(timer);
+        if (countDown === randomCountDown) {
+          // console.log(Math.floor(Math.random() * 9), "Random");
+          profileUser1.chips === 0
+            ? handleAction("CALL", { chips: 0 }, profileFake1)
+            : handleAction(
+                "CALL",
+                {
+                  chips: currentBetChips - profileUser1.betChips + highBetWave,
+                },
+                profileFake1
+              );
+          clearTimeout(timer);
+        }
       }
-    } else {
-      Animated.timing(OpacityCountdown, {
-        toValue: 0,
-        useNativeDriver: false,
-        duration: 200,
-      });
+    } else if (currentPlayer === profileUser1.id) {
+      setTimeout(() => {
+        handleAction("CALL", { chips: 0 }, profileFake1);
+      }, 2000);
     }
   }, [countDown, currentPlayer]);
-  console.log(currentBetChips, "currentBetChips fake1");
+
   useEffect(() => {
     if (waveGame % 8 > 1) {
       Animated.sequence([
@@ -419,69 +425,67 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
 
   // chip show
   useEffect(() => {
-    if (waveGame % 8 > 0) {
-      Animated.sequence([
-        Animated.timing(OpacityBetChip, {
-          toValue: 1,
+    Animated.sequence([
+      Animated.timing(OpacityBetChip, {
+        toValue: 1,
+        useNativeDriver: false,
+        duration: 300,
+      }),
+      Animated.parallel([
+        Animated.timing(PositionVerticalChipBet, {
+          toValue: 0,
           useNativeDriver: false,
-          duration: 300,
+          duration: 200,
         }),
-        Animated.parallel([
-          Animated.timing(PositionVerticalChipBet, {
-            toValue: 0,
-            useNativeDriver: false,
-            duration: 200,
-          }),
-          Animated.timing(PositionHorizontalChipBet, {
-            toValue: 0,
-            useNativeDriver: false,
-            duration: 200,
-          }),
-          Animated.timing(PositionVerticalTotalBet, {
-            toValue: -1,
-            useNativeDriver: false,
-            duration: 200,
-          }),
-          Animated.timing(PositionHorizontalTotalBet, {
-            toValue: -1,
-            useNativeDriver: false,
-            duration: 200,
-          }),
-        ]),
-        Animated.parallel([
-          Animated.timing(OpacityBetChip, {
-            toValue: 0,
-            useNativeDriver: false,
-            duration: 50,
-          }),
-          Animated.timing(OpacityTotalBetChip, {
-            delay: 100,
-            toValue: 0,
-            useNativeDriver: false,
-            duration: 100,
-          }),
-        ]),
+        Animated.timing(PositionHorizontalChipBet, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 200,
+        }),
+        Animated.timing(PositionVerticalTotalBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 200,
+        }),
+        Animated.timing(PositionHorizontalTotalBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 200,
+        }),
+      ]),
+      Animated.parallel([
+        Animated.timing(OpacityBetChip, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 50,
+        }),
         Animated.timing(OpacityTotalBetChip, {
           delay: 100,
-          toValue: 1,
+          toValue: 0,
           useNativeDriver: false,
-          duration: 30,
+          duration: 100,
         }),
+      ]),
+      Animated.timing(OpacityTotalBetChip, {
+        delay: 100,
+        toValue: 1,
+        useNativeDriver: false,
+        duration: 30,
+      }),
 
-        Animated.parallel([
-          Animated.timing(PositionVerticalChipBet, {
-            toValue: -1,
-            useNativeDriver: false,
-            duration: 50,
-          }),
-          Animated.timing(PositionHorizontalChipBet, {
-            toValue: -1,
-            useNativeDriver: false,
-            duration: 50,
-          }),
-        ]),
-      ]).start();
-    }
+      Animated.parallel([
+        Animated.timing(PositionVerticalChipBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 50,
+        }),
+        Animated.timing(PositionHorizontalChipBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 50,
+        }),
+      ]),
+    ]).start();
   }, [profileUser1.betChips]);
   // currentBetChips - profileUser1.betChips + highBetWave
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
@@ -504,7 +508,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
   const OpacityTotalBetChip = useRef(new Animated.Value(0)).current;
   const OpacityWinLose = useRef(new Animated.Value(0)).current;
   const OpacityRanking = useRef(new Animated.Value(0)).current;
-  const OpacityCountdown = useRef(new Animated.Value(0)).current;
+
   const UnOpacity1 = useRef(new Animated.Value(0)).current;
   const UnOpacity2 = useRef(new Animated.Value(0)).current;
   const DegCard2 = GetInterpolate(RotateCard2, ["0deg", "0deg", "30deg"]);
@@ -564,13 +568,14 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
         bottom: "25%",
         left: "15%",
         zIndex: 5,
+        opacity: profileUser1?.isFold ? 0.3 : 1,
       }}
     >
       {/* {currentPlayer === profileUser1.id && ( */}
       {/* <TouchableOpacity
         onPress={() => {
           handleAction(
-            "RAISE",
+            "FOLD",
             { chips: currentBetChips - profileUser1.betChips },
             profileFake1,
             profileUser1
@@ -581,7 +586,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
           top: "20%",
           width: 50,
           height: 50,
-          backgroundColor: "black",
+          backgroundColor: "transparent",
           zIndex: 20,
         }}
       >
@@ -598,7 +603,13 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
           display: "flex",
           top: -10,
           left: 10,
-          opacity: countDown > -1 && currentPlayer === profileUser1.id ? 1 : 0,
+          opacity:
+            profileUser1.chips > 0 &&
+            waveGame > 0 &&
+            countDown > -1 &&
+            currentPlayer === profileUser1.id
+              ? 1
+              : 0,
         }}
       >
         {countDown}
@@ -718,7 +729,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
           zIndex: 14,
           top: "-50%",
           left: "-20%",
-          opacity: OpacityWinLose,
+          opacity: profileUser1?.isFold ? 0 : OpacityWinLose,
         }}
       >
         <Image
@@ -797,8 +808,8 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
         <Animated.Image
           source={require("../../../assets/chip.png")}
           style={{
-            width: 20,
-            height: 20,
+            width: 30,
+            height: 30,
             bottom: bottomPercentBetChip,
             right: rightPercentBetChip,
             opacity: OpacityBetChip,

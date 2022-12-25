@@ -36,24 +36,31 @@ export const FakeUser2 = ({
       setGetCard(getImage(profileUser2.cards));
     }
   }, [waveGame]);
-  //countdown
+  //auto bet
   useEffect(() => {
-    if (countDown > -1 && currentPlayer === profileUser2.id) {
+    if (countDown > -1 && currentPlayer === profileUser2.id && waveGame < 6) {
       const timer = setTimeout(
         () => {
           dispatch(gameAction.updateCountdown(countDown - 1));
         },
-        countDown === 9 ? 2000 : 1000
+        countDown === 8 ? 700 : 700
       );
       if (countDown === randomCountDown) {
         // console.log(Math.floor(Math.random() * 9), "Random");
-        handleAction(
-          "CALL",
-          { chips: currentBetChips - (profileUser2.betChips - highBetWave) },
+        // handleAction(
+        //   "CALL",
+        //   { chips: currentBetChips - (profileUser2.betChips - highBetWave) },
 
-          profileFake2,
-          profileUser2
-        );
+        //   profileFake2,
+        //   profileUser2
+        // );
+        profileUser2.chips === 0
+          ? handleAction("CALL", { chips: 0 }, profileFake2)
+          : handleAction(
+              "CALL",
+              { chips: currentBetChips - profileUser2.betChips + highBetWave },
+              profileFake2
+            );
         clearTimeout(timer);
       }
     } else {
@@ -366,7 +373,7 @@ export const FakeUser2 = ({
         duration: 100,
       }).start();
     }
-  }, [waveGame]);
+  }, [waveGame, currentPlayer]);
 
   useEffect(() => {
     if (waveGame % 8 > 0) {
@@ -431,69 +438,69 @@ export const FakeUser2 = ({
 
   // chip show
   useEffect(() => {
-    if (waveGame % 8 > 0) {
-      Animated.sequence([
-        Animated.timing(OpacityBetChip, {
-          toValue: 1,
+    // if (waveGame % 8 > 0) {
+    Animated.sequence([
+      Animated.timing(OpacityBetChip, {
+        toValue: 1,
+        useNativeDriver: false,
+        duration: 300,
+      }),
+      Animated.parallel([
+        Animated.timing(PositionVerticalChipBet, {
+          toValue: 0,
           useNativeDriver: false,
-          duration: 300,
+          duration: 200,
         }),
-        Animated.parallel([
-          Animated.timing(PositionVerticalChipBet, {
-            toValue: 0,
-            useNativeDriver: false,
-            duration: 200,
-          }),
-          Animated.timing(PositionHorizontalChipBet, {
-            toValue: 0,
-            useNativeDriver: false,
-            duration: 200,
-          }),
-          Animated.timing(PositionVerticalTotalBet, {
-            toValue: -1,
-            useNativeDriver: false,
-            duration: 200,
-          }),
-          Animated.timing(PositionHorizontalTotalBet, {
-            toValue: -1,
-            useNativeDriver: false,
-            duration: 200,
-          }),
-        ]),
-        Animated.parallel([
-          Animated.timing(OpacityBetChip, {
-            toValue: 0,
-            useNativeDriver: false,
-            duration: 50,
-          }),
-          Animated.timing(OpacityTotalBetChip, {
-            delay: 100,
-            toValue: 0,
-            useNativeDriver: false,
-            duration: 100,
-          }),
-        ]),
+        Animated.timing(PositionHorizontalChipBet, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 200,
+        }),
+        Animated.timing(PositionVerticalTotalBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 200,
+        }),
+        Animated.timing(PositionHorizontalTotalBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 200,
+        }),
+      ]),
+      Animated.parallel([
+        Animated.timing(OpacityBetChip, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 50,
+        }),
         Animated.timing(OpacityTotalBetChip, {
           delay: 100,
-          toValue: 1,
+          toValue: 0,
           useNativeDriver: false,
-          duration: 30,
+          duration: 100,
         }),
+      ]),
+      Animated.timing(OpacityTotalBetChip, {
+        delay: 100,
+        toValue: 1,
+        useNativeDriver: false,
+        duration: 30,
+      }),
 
-        Animated.parallel([
-          Animated.timing(PositionVerticalChipBet, {
-            toValue: -1,
-            useNativeDriver: false,
-            duration: 50,
-          }),
-          Animated.timing(PositionHorizontalChipBet, {
-            toValue: -1,
-            useNativeDriver: false,
-            duration: 50,
-          }),
-        ]),
-      ]).start();
-    }
+      Animated.parallel([
+        Animated.timing(PositionVerticalChipBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 50,
+        }),
+        Animated.timing(PositionHorizontalChipBet, {
+          toValue: -1,
+          useNativeDriver: false,
+          duration: 50,
+        }),
+      ]),
+    ]).start();
+    // }
   }, [profileUser2.betChips]);
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
@@ -571,7 +578,13 @@ export const FakeUser2 = ({
   ]);
   return (
     <View
-      style={{ position: "absolute", bottom: "60%", left: "8%", zIndex: 4 }}
+      style={{
+        position: "absolute",
+        bottom: "60%",
+        left: "8%",
+        zIndex: 4,
+        opacity: profileUser2?.isFold ? 0.3 : 1,
+      }}
     >
       {/* {currentPlayer === profileUser2.id && ( */}
       {/* <TouchableOpacity
@@ -607,7 +620,13 @@ export const FakeUser2 = ({
           display: "flex",
           top: -10,
           left: 10,
-          opacity: countDown > -1 && currentPlayer === profileUser2.id ? 1 : 0,
+          opacity:
+            profileUser2.chips > 0 &&
+            waveGame > 0 &&
+            countDown > -1 &&
+            currentPlayer === profileUser2.id
+              ? 1
+              : 0,
         }}
       >
         {countDown}
@@ -806,8 +825,8 @@ export const FakeUser2 = ({
         <Animated.Image
           source={require("../../../assets/chip.png")}
           style={{
-            width: 20,
-            height: 20,
+            width: 30,
+            height: 30,
             bottom: bottomPercentBetChip,
             right: leftPercentBetChip,
             opacity: OpacityBetChip,

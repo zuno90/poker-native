@@ -21,8 +21,10 @@ interface InfoUser {
 const Home: React.FC = (props: any) => {
   const {
     authState: { user },
+
     signOut,
   } = useAuth();
+
   const roomContext = useContext(GameContext);
   const dispatch = useDispatch();
   const client = new Colyseus.Client("ws://175.41.154.239");
@@ -149,18 +151,21 @@ const Home: React.FC = (props: any) => {
           height: "20%",
         }}
         onPress={() => {
-          getAvailableRooms({
-            id: "zuno-bot",
-            isHost: false,
-            chips: 10000,
-            turn: 2,
-            role: "Bot",
-            cards: [],
-            betChips: 0,
-          }).then(() => {
-            console.log("check async");
-            dispatch(gameAction.updateIsRunning(false));
-          });
+          if (user.chips >= 100) {
+            getAvailableRooms({
+              id: "zuno-bot",
+              isHost: false,
+              chips: 10000,
+              turn: 2,
+              role: "Bot",
+              cards: [],
+              betChips: 0,
+            }).then(() => {
+              dispatch(gameAction.updateIsRunning(false));
+            });
+          } else {
+            Alert.alert("not enough money to play game");
+          }
         }}
       >
         <Image
