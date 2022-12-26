@@ -174,7 +174,7 @@ const Game = (props: any) => {
     if (isRunning === false) {
       setTimeout(() => {
         handleReady();
-      }, 5000);
+      }, 4000);
     }
   }, [isRunning]);
 
@@ -248,7 +248,7 @@ const Game = (props: any) => {
       dispatch(gameAction.updateCountdown(9));
       dispatch(gameAction.updateStateClearTimeout(true));
       dispatch(
-        gameAction.updateRandomCountdown(Math.floor(Math.random() * 7) + 1)
+        gameAction.updateRandomCountdown(Math.floor(Math.random() * 3) + 4)
       );
       setCurrent(newarr[0]);
     }
@@ -372,7 +372,7 @@ const Game = (props: any) => {
       {/* Chat */}
       {/* Table */}
       <Image
-        resizeMode="cover"
+        resizeMode="contain"
         source={require("../../../assets/TableRoom.png")}
         style={{
           width: "70%",

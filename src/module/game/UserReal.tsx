@@ -1,8 +1,8 @@
 import { Room } from "colyseus.js";
-import { Flex, View } from "native-base";
+import { View } from "native-base";
 
 import { useContext, useEffect, useRef, useState } from "react";
-import { Animated, Image, Text, TouchableOpacity } from "react-native";
+import { Animated, Image, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../../context/AuthContext";
 import { GameContext } from "../../context/GameContext";
@@ -17,10 +17,13 @@ export const UserReal = ({
   highestBet,
   countRaiseInWave,
 }) => {
+  const {
+    authState: { user },
+  } = useAuth();
   const dispatch = useDispatch();
   const { profileUser } = useSelector(selectGame);
   const { waveGame } = useSelector(selectGame);
-  const { stateClearTimeout } = useSelector(selectGame);
+
   const { countdownReal } = useSelector(selectGame);
   const { highBetWave } = useSelector(selectGame);
   const { isRunning } = useSelector(selectGame);
@@ -354,7 +357,7 @@ export const UserReal = ({
     } else {
     }
   }, [countdownReal, currentPlayer, waveGame, isRunning]);
-
+  console.log(myroom);
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;
@@ -689,7 +692,7 @@ export const UserReal = ({
               height: 20,
             }}
           >
-            {profileUser ? profileUser.id : "User"}
+            {user ? user.username : "User"}
           </Text>
         </View>
       </View>
@@ -706,11 +709,13 @@ export const UserReal = ({
               display: "flex",
               width: "40%",
               height: "17%",
+              maxWidth: 350,
+              maxHeight: 70,
               flexDirection: "row",
             }}
           >
             <Image
-              resizeMode="cover"
+              resizeMode="contain"
               source={require("../../../assets/betFrame.png")}
               style={{
                 width: "100%",
@@ -721,8 +726,9 @@ export const UserReal = ({
             />
             <View
               style={{
+                marginLeft: 10,
                 zIndex: 7,
-                width: "100%",
+                width: "96%",
                 height: "100%",
                 display: "flex",
                 flexDirection: "row",

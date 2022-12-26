@@ -81,9 +81,9 @@ const Home: React.FC = (props: any) => {
     }
     return room;
   };
-  // useEffect(() => {
-  //   checkAuth();
-  // }, []);
+  useEffect(() => {
+    checkAuth();
+  }, []);
   useEffect(() => {
     if (isFocused) {
       checkAuth();
@@ -121,9 +121,14 @@ const Home: React.FC = (props: any) => {
   return (
     <View style={{ position: "relative" }}>
       <Image
+        resizeMode="cover"
         alt="No image"
         source={require("../../assets/BackgroundGame.png")}
-        style={{ width: "102%", height: "102%", zIndex: -2 }}
+        style={{
+          width: "100%",
+          height: "100%",
+          zIndex: -2,
+        }}
       />
 
       <Image
@@ -148,7 +153,7 @@ const Home: React.FC = (props: any) => {
           height: "100%",
           position: "absolute",
           zIndex: 2,
-          top: "10%",
+          bottom: "-10%",
           right: "7%",
         }}
       />
@@ -234,20 +239,21 @@ const Home: React.FC = (props: any) => {
         style={{
           position: "absolute",
           zIndex: 4,
-          bottom: "22%",
-          right: 0,
-          width: 50,
-          height: 50,
+          bottom: "1%",
+          right: "1%",
         }}
         onPress={() => {
-          Alert.alert("Sup");
+          Alert.alert("sup");
         }}
       >
         <Image
           resizeMode="contain"
           alt="No image"
           source={require("../../assets/Support.png")}
-          style={{}}
+          style={{
+            width: 50,
+            height: 50,
+          }}
         />
       </TouchableOpacity>
       {/* Building Left */}
@@ -255,7 +261,7 @@ const Home: React.FC = (props: any) => {
         style={{
           position: "absolute",
           zIndex: 2,
-          bottom: 0,
+          bottom: "-0%",
           left: 0,
           width: "50%",
           height: "25%",
@@ -265,7 +271,7 @@ const Home: React.FC = (props: any) => {
           resizeMode="contain"
           alt="No image"
           source={require("../../assets/Building.png")}
-          style={{ width: "100%", height: "100%" }}
+          style={{ width: "100%", height: "100%", bottom: "-10%" }}
         />
         <View
           style={{
@@ -274,7 +280,7 @@ const Home: React.FC = (props: any) => {
             width: "60%",
             height: "60%",
             justifyContent: "space-around",
-            bottom: 90,
+            bottom: "20%",
             left: "110%",
           }}
         >
@@ -347,14 +353,14 @@ const Home: React.FC = (props: any) => {
           width: "30%",
           height: "40%",
           position: "absolute",
-          backgroundColor: "transparent",
-          // marginTop: "2%",
           display: "flex",
           alignItems: "center",
           flexDirection: "row",
-          top: "-2%",
-          left: "-2%",
+          top: "2%",
+          left: "0%",
           zIndex: 4,
+          maxHeight: 300,
+          maxWidth: 250,
         }}
       >
         <TouchableOpacity
@@ -381,16 +387,16 @@ const Home: React.FC = (props: any) => {
             style={{
               width: "60%",
               height: "50%",
+              maxHeight: 80,
               position: "absolute",
               top: "22%",
             }}
           />
           <Text
             style={{
-              position: "absolute",
               color: "white",
-              bottom: 0,
-              // left: "25%",
+              position: "absolute",
+              bottom: 5,
             }}
           >
             {user.username}
@@ -427,56 +433,12 @@ const Home: React.FC = (props: any) => {
               fontWeight: "bold",
               fontSize: 18,
               paddingLeft: 12,
-              // fontFamily: "Pricedown",
             }}
           >
             {user.chips}
           </Text>
         </View>
       </View>
-
-      {/* <View
-          style={{
-            width: "100%",
-            height: "100%",
-            zIndex: 10000,
-            backgroundColor: "black",
-            position: "absolute",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Text color={"white"} fontSize={30}>
-            TEST SCREEN
-          </Text>
-          <Button marginBottom={6} onPress={getAvailableRooms}>
-            Get Room
-          </Button>
-          <Button marginBottom={6} onPress={createRoom}>
-            Create Room
-          </Button>
-
-          <View>
-            {rooms.length > 0 &&
-              rooms.map((item, index) => (
-                <View
-                  key={index}
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    flexDirection: "row",
-                    minWidth: 200,
-                  }}
-                >
-                  <Text fontSize={20} color={"white"}>
-                    {item.roomId}
-                  </Text>
-                  <Button onPress={() => joinRoom(item)}>Join</Button>
-                </View>
-              ))}
-          </View>
-        </View> */}
     </View>
   );
 };
