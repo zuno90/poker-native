@@ -23,6 +23,7 @@ export const FakeUser2 = ({
   const { profileFake2 } = useContext(GameContext);
   const { currentBetChips } = useSelector(selectGame);
   const { countDown } = useSelector(selectGame);
+  const { raiseBet } = useSelector(selectGame);
   const { randomCountDown } = useSelector(selectGame);
   const dispatch = useDispatch();
   const [getCard, setGetCard] = useState([
@@ -56,11 +57,12 @@ export const FakeUser2 = ({
         // );
         profileUser2.chips === 0
           ? handleAction("CALL", { chips: 0 }, profileFake2)
-          : handleAction(
-              "CALL",
-              { chips: currentBetChips - profileUser2.betChips + highBetWave },
-              profileFake2
-            );
+          : handleAction("CALL", {
+              chips:
+                raiseBet > profileUser2.chips
+                  ? profileUser2.chips
+                  : currentBetChips - profileUser2.betChips + highBetWave,
+            });
         clearTimeout(timer);
       }
     } else {

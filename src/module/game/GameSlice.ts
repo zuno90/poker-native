@@ -17,6 +17,9 @@ const gameSlice = createSlice({
     updateRoundGame(state, action: PayloadAction<any>) {
       state.roundGame = action.payload;
     },
+    updateRaiseBet(state, action: PayloadAction<number>) {
+      state.raiseBet = action.payload;
+    },
     updateHighBetWave(state, action: PayloadAction<number>) {
       state.highBetWave = action.payload;
     },

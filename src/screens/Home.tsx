@@ -1,16 +1,14 @@
-import { useContext, useEffect, useState, useMemo } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useContext, useEffect, useMemo } from "react";
+
 import * as Colyseus from "colyseus.js"; // not necessary if included via <script> tag.
 
 import { Alert, TouchableOpacity, View } from "react-native";
-import { Text, Image, Button } from "native-base";
+import { Text, Image } from "native-base";
 
 import { useAuth } from "../context/AuthContext";
 import { GameContext } from "../context/GameContext";
 import { gameAction } from "../module/game/GameSlice";
 import { useDispatch } from "react-redux";
-import { API_URL } from "react-native-dotenv";
-import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 interface InfoUser {
   id?: string;
@@ -145,16 +143,17 @@ const Home: React.FC = (props: any) => {
         }}
       />
       <Image
-        resizeMode="contain"
+        resizeMode="cover"
         alt="No image"
         source={require("../../assets/GirlHome.png")}
         style={{
           width: "35%",
-          height: "100%",
+          height: "90%",
           position: "absolute",
+          bottom: 0,
           zIndex: 2,
-          bottom: "-10%",
           right: "7%",
+          // backgroundColor: "white",
         }}
       />
       <TouchableOpacity
@@ -261,17 +260,24 @@ const Home: React.FC = (props: any) => {
         style={{
           position: "absolute",
           zIndex: 2,
-          bottom: "-0%",
+          bottom: "0%",
           left: 0,
           width: "50%",
           height: "25%",
         }}
       >
         <Image
-          resizeMode="contain"
+          resizeMode="center"
           alt="No image"
           source={require("../../assets/Building.png")}
-          style={{ width: "100%", height: "100%", bottom: "-10%" }}
+          style={{
+            width: "100%",
+            height: "80%",
+            bottom: 0,
+            left: 0,
+            // backgroundColor: "white",
+            position: "absolute",
+          }}
         />
         <View
           style={{
@@ -281,7 +287,8 @@ const Home: React.FC = (props: any) => {
             height: "60%",
             justifyContent: "space-around",
             bottom: "20%",
-            left: "110%",
+            left: "30%",
+            position: "absolute",
           }}
         >
           <TouchableOpacity
@@ -363,49 +370,58 @@ const Home: React.FC = (props: any) => {
           maxWidth: 250,
         }}
       >
-        <TouchableOpacity
+        {/* User */}
+        <View
           style={{
             position: "relative",
             width: "60%",
             height: "100%",
             display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
             marginLeft: "-2%",
+            // backgroundColor: "white",
           }}
         >
-          <Image
-            resizeMode="contain"
-            alt="No image"
-            source={require("../../assets/FrameUser.png")}
-            style={{ width: "100%", height: "100%" }}
-          />
-          <Image
-            resizeMode="contain"
-            alt="No image"
-            source={require(`../../assets/GirlHome.png`)}
+          <TouchableOpacity
             style={{
-              width: "60%",
-              height: "50%",
-              maxHeight: 80,
-              position: "absolute",
-              top: "22%",
-            }}
-          />
-          <Text
-            style={{
-              color: "white",
-              position: "absolute",
-              bottom: 5,
+              position: "relative",
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            {user.username}
-          </Text>
-          {/* <Text style={{ fontWeight: "bold" }}>
-            I am bold
-            <Text style={{ color: "red" }}>and red</Text>
-          </Text> */}
-        </TouchableOpacity>
+            <Image
+              resizeMode="contain"
+              alt="No image"
+              source={require("../../assets/FrameUser.png")}
+              style={{ width: "100%", height: "100%" }}
+            />
+            <Image
+              resizeMode="contain"
+              alt="No image"
+              source={require(`../../assets/GirlHome.png`)}
+              style={{
+                width: "50%",
+                height: "45%",
+                maxHeight: 80,
+                position: "absolute",
+                // bottom: 5,
+              }}
+            />
+            <Text
+              style={{
+                color: "white",
+                position: "absolute",
+                bottom: 5,
+              }}
+            >
+              {user.username}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* coins */}
         <View
           style={{
             position: "relative",

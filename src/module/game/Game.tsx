@@ -18,9 +18,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { gameAction, selectGame } from "./GameSlice";
 import { useAuth } from "../../context/AuthContext";
 import { UserReal } from "./UserReal";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { API_URL } from "react-native-dotenv";
-import axios from "axios";
 
 interface ROOM_CHAT {
   ROOM_CHAT: "ROOM_CHAT";
@@ -42,19 +39,15 @@ const Game = (props: any) => {
   const myroom = room as Room;
   const [totalCard, setTotalCard] = useState<any>([]);
   const [totalBet, setTotalBet] = useState<number>(0);
-  const [countDownGlobal, setCountDownGlobal] = useState<number>(9);
   const [highestBet, setHighestBet] = useState<number>(100);
   const dispatch = useDispatch();
-  const { countDown } = useSelector(selectGame);
   const [bankerCard, setBankerCard] = useState<any>([]);
   const [countRaiseInWave, setCountRaiseInWave] = useState<number>(0);
   const { waveGame } = useSelector(selectGame);
   const [roundgame, setRoundGame] = useState([]);
   const [current, setCurrent] = useState<any>(null);
   const [playerWait, setPlayerWait] = useState([]);
-  const { countdownReal } = useSelector(selectGame);
   const { isRunning } = useSelector(selectGame);
-  const { countDownStartGame } = useSelector(selectGame);
   const client = new Colyseus.Client("ws://175.41.154.239");
   const a = useSelector(selectGame);
 
@@ -194,8 +187,6 @@ const Game = (props: any) => {
     }
   };
   const handleLeaveRoom = () => {
-    checkAuth();
-
     myroom.leave();
 
     // profileFake1.leave();
@@ -205,12 +196,14 @@ const Game = (props: any) => {
   //   console.log(message, "mess back");
   // });
   // console.log(room.onMessageHandlers.events.CONGRATULATION, "muyrom");
+  console.log(myroom);
 
   const handlePlayerAction = (
     actionType: "CALL" | "FOLD" | "RAISE" | "CHECK" | "ALLIN" | "",
     Chip,
     profile
   ) => {
+    console.log(Chip, "chip bet");
     if (profile && profile !== null && waveGame > 0 && waveGame < 6) {
       profile.send(actionType, Chip);
       const newarr = roundgame.filter((item) => item !== roundgame[0]);
@@ -309,10 +302,25 @@ const Game = (props: any) => {
         flex: 1,
       }}
     >
-      {/* <TouchableOpacity
+      <TouchableOpacity
         onPress={() => {
           handleReady();
           // handeEndTurn();
+        }}
+        style={{
+          position: "absolute",
+          top: "10%",
+          width: 50,
+          height: 50,
+          backgroundColor: "black",
+          zIndex: 20,
+        }}
+      >
+        <Text style={{ color: "white" }}>ACtion</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+          handeEndTurn();
         }}
         style={{
           position: "absolute",
@@ -323,8 +331,8 @@ const Game = (props: any) => {
           zIndex: 20,
         }}
       >
-        <Text style={{ color: "white" }}>ACtion</Text>
-      </TouchableOpacity> */}
+        <Text style={{ color: "white" }}>End turn</Text>
+      </TouchableOpacity>
       {/* Background */}
       <Image
         resizeMode="cover"

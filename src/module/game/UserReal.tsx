@@ -1,5 +1,5 @@
 import { Room } from "colyseus.js";
-import { View } from "native-base";
+import { Box, Slider, Stack, View } from "native-base";
 
 import { useContext, useEffect, useRef, useState } from "react";
 import { Animated, Image, Text } from "react-native";
@@ -23,6 +23,7 @@ export const UserReal = ({
   const dispatch = useDispatch();
   const { profileUser } = useSelector(selectGame);
   const { waveGame } = useSelector(selectGame);
+  const { raiseBet } = useSelector(selectGame);
 
   const { countdownReal } = useSelector(selectGame);
   const { highBetWave } = useSelector(selectGame);
@@ -329,35 +330,34 @@ export const UserReal = ({
       ]),
     ]).start();
   }, [profileUser.betChips]);
-  useEffect(() => {
-    if (currentPlayer === profileUser.id && waveGame > 0 && waveGame < 6) {
-      if (countdownReal > -1) {
-        var timer = setTimeout(() => {
-          dispatch(gameAction.updateCountdownReal(countdownReal - 1));
-        }, 700);
+  // useEffect(() => {
+  //   if (currentPlayer === profileUser.id && waveGame > 0 && waveGame < 6) {
+  //     if (countdownReal > -1) {
+  //       var timer = setTimeout(() => {
+  //         dispatch(gameAction.updateCountdownReal(countdownReal - 1));
+  //       }, 700);
 
-        if (countdownReal === 0 && waveGame < 6) {
-          profileUser.chips > 0
-            ? handleAction("FOLD", { chips: 0 }, myroom)
-            : handleAction("CALL", { chips: 0 }, myroom);
-          clearTimeout(timer);
-          dispatch(gameAction.updateCountdownReal(-2));
-        }
-      } else {
-        dispatch(gameAction.updateCountdownReal(-2));
-      }
+  //       if (countdownReal === 0 && waveGame < 6) {
+  //         profileUser.chips > 0
+  //           ? handleAction("FOLD", { chips: 0 }, myroom)
+  //           : handleAction("CALL", { chips: 0 }, myroom);
+  //         clearTimeout(timer);
+  //         dispatch(gameAction.updateCountdownReal(-2));
+  //       }
+  //     } else {
+  //       dispatch(gameAction.updateCountdownReal(-2));
+  //     }
 
-      if (currentPlayer === profileUser.id && waveGame < 6) {
-        if (profileUser.chips <= 0 || profileUser.isFold) {
-          setTimeout(() => {
-            handleAction("CALL", { chips: 0 }, myroom);
-          }, 1000);
-        }
-      }
-    } else {
-    }
-  }, [countdownReal, currentPlayer, waveGame, isRunning]);
-  console.log(myroom);
+  //     if (currentPlayer === profileUser.id && waveGame < 6) {
+  //       if (profileUser.chips <= 0 || profileUser.isFold) {
+  //         setTimeout(() => {
+  //           handleAction("CALL", { chips: 0 }, myroom);
+  //         }, 1000);
+  //       }
+  //     }
+  //   } else {
+  //   }
+  // }, [countdownReal, currentPlayer, waveGame, isRunning]);
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;
@@ -453,17 +453,16 @@ export const UserReal = ({
     <>
       <View
         style={{
-          position: "relative",
           left: "50%",
           bottom: "10%",
-          opacity: profileUser?.isFold ? 0.5 : 1,
+          opacity: profileUser?.isFold ? 0.9 : 1,
           zIndex: 8,
         }}
       >
         {/* User */}
         <Text
           style={{
-            zIndex: 20,
+            zIndex: 15,
             fontSize: 60,
             bottom: -10,
             left: "-60%",
@@ -572,7 +571,7 @@ export const UserReal = ({
             bottom: -20,
             left: "-48%",
             width: 150,
-            zIndex: 13,
+            zIndex: 16,
             opacity: profileUser.isFold ? 0 : OpacityRanking,
           }}
         >
@@ -585,7 +584,7 @@ export const UserReal = ({
             position: "absolute",
             width: 150,
             height: 150,
-            zIndex: 14,
+            zIndex: 16,
             bottom: -50,
             right: "45%",
             opacity: profileUser.isFold ? 0 : OpacityWinLose,
@@ -616,6 +615,31 @@ export const UserReal = ({
             zIndex: 15,
           }}
         >
+          {profileUser?.isFold ? (
+            <View
+              style={{
+                position: "absolute",
+                width: "120%",
+                height: "100%",
+                opacity: 0.7,
+                backgroundColor: "black",
+                borderRadius: 8,
+                zIndex: 25,
+              }}
+            />
+          ) : (
+            <></>
+          )}
+          <Image
+            source={require("../../../assets/Frame.png")}
+            style={{
+              position: "absolute",
+              bottom: -50,
+              width: "200%",
+              height: "100%",
+              backgroundColor: "transparent",
+            }}
+          />
           <Image
             source={require("../../../assets/AvatarExample.png")}
             style={{
@@ -696,6 +720,7 @@ export const UserReal = ({
           </Text>
         </View>
       </View>
+
       {profileUser.isFold === false &&
         currentPlayer === profileUser.id &&
         waveGame % 8 < 6 &&
@@ -740,7 +765,7 @@ export const UserReal = ({
                 action={() => {
                   dispatch(gameAction.updateCountdownReal(-2));
 
-                  handleAction("FOLD", { chips: 0 }, myroom);
+                  handleAction("FOLD", {}, myroom);
                 }}
                 ImageAction={require("../../../assets/Fold.png")}
                 title="FOLD"
@@ -750,7 +775,7 @@ export const UserReal = ({
                 action={() => {
                   dispatch(gameAction.updateCountdownReal(-2));
 
-                  handleAction("CHECK", {}, myroom);
+                  handleAction("CHECK", { chips: 0 }, myroom);
                 }}
                 ImageAction={require("../../../assets/Check.png")}
                 title="CHECK"
@@ -764,7 +789,9 @@ export const UserReal = ({
                     "RAISE",
                     {
                       chips:
-                        waveGame > 1 || countRaiseInWave > 0
+                        raiseBet >= 100
+                          ? raiseBet
+                          : waveGame > 1 || countRaiseInWave > 0
                           ? profileUser.betChips - highBetWave + highestBet
                           : profileUser.betChips - highBetWave,
                     },
@@ -773,6 +800,7 @@ export const UserReal = ({
                 }}
                 ImageAction={require("../../../assets/Raise.png")}
                 title="Raise"
+                chips={profileUser.chips}
               />
               {/* ALL In */}
               <Action
@@ -787,6 +815,7 @@ export const UserReal = ({
                     myroom
                   );
                 }}
+                profile={myroom}
                 ImageAction={require("../../../assets/Allin.png")}
                 title="ALL IN"
               />

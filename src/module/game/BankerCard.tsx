@@ -369,7 +369,6 @@ export const BankerCard = ({ ImageCard }) => {
           }}
         >
           <Image
-            resizeMethod="resize"
             resizeMode="center"
             source={ImageBanker ? ImageBanker[4]?.image : ""}
             style={{ width: "100%", height: "100%" }}

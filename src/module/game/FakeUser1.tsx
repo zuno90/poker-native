@@ -17,6 +17,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
   const { currentBetChips } = useSelector(selectGame);
   const { randomCountDown } = useSelector(selectGame);
   const { highBetWave } = useSelector(selectGame);
+  const { raiseBet } = useSelector(selectGame);
 
   const { countDown } = useSelector(selectGame);
   const { waveGame } = useSelector(selectGame);
@@ -39,7 +40,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
           () => {
             dispatch(gameAction.updateCountdown(countDown - 1));
           },
-          countDown === 8 ? 700 : 700
+          countDown === 8 ? 1000 : 1000
         );
         if (countDown === randomCountDown) {
           // console.log(Math.floor(Math.random() * 9), "Random");
@@ -48,7 +49,10 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
             : handleAction(
                 "CALL",
                 {
-                  chips: currentBetChips - profileUser1.betChips + highBetWave,
+                  chips:
+                    raiseBet > profileUser1.chips
+                      ? profileUser1.chips
+                      : currentBetChips - profileUser1.betChips + highBetWave,
                 },
                 profileFake1
               );
