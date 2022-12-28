@@ -1,12 +1,10 @@
-import { Text } from "native-base";
-import React, { useEffect, useRef, useState } from "react";
-import { Animated, View, Image, TouchableOpacity } from "react-native";
+import { useEffect, useRef } from "react";
+import { Animated, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { GetInterpolate } from "../../utils/getInterpolate";
 import { selectGame } from "./GameSlice";
 
 export const BankerCard4 = ({ ImageBanker4 }) => {
-  const [count, setCount] = useState(0);
   const { waveGame } = useSelector(selectGame);
 
   useEffect(() => {
@@ -136,7 +134,7 @@ export const BankerCard4 = ({ ImageBanker4 }) => {
         }}
       >
         <Image
-          resizeMode="center"
+          resizeMode="contain"
           source={require("../../../assets/deckofcard/CloseCard.png")}
           // source={ImageBanker ? ImageBanker[2]?.image : ""}
           style={{ width: "100%", height: "100%" }}
@@ -153,7 +151,7 @@ export const BankerCard4 = ({ ImageBanker4 }) => {
         }}
       >
         <Image
-          resizeMode="center"
+          resizeMode="contain"
           source={ImageBanker4 ? ImageBanker4 : ""}
           style={{ width: "100%", height: "100%" }}
         />

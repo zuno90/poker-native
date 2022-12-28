@@ -1,13 +1,8 @@
-import { View } from "native-base";
-
-import { useEffect, useRef, useState } from "react";
-import { Animated, Image, Text, TouchableOpacity } from "react-native";
+import { useEffect, useRef } from "react";
+import { Animated, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { GetInterpolate } from "../../utils/getInterpolate";
-import { BankerCard4 } from "./BankerCard4";
-import { BankerCard5 } from "./BankerCard5";
 import { selectGame } from "./GameSlice";
-import { getImage } from "./get";
 
 export const BankerCard3 = ({ ImageCard }) => {
   const { waveGame } = useSelector(selectGame);
@@ -18,16 +13,19 @@ export const BankerCard3 = ({ ImageCard }) => {
         Animated.sequence([
           Animated.parallel([
             Animated.timing(SizeCard3, {
+              delay: 700,
               useNativeDriver: false,
               toValue: 85,
               duration: 100,
             }),
             Animated.timing(PositionVerticalCard3, {
+              delay: 700,
               useNativeDriver: false,
               toValue: 1,
               duration: 100,
             }),
             Animated.timing(PositionHorizontalCard3, {
+              delay: 700,
               useNativeDriver: false,
               toValue: 1,
               duration: 100,
@@ -103,24 +101,21 @@ export const BankerCard3 = ({ ImageCard }) => {
       ]).start();
     }
   }, [waveGame]);
-  // console.log(waveGame % 8, "wave Banker");
+
   const PositionVerticalCard3 = useRef(new Animated.Value(0)).current;
   const PositionHorizontalCard3 = useRef(new Animated.Value(0)).current;
   const SizeCard3 = useRef(new Animated.Value(0)).current;
-  const RotateCard3 = useRef(new Animated.Value(0)).current;
 
+  const RotateCard3 = useRef(new Animated.Value(0)).current;
   const UnRotateCard3 = useRef(new Animated.Value(0)).current;
 
   const Opacity3 = useRef(new Animated.Value(-1)).current;
-
   const UnOpacity3 = useRef(new Animated.Value(0)).current;
 
   const DegCard3 = GetInterpolate(RotateCard3, ["0deg", "0deg", "180deg"]);
-
   const UnDegCard3 = GetInterpolate(UnRotateCard3, ["0deg", "-180deg", "0deg"]);
 
   const OpacityCard3 = GetInterpolate(Opacity3, [0, 1, 0]);
-
   const UnOpacityCard3 = GetInterpolate(UnOpacity3, [0, 0, 1]);
   const topPercentCard3 = GetInterpolate(PositionVerticalCard3, [
     "-20%",

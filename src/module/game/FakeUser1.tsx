@@ -68,7 +68,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
   // chip move end turn
 
   useEffect(() => {
-    if (waveGame % 10 > 1) {
+    if (waveGame > 1 && waveGame < 5) {
       Animated.sequence([
         Animated.timing(OpacityBetChip, {
           toValue: 1,
@@ -384,9 +384,6 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
     }
   }, [waveGame]);
 
-  // chip move end turn
-  useEffect(() => {}, [waveGame]);
-
   // chip move
   useEffect(() => {
     if (waveGame % 10 > 0) {
@@ -414,68 +411,70 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
 
   // chip show
   useEffect(() => {
-    Animated.sequence([
-      Animated.timing(OpacityBetChip, {
-        toValue: 1,
-        useNativeDriver: false,
-        duration: 300,
-      }),
-      Animated.parallel([
-        Animated.timing(PositionVerticalChipBet, {
-          toValue: 0,
-          useNativeDriver: false,
-          duration: 200,
-        }),
-        Animated.timing(PositionHorizontalChipBet, {
-          toValue: 0,
-          useNativeDriver: false,
-          duration: 200,
-        }),
-        Animated.timing(PositionVerticalTotalBet, {
-          toValue: -1,
-          useNativeDriver: false,
-          duration: 200,
-        }),
-        Animated.timing(PositionHorizontalTotalBet, {
-          toValue: -1,
-          useNativeDriver: false,
-          duration: 200,
-        }),
-      ]),
-      Animated.parallel([
+    if (waveGame % 10 > 0 && waveGame < 5) {
+      Animated.sequence([
         Animated.timing(OpacityBetChip, {
-          toValue: 0,
+          toValue: 1,
           useNativeDriver: false,
-          duration: 50,
+          duration: 300,
         }),
+        Animated.parallel([
+          Animated.timing(PositionVerticalChipBet, {
+            toValue: 0,
+            useNativeDriver: false,
+            duration: 200,
+          }),
+          Animated.timing(PositionHorizontalChipBet, {
+            toValue: 0,
+            useNativeDriver: false,
+            duration: 200,
+          }),
+          Animated.timing(PositionVerticalTotalBet, {
+            toValue: -1,
+            useNativeDriver: false,
+            duration: 200,
+          }),
+          Animated.timing(PositionHorizontalTotalBet, {
+            toValue: -1,
+            useNativeDriver: false,
+            duration: 200,
+          }),
+        ]),
+        Animated.parallel([
+          Animated.timing(OpacityBetChip, {
+            toValue: 0,
+            useNativeDriver: false,
+            duration: 50,
+          }),
+          Animated.timing(OpacityTotalBetChip, {
+            delay: 100,
+            toValue: 0,
+            useNativeDriver: false,
+            duration: 100,
+          }),
+        ]),
         Animated.timing(OpacityTotalBetChip, {
           delay: 100,
-          toValue: 0,
+          toValue: 1,
           useNativeDriver: false,
-          duration: 100,
+          duration: 30,
         }),
-      ]),
-      Animated.timing(OpacityTotalBetChip, {
-        delay: 100,
-        toValue: 1,
-        useNativeDriver: false,
-        duration: 30,
-      }),
 
-      Animated.parallel([
-        Animated.timing(PositionVerticalChipBet, {
-          toValue: -1,
-          useNativeDriver: false,
-          duration: 50,
-        }),
-        Animated.timing(PositionHorizontalChipBet, {
-          toValue: -1,
-          useNativeDriver: false,
-          duration: 50,
-        }),
-      ]),
-    ]).start();
-  }, [profileUser1.betChips]);
+        Animated.parallel([
+          Animated.timing(PositionVerticalChipBet, {
+            toValue: -1,
+            useNativeDriver: false,
+            duration: 50,
+          }),
+          Animated.timing(PositionHorizontalChipBet, {
+            toValue: -1,
+            useNativeDriver: false,
+            duration: 50,
+          }),
+        ]),
+      ]).start();
+    }
+  }, [profileUser1.betChips, waveGame]);
   // currentBetChips - profileUser1.betChips + highBetWave
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;

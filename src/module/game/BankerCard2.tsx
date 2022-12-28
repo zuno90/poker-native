@@ -1,13 +1,8 @@
-import { View } from "native-base";
-
-import { useEffect, useRef, useState } from "react";
-import { Animated, Image, Text, TouchableOpacity } from "react-native";
+import { useEffect, useRef } from "react";
+import { Animated, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { GetInterpolate } from "../../utils/getInterpolate";
-import { BankerCard4 } from "./BankerCard4";
-import { BankerCard5 } from "./BankerCard5";
 import { selectGame } from "./GameSlice";
-import { getImage } from "./get";
 
 export const BankerCard2 = ({ ImageCard }) => {
   const { waveGame } = useSelector(selectGame);
@@ -18,16 +13,21 @@ export const BankerCard2 = ({ ImageCard }) => {
         Animated.sequence([
           Animated.parallel([
             Animated.timing(SizeCard2, {
+              delay: 300,
               useNativeDriver: false,
               toValue: 85,
               duration: 100,
             }),
             Animated.timing(PositionVerticalCard2, {
+              delay: 300,
+
               useNativeDriver: false,
               toValue: 1,
               duration: 100,
             }),
             Animated.timing(PositionHorizontalCard2, {
+              delay: 300,
+
               useNativeDriver: false,
               toValue: 1,
               duration: 100,

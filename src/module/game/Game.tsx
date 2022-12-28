@@ -86,7 +86,7 @@ const Game = (props: any) => {
     try {
       if (waveGame > 0) setTotalBet(myroom.state.totalBet);
       if (waveGame < 2) {
-        setPositionTop(["24%", "24%", "24%"]);
+        setPositionTop(["24%", "23%", "24%"]);
 
         setPositionLeft(["24%", "48%", "24%"]);
       }
@@ -121,18 +121,18 @@ const Game = (props: any) => {
         }, 3000);
         break;
       case 6:
-        myroom.send("FINISH_GAME", "");
         dispatch(gameAction.updateCurrentBetChips(100));
         setTimeout(() => {
           dispatch(gameAction.updateWaveGame(7));
           dispatch(gameAction.updateHighBetWave(0));
-        }, 3000);
+        }, 2000);
 
         break;
       case 7:
+        myroom.send("FINISH_GAME", "");
         setTimeout(() => {
           dispatch(gameAction.updateWaveGame(9));
-        }, 6000);
+        }, 3000);
         break;
 
       case 9:
@@ -213,7 +213,7 @@ const Game = (props: any) => {
       toValue: 1,
       duration: 100,
     }).start();
-    if (waveGame === 7) {
+    if (waveGame === 6) {
       try {
         const Winner = myroom.state.players.$items;
         const arr2 = Array.from(Winner, ([_, value]) => {
@@ -235,14 +235,16 @@ const Game = (props: any) => {
         Animated.sequence([
           Animated.parallel([
             Animated.timing(PositionVerticalTotalBet, {
+              delay: 1500,
               useNativeDriver: false,
               toValue: 1,
-              duration: 2000,
+              duration: 1500,
             }),
             Animated.timing(PositionHorizontalTotalBet, {
+              delay: 1500,
               useNativeDriver: false,
               toValue: 1,
-              duration: 2000,
+              duration: 1500,
             }),
           ]),
           Animated.timing(OpacityTotalBet, {

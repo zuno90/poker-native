@@ -134,7 +134,7 @@ export const BankerCard5 = ({ ImageBanker5 }) => {
         }}
       >
         <Image
-          resizeMode="center"
+          resizeMode="contain"
           source={require("../../../assets/deckofcard/CloseCard.png")}
           // source={ImageBanker ? ImageBanker[2]?.image : ""}
           style={{ width: "100%", height: "100%" }}
@@ -151,7 +151,7 @@ export const BankerCard5 = ({ ImageBanker5 }) => {
         }}
       >
         <Image
-          resizeMode="center"
+          resizeMode="contain"
           source={ImageBanker5 ? ImageBanker5 : ""}
           style={{ width: "100%", height: "100%" }}
         />
