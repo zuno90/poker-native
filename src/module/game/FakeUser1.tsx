@@ -65,28 +65,45 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
       }, 2000);
     }
   }, [countDown, currentPlayer]);
+  // chip move end turn
 
   useEffect(() => {
     if (waveGame % 10 > 1) {
       Animated.sequence([
+        Animated.timing(OpacityBetChip, {
+          toValue: 1,
+          useNativeDriver: false,
+          duration: 300,
+        }),
         Animated.parallel([
-          Animated.timing(PositionVerticalTotalBet, {
+          Animated.timing(PositionVerticalChipBet, {
+            toValue: 1,
             useNativeDriver: false,
-            toValue: 0,
             duration: 300,
           }),
-          Animated.timing(PositionHorizontalTotalBet, {
+          Animated.timing(PositionHorizontalChipBet, {
+            toValue: 1,
             useNativeDriver: false,
-            toValue: 0,
             duration: 300,
           }),
         ]),
-
-        Animated.timing(OpacityTotalBetChip, {
-          useNativeDriver: false,
+        Animated.timing(OpacityBetChip, {
           toValue: 0,
+          useNativeDriver: false,
           duration: 300,
         }),
+        Animated.parallel([
+          Animated.timing(PositionVerticalChipBet, {
+            toValue: -1,
+            useNativeDriver: false,
+            duration: 300,
+          }),
+          Animated.timing(PositionHorizontalChipBet, {
+            toValue: -1,
+            useNativeDriver: false,
+            duration: 300,
+          }),
+        ]),
       ]).start();
     }
     if (waveGame % 10 == 1) {
@@ -368,39 +385,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
   }, [waveGame]);
 
   // chip move end turn
-  useEffect(() => {
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(PositionVerticalChipBet, {
-          toValue: 1,
-          useNativeDriver: false,
-          duration: 300,
-        }),
-        Animated.timing(PositionHorizontalChipBet, {
-          toValue: 1,
-          useNativeDriver: false,
-          duration: 300,
-        }),
-      ]),
-      Animated.timing(OpacityBetChip, {
-        toValue: 0,
-        useNativeDriver: false,
-        duration: 300,
-      }),
-      Animated.parallel([
-        Animated.timing(PositionVerticalChipBet, {
-          toValue: -1,
-          useNativeDriver: false,
-          duration: 300,
-        }),
-        Animated.timing(PositionHorizontalChipBet, {
-          toValue: -1,
-          useNativeDriver: false,
-          duration: 300,
-        }),
-      ]),
-    ]).start();
-  }, [waveGame]);
+  useEffect(() => {}, [waveGame]);
 
   // chip move
   useEffect(() => {

@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { Animated, Image, Text, TouchableOpacity } from "react-native";
 import { useSelector } from "react-redux";
 import { GetInterpolate } from "../../utils/getInterpolate";
+import { BankerCard2 } from "./BankerCard2";
+import { BankerCard3 } from "./BankerCard3";
 import { BankerCard4 } from "./BankerCard4";
 import { BankerCard5 } from "./BankerCard5";
 import { selectGame } from "./GameSlice";
@@ -377,94 +379,10 @@ export const BankerCard = ({ ImageCard }) => {
       </Animated.View>
 
       {/* Card2 */}
-
-      <Animated.View
-        style={{
-          position: "relative",
-          top: topPercentCard2,
-          right: rightPercentCard2,
-          zIndex: 2,
-        }}
-      >
-        {/* Close */}
-        <Animated.View
-          style={{
-            width: SizeCard2,
-            height: SizeCard2,
-            position: "absolute",
-
-            transform: [{ rotateY: DegCard2 }],
-            opacity: OpacityCard2,
-          }}
-        >
-          <Image
-            resizeMode="contain"
-            source={require("../../../assets/deckofcard/CloseCard.png")}
-            style={{ width: "100%", height: "100%" }}
-          />
-        </Animated.View>
-        {/* Open */}
-        <Animated.View
-          style={{
-            zIndex: 2,
-            width: SizeCard2,
-            height: SizeCard2,
-            transform: [{ rotateY: UnDegCard2 }],
-            opacity: UnOpacityCard2,
-          }}
-        >
-          <Image
-            resizeMode="contain"
-            source={ImageBanker ? ImageBanker[3]?.image : ""}
-            style={{ width: "100%", height: "100%" }}
-          />
-        </Animated.View>
-      </Animated.View>
+      <BankerCard2 ImageCard={ImageBanker ? ImageBanker[3]?.image : []} />
 
       {/* Card3 */}
-
-      <Animated.View
-        style={{
-          position: "relative",
-          top: topPercentCard3,
-          right: rightPercentCard3,
-          zIndex: 2,
-        }}
-      >
-        {/* Close */}
-        <Animated.View
-          style={{
-            position: "absolute",
-            zIndex: 2,
-            width: SizeCard3,
-            height: SizeCard3,
-            transform: [{ rotateY: DegCard3 }],
-            opacity: OpacityCard3,
-          }}
-        >
-          <Image
-            resizeMode="contain"
-            source={require("../../../assets/deckofcard/CloseCard.png")}
-            style={{ width: "100%", height: "100%" }}
-          />
-        </Animated.View>
-        {/* Open */}
-        <Animated.View
-          style={{
-            zIndex: 2,
-            width: SizeCard3,
-            height: SizeCard3,
-            transform: [{ rotateY: UnDegCard3 }],
-            opacity: UnOpacityCard3,
-          }}
-        >
-          <Image
-            resizeMode="contain"
-            source={ImageBanker ? ImageBanker[2]?.image : ""}
-            style={{ width: "100%", height: "100%" }}
-          />
-        </Animated.View>
-      </Animated.View>
+      <BankerCard3 ImageCard={ImageBanker ? ImageBanker[2]?.image : []} />
 
       {/* Card 4*/}
 
