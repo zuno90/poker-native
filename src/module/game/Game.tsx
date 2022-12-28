@@ -4,6 +4,7 @@ import React, {
   useState,
   useCallback,
   useMemo,
+  useRef,
 } from "react";
 import { Room } from "colyseus.js";
 
@@ -18,6 +19,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { gameAction, selectGame } from "./GameSlice";
 import { useAuth } from "../../context/AuthContext";
 import { UserReal } from "./UserReal";
+import {
+  GetInterpolate,
+  GetInterpolate6Element,
+} from "../../utils/getInterpolate";
 
 interface ROOM_CHAT {
   ROOM_CHAT: "ROOM_CHAT";
@@ -50,6 +55,9 @@ const Game = (props: any) => {
   const { isRunning } = useSelector(selectGame);
   const client = new Colyseus.Client("ws://175.41.154.239");
   const a = useSelector(selectGame);
+  const PositionVerticalTotalBet = useRef(new Animated.Value(-1)).current;
+  const PositionHorizontalTotalBet = useRef(new Animated.Value(-1)).current;
+  const OpacityCountdown = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     dispatch(gameAction.updateProfileUser(a.Total[a.PositionArray % 5]));
@@ -65,6 +73,8 @@ const Game = (props: any) => {
     } catch (error) {
       console.log("error totalBet end turn");
     }
+    dispatch(gameAction.updateRaiseBet(100));
+
     setRoundGame(roundGame);
     setCurrent(roundGame[0]);
     setPlayerWait([]);
@@ -94,12 +104,14 @@ const Game = (props: any) => {
         myroom.send("FINISH_GAME", "");
         dispatch(gameAction.updateCurrentBetChips(100));
         setTimeout(() => {
-          dispatch(gameAction.updateWaveGame(7));
+          // dispatch(gameAction.updateWaveGame(7));
           dispatch(gameAction.updateHighBetWave(0));
         }, 2000);
 
         break;
       case 7:
+
+      case 8:
         myroom.send("RESET_GAME", "");
         setTotalBet(0);
         setTimeout(() => {
@@ -167,9 +179,27 @@ const Game = (props: any) => {
     if (isRunning === false) {
       setTimeout(() => {
         handleReady();
-      }, 4000);
+      }, 5000);
     }
   }, [isRunning]);
+
+  const topTotalBet = GetInterpolate6Element(PositionVerticalTotalBet, [
+    "24%",
+    "68%",
+    "5%",
+    "0%",
+    "0%",
+    "0%",
+  ]);
+
+  const leftTotalBet = GetInterpolate6Element(PositionHorizontalTotalBet, [
+    "48%",
+    "48%",
+    "42%",
+    "0%",
+    "0%",
+    "0%",
+  ]);
 
   const handleReady = () => {
     if (myroom && myroom !== null) {
@@ -183,6 +213,7 @@ const Game = (props: any) => {
       dispatch(gameAction.updateRoundGame(arr));
       dispatch(gameAction.updateWaveGame(-1));
       dispatch(gameAction.updateCountdownReal(9));
+
       dispatch(gameAction.updateIsRunning(true));
     }
   };
@@ -196,7 +227,6 @@ const Game = (props: any) => {
   //   console.log(message, "mess back");
   // });
   // console.log(room.onMessageHandlers.events.CONGRATULATION, "muyrom");
-  console.log(myroom);
 
   const handlePlayerAction = (
     actionType: "CALL" | "FOLD" | "RAISE" | "CHECK" | "ALLIN" | "",
@@ -302,7 +332,7 @@ const Game = (props: any) => {
         flex: 1,
       }}
     >
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={() => {
           handleReady();
           // handeEndTurn();
@@ -332,7 +362,7 @@ const Game = (props: any) => {
         }}
       >
         <Text style={{ color: "white" }}>End turn</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       {/* Background */}
       <Image
         resizeMode="cover"
@@ -398,9 +428,10 @@ const Game = (props: any) => {
         />
       </View>
       {/* TotalBet */}
-      <Text
+      <Animated.Text
         style={{
-          top: "24%",
+          top: "27%",
+          left: "48%",
           color: "white",
           position: "absolute",
           fontSize: 16,
@@ -408,7 +439,7 @@ const Game = (props: any) => {
         }}
       >
         {totalBet > 0 && waveGame > 1 ? totalBet : ""}
-      </Text>
+      </Animated.Text>
       <BankerCard ImageCard={bankerCard} />
       {/* User  */}
       <UserReal

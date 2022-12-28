@@ -260,7 +260,7 @@ const Home: React.FC = (props: any) => {
         style={{
           position: "absolute",
           zIndex: 2,
-          bottom: "0%",
+          bottom: "-2%",
           left: 0,
           width: "50%",
           height: "25%",
@@ -293,7 +293,7 @@ const Home: React.FC = (props: any) => {
         >
           <TouchableOpacity
             style={{
-              width: "30%",
+              width: "20%",
               height: "100%",
               zIndex: 5,
             }}
@@ -314,7 +314,7 @@ const Home: React.FC = (props: any) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={{
-              width: "30%",
+              width: "20%",
               height: "100%",
               zIndex: 5,
             }}
@@ -335,7 +335,7 @@ const Home: React.FC = (props: any) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={{
-              width: "30%",
+              width: "20%",
               height: "100%",
               zIndex: 5,
             }}

@@ -330,34 +330,34 @@ export const UserReal = ({
       ]),
     ]).start();
   }, [profileUser.betChips]);
-  // useEffect(() => {
-  //   if (currentPlayer === profileUser.id && waveGame > 0 && waveGame < 6) {
-  //     if (countdownReal > -1) {
-  //       var timer = setTimeout(() => {
-  //         dispatch(gameAction.updateCountdownReal(countdownReal - 1));
-  //       }, 700);
+  useEffect(() => {
+    if (currentPlayer === profileUser.id && waveGame > 0 && waveGame < 5) {
+      if (countdownReal > -1) {
+        var timer = setTimeout(() => {
+          dispatch(gameAction.updateCountdownReal(countdownReal - 1));
+        }, 1000);
 
-  //       if (countdownReal === 0 && waveGame < 6) {
-  //         profileUser.chips > 0
-  //           ? handleAction("FOLD", { chips: 0 }, myroom)
-  //           : handleAction("CALL", { chips: 0 }, myroom);
-  //         clearTimeout(timer);
-  //         dispatch(gameAction.updateCountdownReal(-2));
-  //       }
-  //     } else {
-  //       dispatch(gameAction.updateCountdownReal(-2));
-  //     }
+        if (countdownReal === 0 && waveGame < 6) {
+          profileUser.chips > 0
+            ? handleAction("FOLD", { chips: 0 }, myroom)
+            : handleAction("CALL", { chips: 0 }, myroom);
+          clearTimeout(timer);
+          dispatch(gameAction.updateCountdownReal(-2));
+        }
+      } else {
+        dispatch(gameAction.updateCountdownReal(-2));
+      }
 
-  //     if (currentPlayer === profileUser.id && waveGame < 6) {
-  //       if (profileUser.chips <= 0 || profileUser.isFold) {
-  //         setTimeout(() => {
-  //           handleAction("CALL", { chips: 0 }, myroom);
-  //         }, 1000);
-  //       }
-  //     }
-  //   } else {
-  //   }
-  // }, [countdownReal, currentPlayer, waveGame, isRunning]);
+      if (currentPlayer === profileUser.id && waveGame < 6) {
+        if (profileUser.chips <= 0 || profileUser.isFold) {
+          setTimeout(() => {
+            handleAction("CALL", { chips: 0 }, myroom);
+          }, 1000);
+        }
+      }
+    } else {
+    }
+  }, [countdownReal, currentPlayer, waveGame, isRunning]);
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;
@@ -455,22 +455,21 @@ export const UserReal = ({
         style={{
           left: "50%",
           bottom: "10%",
-          opacity: profileUser?.isFold ? 0.9 : 1,
+          opacity: profileUser?.isFold ? 1 : 1,
           zIndex: 8,
         }}
       >
         {/* User */}
         <Text
           style={{
-            zIndex: 15,
+            zIndex: 25,
             fontSize: 60,
             bottom: -10,
             left: "-60%",
             opacity:
               profileUser.isFold === false &&
               waveGame > 0 &&
-              waveGame < 6 &&
-              countdownReal > -1 &&
+              waveGame < 4 &&
               profileUser.chips > 0 &&
               currentPlayer === profileUser.id
                 ? 1
@@ -480,7 +479,7 @@ export const UserReal = ({
             position: "absolute",
           }}
         >
-          {countdownReal ? countdownReal : ""}
+          {countdownReal}
         </Text>
         {/* Card1 */}
         {/* Close */}
@@ -615,7 +614,7 @@ export const UserReal = ({
             zIndex: 15,
           }}
         >
-          {profileUser?.isFold ? (
+          {!profileUser?.isFold ? (
             <View
               style={{
                 position: "absolute",
@@ -630,16 +629,25 @@ export const UserReal = ({
           ) : (
             <></>
           )}
-          <Image
-            source={require("../../../assets/Frame.png")}
-            style={{
-              position: "absolute",
-              bottom: -50,
-              width: "200%",
-              height: "100%",
-              backgroundColor: "transparent",
-            }}
-          />
+          {/* {profileUser.id === currentPlayer ? (
+            <Image
+              resizeMode="contain"
+              source={require("../../../assets/Frame.png")}
+              style={{
+                position: "absolute",
+                top: -40,
+                width: 170,
+                height: 150,
+                right: "-100%",
+                opacity: 0.8,
+                backgroundColor: "transparent",
+                zIndex: 99,
+              }}
+            />
+          ) : (
+            <></>
+          )} */}
+
           <Image
             source={require("../../../assets/AvatarExample.png")}
             style={{
@@ -711,8 +719,8 @@ export const UserReal = ({
               color: "white",
               position: "absolute",
               bottom: -20,
-              width: 70,
-              overflow: "hidden",
+              width: 100,
+              // overflow: "hidden",
               height: 20,
             }}
           >

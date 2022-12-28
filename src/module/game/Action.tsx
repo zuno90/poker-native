@@ -53,7 +53,7 @@ export const Action = ({
         <Box
           alignItems="center"
           w="0"
-          h="100"
+          h="200"
           style={{
             position: "absolute",
             bottom: "100%",

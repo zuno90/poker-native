@@ -42,7 +42,7 @@ export const GAME_INIT: init = {
   profileUser4: {},
   waveGame: -2,
   countDown: 9,
-  countdownReal: 9,
+  countdownReal: -2,
   countDownStartGame: 10,
   stateClearTimeout: true,
   isRunning: true,
