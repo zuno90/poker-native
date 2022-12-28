@@ -79,7 +79,7 @@ export const FakeUser2 = ({
 
   // chip move end turn
   useEffect(() => {
-    if (waveGame % 9 > 1) {
+    if (waveGame % 10 > 1) {
       Animated.sequence([
         Animated.parallel([
           Animated.timing(PositionVerticalTotalBet, {
@@ -102,7 +102,7 @@ export const FakeUser2 = ({
       ]).start();
     }
 
-    if (waveGame % 9 == 1) {
+    if (waveGame % 10 == 1) {
       Animated.sequence([
         Animated.sequence([
           Animated.parallel([
@@ -183,7 +183,7 @@ export const FakeUser2 = ({
           ]),
         ]),
       ]).start();
-    } else if (waveGame % 9 == 5) {
+    } else if (waveGame % 10 == 5) {
       Animated.sequence([
         Animated.sequence([
           Animated.parallel([
@@ -274,7 +274,7 @@ export const FakeUser2 = ({
           duration: 300,
         }),
       ]).start();
-    } else if (waveGame % 9 == 6) {
+    } else if (waveGame % 10 == 6) {
       Animated.loop(
         Animated.sequence([
           Animated.timing(OpacityWinLose, {
@@ -294,7 +294,7 @@ export const FakeUser2 = ({
           }),
         ])
       ).start();
-    } else if (waveGame % 9 == 7) {
+    } else if (waveGame % 10 == 7) {
       Animated.timing(OpacityRanking, {
         toValue: 0,
         useNativeDriver: false,
@@ -381,7 +381,7 @@ export const FakeUser2 = ({
   }, [waveGame, currentPlayer]);
 
   useEffect(() => {
-    if (waveGame % 9 > 0) {
+    if (waveGame % 10 > 0) {
       Animated.sequence([
         Animated.parallel([
           Animated.timing(PositionVerticalChipBet, {
@@ -418,7 +418,7 @@ export const FakeUser2 = ({
 
   // chip move
   useEffect(() => {
-    if (waveGame % 9 > 0) {
+    if (waveGame % 10 > 0) {
       Animated.sequence([
         Animated.timing(OpacityBetChip, {
           toValue: 1,

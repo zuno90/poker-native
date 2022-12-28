@@ -41,7 +41,7 @@ export const UserReal = ({
     }
   }, [waveGame, isRunning, currentPlayer]);
   useEffect(() => {
-    if (waveGame % 8 > 1) {
+    if (waveGame % 10 > 1) {
       Animated.sequence([
         Animated.parallel([
           Animated.timing(PositionVerticalTotalBet, {
@@ -63,7 +63,7 @@ export const UserReal = ({
         }),
       ]).start();
     }
-    if (waveGame % 8 == 1) {
+    if (waveGame % 10 == 1) {
       Animated.sequence([
         Animated.sequence([
           Animated.parallel([
@@ -154,13 +154,13 @@ export const UserReal = ({
           ]),
         ]),
       ]).start();
-    } else if (waveGame % 8 == 5) {
+    } else if (waveGame % 10 == 5) {
       Animated.timing(OpacityRanking, {
         toValue: 1,
         useNativeDriver: false,
         duration: 300,
       }).start();
-    } else if (waveGame % 8 == 6) {
+    } else if (waveGame % 10 == 6) {
       Animated.loop(
         Animated.sequence([
           Animated.timing(OpacityWinLose, {
@@ -180,7 +180,7 @@ export const UserReal = ({
           }),
         ])
       ).start();
-    } else if (waveGame % 8 == 7) {
+    } else if (waveGame % 10 == 7) {
       Animated.timing(OpacityRanking, {
         toValue: 0,
         useNativeDriver: false,
@@ -469,7 +469,7 @@ export const UserReal = ({
             opacity:
               profileUser.isFold === false &&
               waveGame > 0 &&
-              waveGame < 4 &&
+              waveGame < 5 &&
               profileUser.chips > 0 &&
               currentPlayer === profileUser.id
                 ? 1
@@ -614,7 +614,7 @@ export const UserReal = ({
             zIndex: 15,
           }}
         >
-          {!profileUser?.isFold ? (
+          {profileUser?.isFold ? (
             <View
               style={{
                 position: "absolute",

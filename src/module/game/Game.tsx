@@ -21,8 +21,12 @@ import { useAuth } from "../../context/AuthContext";
 import { UserReal } from "./UserReal";
 import {
   GetInterpolate,
-  GetInterpolate6Element,
+  GetInterpolatePosition,
 } from "../../utils/getInterpolate";
+import {
+  POSITION_USER_LEFT,
+  POSITION_USER_TOP,
+} from "../../../constant/common";
 
 interface ROOM_CHAT {
   ROOM_CHAT: "ROOM_CHAT";
@@ -51,14 +55,25 @@ const Game = (props: any) => {
   const { waveGame } = useSelector(selectGame);
   const [roundgame, setRoundGame] = useState([]);
   const [current, setCurrent] = useState<any>(null);
+  const [positionTop, setPositionTop] = useState<any>([0, 30, 0]);
+  const [positionLeft, setPositionLeft] = useState<any>([0, 200, 0]);
   const [playerWait, setPlayerWait] = useState([]);
   const { isRunning } = useSelector(selectGame);
   const client = new Colyseus.Client("ws://175.41.154.239");
   const a = useSelector(selectGame);
-  const PositionVerticalTotalBet = useRef(new Animated.Value(-1)).current;
-  const PositionHorizontalTotalBet = useRef(new Animated.Value(-1)).current;
-  const OpacityCountdown = useRef(new Animated.Value(0)).current;
+  const PositionVerticalTotalBet = useRef(new Animated.Value(0)).current;
+  const PositionHorizontalTotalBet = useRef(new Animated.Value(0)).current;
+  const OpacityTotalBet = useRef(new Animated.Value(1)).current;
 
+  const topTotalBet = GetInterpolatePosition(
+    PositionVerticalTotalBet,
+    positionTop
+  );
+
+  const leftTotalBet = GetInterpolatePosition(
+    PositionHorizontalTotalBet,
+    positionLeft
+  );
   useEffect(() => {
     dispatch(gameAction.updateProfileUser(a.Total[a.PositionArray % 5]));
     dispatch(gameAction.updateProfileUser1(a.Total[(a.PositionArray + 1) % 5]));
@@ -70,6 +85,11 @@ const Game = (props: any) => {
   useEffect(() => {
     try {
       if (waveGame > 0) setTotalBet(myroom.state.totalBet);
+      if (waveGame < 2) {
+        setPositionTop(["24%", "24%", "24%"]);
+
+        setPositionLeft(["24%", "48%", "24%"]);
+      }
     } catch (error) {
       console.log("error totalBet end turn");
     }
@@ -98,20 +118,24 @@ const Game = (props: any) => {
       case 5:
         setTimeout(() => {
           dispatch(gameAction.updateWaveGame(6));
-        }, 4000);
+        }, 3000);
         break;
       case 6:
         myroom.send("FINISH_GAME", "");
         dispatch(gameAction.updateCurrentBetChips(100));
         setTimeout(() => {
-          // dispatch(gameAction.updateWaveGame(7));
+          dispatch(gameAction.updateWaveGame(7));
           dispatch(gameAction.updateHighBetWave(0));
-        }, 2000);
+        }, 3000);
 
         break;
       case 7:
+        setTimeout(() => {
+          dispatch(gameAction.updateWaveGame(9));
+        }, 6000);
+        break;
 
-      case 8:
+      case 9:
         myroom.send("RESET_GAME", "");
         setTotalBet(0);
         setTimeout(() => {
@@ -182,24 +206,68 @@ const Game = (props: any) => {
       }, 5000);
     }
   }, [isRunning]);
+  //Animation for totalBet
+  useEffect(() => {
+    Animated.timing(OpacityTotalBet, {
+      useNativeDriver: false,
+      toValue: 1,
+      duration: 100,
+    }).start();
+    if (waveGame === 7) {
+      try {
+        const Winner = myroom.state.players.$items;
+        const arr2 = Array.from(Winner, ([_, value]) => {
+          return value;
+        });
+        const arr = Array.from(Winner, ([_, value]) => {
+          if (value.isFold === false && value.isWinner === true)
+            return value.id;
+        });
+        const filterWiner = arr.filter((value) => !!value);
+        const positionTurnPlayerWinner = arr2.filter((value) => {
+          if (value.id === filterWiner[0]) return value;
+        });
+        // console.log(POSITION_USER_TOP, "posiCONSTANT");
+        // console.log(positionTurnPlayerWinner, "posiCONSTANT");
+        setPositionLeft(POSITION_USER_LEFT[positionTurnPlayerWinner[0].turn]);
+        setPositionTop(POSITION_USER_TOP[positionTurnPlayerWinner[0].turn]);
 
-  const topTotalBet = GetInterpolate6Element(PositionVerticalTotalBet, [
-    "24%",
-    "68%",
-    "5%",
-    "0%",
-    "0%",
-    "0%",
-  ]);
-
-  const leftTotalBet = GetInterpolate6Element(PositionHorizontalTotalBet, [
-    "48%",
-    "48%",
-    "42%",
-    "0%",
-    "0%",
-    "0%",
-  ]);
+        Animated.sequence([
+          Animated.parallel([
+            Animated.timing(PositionVerticalTotalBet, {
+              useNativeDriver: false,
+              toValue: 1,
+              duration: 2000,
+            }),
+            Animated.timing(PositionHorizontalTotalBet, {
+              useNativeDriver: false,
+              toValue: 1,
+              duration: 2000,
+            }),
+          ]),
+          Animated.timing(OpacityTotalBet, {
+            useNativeDriver: false,
+            toValue: 0,
+            duration: 100,
+          }),
+          Animated.parallel([
+            Animated.timing(PositionVerticalTotalBet, {
+              useNativeDriver: false,
+              toValue: 0,
+              duration: 100,
+            }),
+            Animated.timing(PositionHorizontalTotalBet, {
+              useNativeDriver: false,
+              toValue: 0,
+              duration: 100,
+            }),
+          ]),
+        ]).start();
+      } catch (error) {
+        console.log(error, "askldj");
+      }
+    }
+  }, [waveGame]);
 
   const handleReady = () => {
     if (myroom && myroom !== null) {
@@ -233,7 +301,7 @@ const Game = (props: any) => {
     Chip,
     profile
   ) => {
-    console.log(Chip, "chip bet");
+    // console.log(Chip, "chip bet");
     if (profile && profile !== null && waveGame > 0 && waveGame < 6) {
       profile.send(actionType, Chip);
       const newarr = roundgame.filter((item) => item !== roundgame[0]);
@@ -334,22 +402,6 @@ const Game = (props: any) => {
     >
       {/* <TouchableOpacity
         onPress={() => {
-          handleReady();
-          // handeEndTurn();
-        }}
-        style={{
-          position: "absolute",
-          top: "10%",
-          width: 50,
-          height: 50,
-          backgroundColor: "black",
-          zIndex: 20,
-        }}
-      >
-        <Text style={{ color: "white" }}>ACtion</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => {
           handeEndTurn();
         }}
         style={{
@@ -357,7 +409,7 @@ const Game = (props: any) => {
           top: "30%",
           width: 50,
           height: 50,
-          backgroundColor: "black",
+
           zIndex: 20,
         }}
       >
@@ -430,15 +482,21 @@ const Game = (props: any) => {
       {/* TotalBet */}
       <Animated.Text
         style={{
-          top: "27%",
-          left: "48%",
+          top: topTotalBet,
+          left: leftTotalBet,
           color: "white",
           position: "absolute",
-          fontSize: 16,
+          fontSize: 16, // 16
+          // backgroundColor: "yellow",
           zIndex: 6,
+          opacity: OpacityTotalBet,
         }}
       >
-        {totalBet > 0 && waveGame > 1 ? totalBet : ""}
+        {totalBet > 0 && waveGame > 1
+          ? waveGame === 7
+            ? `+ ${totalBet}`
+            : totalBet
+          : ""}
       </Animated.Text>
       <BankerCard ImageCard={bankerCard} />
       {/* User  */}
@@ -459,8 +517,8 @@ const Game = (props: any) => {
         handleAction={handlePlayerAction}
         currentChips={currentBetChips}
       />
-      {/* <FakeUser3 handleAction={handlePlayerAction} /> */}
-      {/* <FakeUser4 StateCard={count} currentPlayer={current} /> */}
+      {/* <FakeUser3 handleAction={handlePlayerAction} />
+      <FakeUser4 handleAction={handlePlayerAction} /> */}
       {/* Bet */}
     </View>
   );

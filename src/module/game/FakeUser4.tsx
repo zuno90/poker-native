@@ -7,7 +7,7 @@ import { GetInterpolate } from "../../utils/getInterpolate";
 import { selectGame } from "./GameSlice";
 import { getImage } from "./get";
 
-export const FakeUser4 = ({ StateCard, ImageCard, profile }) => {
+export const FakeUser4 = ({ handleAction }) => {
   const [count, setCount] = useState(0);
   const { profileUser1 } = useSelector(selectGame);
   const { waveGame } = useSelector(selectGame);
@@ -470,7 +470,7 @@ export const FakeUser4 = ({ StateCard, ImageCard, profile }) => {
     "350%",
   ]);
   return (
-    <View style={{ position: "absolute", bottom: "25%", right: "15%" }}>
+    <View style={{ position: "absolute", bottom: "20%", right: "15%" }}>
       <View
         style={{
           display: "flex",

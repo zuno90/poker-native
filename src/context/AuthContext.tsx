@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           username: data.username,
           name: data.name,
           avatar: data.avatar,
-          chips: data.chips,
+          chips: 400000,
         },
       });
     } catch (error) {

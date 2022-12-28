@@ -5,11 +5,13 @@ export const GetInterpolate = (Input, Output) => {
   });
   return a;
 };
-export const GetInterpolate6Element = (Input, Output) => {
+export const GetInterpolatePosition = (Input, Output = [0, 0, 0]) => {
+  // console.log(Input, "input");
   const a = Input.interpolate({
-    inputRange: [0, 1, 2, 3, 4, 5],
+    inputRange: [-1, 0, 1],
     outputRange: Output,
   });
+  // console.log(a, "check a");
   return a;
 };
 
