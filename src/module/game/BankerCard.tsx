@@ -369,7 +369,7 @@ export const BankerCard = ({ ImageCard }) => {
           }}
         >
           <Image
-            resizeMode="center"
+            resizeMode="contain"
             source={ImageBanker ? ImageBanker[4]?.image : ""}
             style={{ width: "100%", height: "100%" }}
           />
@@ -398,7 +398,7 @@ export const BankerCard = ({ ImageCard }) => {
           }}
         >
           <Image
-            resizeMode="center"
+            resizeMode="contain"
             source={require("../../../assets/deckofcard/CloseCard.png")}
             style={{ width: "100%", height: "100%" }}
           />
@@ -414,7 +414,7 @@ export const BankerCard = ({ ImageCard }) => {
           }}
         >
           <Image
-            resizeMode="center"
+            resizeMode="contain"
             source={ImageBanker ? ImageBanker[3]?.image : ""}
             style={{ width: "100%", height: "100%" }}
           />
@@ -443,7 +443,7 @@ export const BankerCard = ({ ImageCard }) => {
           }}
         >
           <Image
-            resizeMode="center"
+            resizeMode="contain"
             source={require("../../../assets/deckofcard/CloseCard.png")}
             style={{ width: "100%", height: "100%" }}
           />
@@ -459,7 +459,7 @@ export const BankerCard = ({ ImageCard }) => {
           }}
         >
           <Image
-            resizeMode="center"
+            resizeMode="contain"
             source={ImageBanker ? ImageBanker[2]?.image : ""}
             style={{ width: "100%", height: "100%" }}
           />
