@@ -394,7 +394,7 @@ export const FakeUser2 = ({
       }).start();
     }
   }, [waveGame]);
-
+  // console.log(getCard, "getCard");
   // useEffect(() => {
   //   if (waveGame % 10 > 0) {
   //     Animated.sequence([
@@ -680,6 +680,7 @@ export const FakeUser2 = ({
               resizeMode="contain"
               source={require("../../../assets/deckofcard/CloseCard.png")}
               style={{ width: "100%", height: "100%" }}
+              alt="kasd"
             />
           </Animated.View>
           {/* Open */}
@@ -699,6 +700,7 @@ export const FakeUser2 = ({
               resizeMode="contain"
               source={getCard ? getCard[0]?.image : ""}
               style={{ width: "100%", height: "100%" }}
+              alt="asd"
             />
           </Animated.View>
         </View>
@@ -720,6 +722,7 @@ export const FakeUser2 = ({
               resizeMode="contain"
               source={require("../../../assets/deckofcard/CloseCard.png")}
               style={{ width: "100%", height: "100%" }}
+              alt="kasd"
             />
           </Animated.View>
           {/* OpenCard2 */}
@@ -739,6 +742,7 @@ export const FakeUser2 = ({
               resizeMode="contain"
               source={getCard ? getCard[1]?.image : ""}
               style={{ width: "100%", height: "100%" }}
+              alt="asd"
             />
           </Animated.View>
         </View>
@@ -771,6 +775,7 @@ export const FakeUser2 = ({
         }}
       >
         <Image
+          alt="kasd"
           resizeMode="contain"
           source={
             profileUser2?.isWinner === false
@@ -796,6 +801,7 @@ export const FakeUser2 = ({
         {/* Avatar */}
         <Image
           source={require("../../../assets/AvatarExample.png")}
+          alt="kasd"
           style={{
             width: 60,
             height: 60,
@@ -834,6 +840,7 @@ export const FakeUser2 = ({
               width: 20,
               height: 20,
             }}
+            alt="kasd"
           />
           <Text
             style={{
