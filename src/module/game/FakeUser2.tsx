@@ -675,12 +675,11 @@ export const FakeUser2 = ({
               right: rightPercentCard1,
             }}
           >
-            <Image
+            <Animated.Image
               resizeMethod={"scale"}
               resizeMode="contain"
               source={require("../../../assets/deckofcard/CloseCard.png")}
               style={{ width: "100%", height: "100%" }}
-              alt="kasd"
             />
           </Animated.View>
           {/* Open */}
@@ -695,12 +694,11 @@ export const FakeUser2 = ({
               right: rightPercentCard1,
             }}
           >
-            <Image
+            <Animated.Image
               resizeMethod={"scale"}
               resizeMode="contain"
               source={getCard ? getCard[0]?.image : ""}
               style={{ width: "100%", height: "100%" }}
-              alt="asd"
             />
           </Animated.View>
         </View>
@@ -718,11 +716,10 @@ export const FakeUser2 = ({
               right: rightPercentCard2,
             }}
           >
-            <Image
+            <Animated.Image
               resizeMode="contain"
               source={require("../../../assets/deckofcard/CloseCard.png")}
               style={{ width: "100%", height: "100%" }}
-              alt="kasd"
             />
           </Animated.View>
           {/* OpenCard2 */}
@@ -737,12 +734,11 @@ export const FakeUser2 = ({
               right: rightPercentCard2,
             }}
           >
-            <Image
+            <Animated.Image
               resizeMethod={"scale"}
               resizeMode="contain"
               source={getCard ? getCard[1]?.image : ""}
               style={{ width: "100%", height: "100%" }}
-              alt="asd"
             />
           </Animated.View>
         </View>
@@ -774,8 +770,7 @@ export const FakeUser2 = ({
           opacity: OpacityWinLose,
         }}
       >
-        <Image
-          alt="kasd"
+        <Animated.Image
           resizeMode="contain"
           source={
             profileUser2?.isWinner === false
@@ -799,9 +794,8 @@ export const FakeUser2 = ({
         }}
       >
         {/* Avatar */}
-        <Image
+        <Animated.Image
           source={require("../../../assets/AvatarExample.png")}
-          alt="kasd"
           style={{
             width: 60,
             height: 60,
@@ -833,14 +827,13 @@ export const FakeUser2 = ({
             alignItems: "center",
           }}
         >
-          <Image
+          <Animated.Image
             resizeMode="contain"
             source={require("../../../assets/Coins.png")}
             style={{
               width: 20,
               height: 20,
             }}
-            alt="kasd"
           />
           <Text
             style={{

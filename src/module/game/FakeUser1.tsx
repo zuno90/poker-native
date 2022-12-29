@@ -626,8 +626,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
               right: rightPercentCard1,
             }}
           >
-            <Image
-              alt="asd"
+            <Animated.Image
               resizeMethod={"scale"}
               resizeMode="contain"
               source={require("../../../assets/deckofcard/CloseCard.png")}
@@ -647,8 +646,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
               right: rightPercentCard1,
             }}
           >
-            <Image
-              alt="asd"
+            <Animated.Image
               resizeMethod={"scale"}
               resizeMode="contain"
               // source={require("../../../assets/deckofcard/A♠.png")}
@@ -671,8 +669,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
               right: rightPercentCard2,
             }}
           >
-            <Image
-              alt="asd"
+            <Animated.Image
               resizeMethod={"scale"}
               resizeMode="contain"
               source={require("../../../assets/deckofcard/CloseCard.png")}
@@ -692,7 +689,6 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
             }}
           >
             <Image
-              alt="asd"
               resizeMethod={"scale"}
               resizeMode="contain"
               // source={require("../../../assets/deckofcard/A♠.png")}
@@ -729,8 +725,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
           opacity: profileUser1?.isFold ? 0 : OpacityWinLose,
         }}
       >
-        <Image
-          alt="asd"
+        <Animated.Image
           resizeMode="contain"
           source={
             profileUser1?.isWinner === false
@@ -753,7 +748,6 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
         }}
       >
         <Image
-          alt="asd"
           source={require("../../../assets/AvatarExample.png")}
           style={{
             width: 60,
@@ -786,8 +780,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
             alignItems: "center",
           }}
         >
-          <Image
-            alt="asd"
+          <Animated.Image
             resizeMode="contain"
             source={require("../../../assets/Coins.png")}
             style={{
