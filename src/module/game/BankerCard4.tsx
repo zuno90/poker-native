@@ -133,11 +133,12 @@ export const BankerCard4 = ({ ImageBanker4 }) => {
           opacity: OpacityCard4,
         }}
       >
-        <Image
+        <Animated.Image
+          resizeMethod={"scale"}
           resizeMode="contain"
           source={require("../../../assets/deckofcard/CloseCard.png")}
           // source={ImageBanker ? ImageBanker[2]?.image : ""}
-          style={{ width: "100%", height: "100%" }}
+          style={{ width: SizeCard4, height: SizeCard4 }}
         />
       </Animated.View>
       {/* Open */}
@@ -150,10 +151,10 @@ export const BankerCard4 = ({ ImageBanker4 }) => {
           opacity: UnOpacityCard4,
         }}
       >
-        <Image
+        <Animated.Image
           resizeMode="contain"
           source={ImageBanker4 ? ImageBanker4 : ""}
-          style={{ width: "100%", height: "100%" }}
+          style={{ width: SizeCard4, height: SizeCard4 }}
         />
       </Animated.View>
     </Animated.View>
