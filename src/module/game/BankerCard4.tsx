@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
-import { Animated, Image } from "react-native";
+import { Animated } from "react-native";
 import { useSelector } from "react-redux";
 import { GetInterpolate } from "../../utils/getInterpolate";
 import { selectGame } from "./GameSlice";
+import { Image } from "native-base";
 
 export const BankerCard4 = ({ ImageBanker4 }) => {
   const { waveGame } = useSelector(selectGame);

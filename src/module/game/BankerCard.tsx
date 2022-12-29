@@ -1,7 +1,7 @@
 import { Box, Flex, View } from "native-base";
 
 import { useEffect, useRef, useState } from "react";
-import { Animated, Image, Text, TouchableOpacity } from "react-native";
+import { Animated, Text, TouchableOpacity } from "react-native";
 import { useSelector } from "react-redux";
 import { GetInterpolate } from "../../utils/getInterpolate";
 import { BankerCard2 } from "./BankerCard2";
@@ -10,6 +10,7 @@ import { BankerCard4 } from "./BankerCard4";
 import { BankerCard5 } from "./BankerCard5";
 import { selectGame } from "./GameSlice";
 import { getImage } from "./get";
+import { Image } from "native-base";
 
 export const BankerCard = ({ ImageCard }) => {
   const ImageBanker = getImage(ImageCard);
