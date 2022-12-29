@@ -1,4 +1,4 @@
-import { View } from "native-base";
+import { Box, Flex, View } from "native-base";
 
 import { useEffect, useRef, useState } from "react";
 import { Animated, Image, Text, TouchableOpacity } from "react-native";
@@ -325,11 +325,11 @@ export const BankerCard = ({ ImageCard }) => {
     "0%",
   ]);
   return (
-    <View
+    <Flex
+      direction="row"
       style={{
         position: "absolute",
         bottom: "50%",
-        display: "flex",
         flexDirection: "row",
       }}
     >
@@ -354,7 +354,7 @@ export const BankerCard = ({ ImageCard }) => {
           }}
         >
           <Animated.Image
-            resizeMode="center"
+            resizeMode="contain"
             source={require("../../../assets/deckofcard/CloseCard.png")}
             style={{ width: SizeCard1, height: SizeCard1 }}
           />
@@ -388,6 +388,6 @@ export const BankerCard = ({ ImageCard }) => {
 
       {/* Card 5 */}
       <BankerCard5 ImageBanker5={ImageBanker ? ImageBanker[0]?.image : []} />
-    </View>
+    </Flex>
   );
 };
