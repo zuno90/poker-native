@@ -348,32 +348,30 @@ export const BankerCard = ({ ImageCard }) => {
         <Animated.View
           style={{
             position: "absolute",
-            width: SizeCard1,
-            height: SizeCard1,
+
             transform: [{ rotateY: DegCard1 }],
             opacity: OpacityCard1,
           }}
         >
-          <Image
+          <Animated.Image
             resizeMode="center"
             source={require("../../../assets/deckofcard/CloseCard.png")}
-            style={{ width: "100%", height: "100%" }}
+            style={{ width: SizeCard1, height: SizeCard1 }}
           />
         </Animated.View>
         {/* Open */}
         <Animated.View
           style={{
             zIndex: 2,
-            width: SizeCard1,
-            height: SizeCard1,
+
             transform: [{ rotateY: UnDegCard1 }],
             opacity: UnOpacityCard1,
           }}
         >
-          <Image
+          <Animated.Image
             resizeMode="contain"
             source={ImageBanker ? ImageBanker[4]?.image : ""}
-            style={{ width: "100%", height: "100%" }}
+            style={{ width: SizeCard1, height: SizeCard1 }}
           />
         </Animated.View>
       </Animated.View>

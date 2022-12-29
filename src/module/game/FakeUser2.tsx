@@ -863,7 +863,7 @@ export const FakeUser2 = ({
             opacity: OpacityTotalBetChip,
           }}
         >
-          {profileUser2?.betChips - highBetWave > 0
+          {profileUser2?.betChips - highBetWave > 0 && waveGame < 6
             ? profileUser2?.betChips - highBetWave
             : ""}
         </Animated.Text>

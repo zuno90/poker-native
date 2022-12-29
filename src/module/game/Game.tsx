@@ -14,6 +14,7 @@ import { GameContext } from "../../context/GameContext";
 import { Animated, TouchableOpacity, Image, Text, Alert } from "react-native";
 import { FakeUser1, FakeUser2, FakeUser3, FakeUser4 } from "./index";
 import { BankerCard } from "./BankerCard";
+
 import { Action } from "./Action";
 import { useDispatch, useSelector } from "react-redux";
 import { gameAction, selectGame } from "./GameSlice";
@@ -42,6 +43,8 @@ const Game = (props: any) => {
     checkAuth,
   } = useAuth();
   const { profileUser } = useSelector(selectGame);
+  const { profileUser1 } = useSelector(selectGame);
+  const { profileUser2 } = useSelector(selectGame);
   const { currentBetChips } = useSelector(selectGame);
   const { highBetWave } = useSelector(selectGame);
   const { roundGame } = useSelector(selectGame);
@@ -49,6 +52,8 @@ const Game = (props: any) => {
   const [totalCard, setTotalCard] = useState<any>([]);
   const [totalBet, setTotalBet] = useState<number>(0);
   const [highestBet, setHighestBet] = useState<number>(100);
+  const [endTurnEnoughChip, setEndTurnEnoughChip] = useState<boolean>(false);
+  const [countEnoughChip, setCountEnoughChip] = useState<number>(0);
   const dispatch = useDispatch();
   const [bankerCard, setBankerCard] = useState<any>([]);
   const [countRaiseInWave, setCountRaiseInWave] = useState<number>(0);
@@ -94,7 +99,7 @@ const Game = (props: any) => {
       console.log("error totalBet end turn");
     }
     dispatch(gameAction.updateRaiseBet(100));
-
+    setCountEnoughChip(0);
     setRoundGame(roundGame);
     setCurrent(roundGame[0]);
     setPlayerWait([]);
@@ -116,6 +121,8 @@ const Game = (props: any) => {
         dispatch(gameAction.updateCountdownReal(9));
         break;
       case 5:
+        setEndTurnEnoughChip(false);
+
         setTimeout(() => {
           dispatch(gameAction.updateWaveGame(6));
         }, 3000);
@@ -305,49 +312,66 @@ const Game = (props: any) => {
   ) => {
     // console.log(Chip, "chip bet");
     if (profile && profile !== null && waveGame > 0 && waveGame < 6) {
-      profile.send(actionType, Chip);
-      const newarr = roundgame.filter((item) => item !== roundgame[0]);
-      if (
-        newarr.length === 0 &&
-        (actionType === "CHECK" || actionType === "CALL")
-      ) {
-        handeEndTurn();
-      }
-      if (actionType === "FOLD") {
-        dispatch(gameAction.updateRoundGame(newarr));
-        setRoundGame(newarr);
-      }
-      if (actionType === "RAISE") {
-        if (countRaiseInWave > 0) {
-          setHighestBet(highestBet * 2);
+      if (endTurnEnoughChip) handleEndTurn();
+      else {
+        profile.send(actionType, Chip);
+        const newarr = roundgame.filter((item) => item !== roundgame[0]);
+        if (
+          newarr.length === 0 &&
+          (actionType === "CHECK" || actionType === "CALL")
+        ) {
+          handleEndTurn();
         }
-        setCountRaiseInWave(countRaiseInWave + 1);
-        setRoundGame([...newarr, ...playerWait, roundgame[0]]);
-        setPlayerWait(newarr);
-        dispatch(
-          gameAction.updateCurrentBetChips(currentBetChips + Chip.chips)
-        );
-      }
-      if (actionType === "ALLIN") {
-        setRoundGame([...newarr, ...playerWait, roundgame[0]]);
-        setPlayerWait(newarr);
-        dispatch(gameAction.updateCurrentBetChips(Chip.chips));
-      }
-      if (actionType === "CALL" || "CHECK") {
-        setPlayerWait([...playerWait, roundgame[0]]);
-        setRoundGame(newarr);
-      }
+        if (actionType === "FOLD") {
+          dispatch(gameAction.updateRoundGame(newarr));
+          setRoundGame(newarr);
+        }
+        if (actionType === "RAISE") {
+          if (countRaiseInWave > 0) {
+            setHighestBet(highestBet * 2);
+          }
+          setCountRaiseInWave(countRaiseInWave + 1);
+          setRoundGame([...newarr, ...playerWait, roundgame[0]]);
+          setPlayerWait(newarr);
+          dispatch(
+            gameAction.updateCurrentBetChips(currentBetChips + Chip.chips)
+          );
+        }
+        if (actionType === "ALLIN") {
+          setRoundGame([...newarr, ...playerWait, roundgame[0]]);
+          setPlayerWait(newarr);
+          dispatch(gameAction.updateCurrentBetChips(Chip.chips));
+        }
+        if (actionType === "CALL" || "CHECK") {
+          setPlayerWait([...playerWait, roundgame[0]]);
+          setRoundGame(newarr);
+        }
 
-      dispatch(gameAction.updateCountdown(9));
-      dispatch(gameAction.updateStateClearTimeout(true));
-      dispatch(
-        gameAction.updateRandomCountdown(Math.floor(Math.random() * 3) + 4)
-      );
-      setCurrent(newarr[0]);
+        dispatch(gameAction.updateCountdown(9));
+        dispatch(gameAction.updateStateClearTimeout(true));
+        dispatch(
+          gameAction.updateRandomCountdown(Math.floor(Math.random() * 3) + 4)
+        );
+        setCurrent(newarr[0]);
+      }
     }
   };
+  useEffect(() => {
+    if (waveGame > 0) {
+      const arrFull = Array.from(myroom.state.players.$items, ([_, value]) => {
+        return value;
+      });
+      arrFull.map((value, index) => {
+        if (value.chips === 0) {
+          setCountEnoughChip((countEnoughChip) => countEnoughChip + 1);
+        }
+        if (countEnoughChip === myroom.state.players.$items.size - 1)
+          setEndTurnEnoughChip(true);
+      });
+    }
+  }, [profileUser1.chips, profileUser2.chips, profileUser.chips, current]);
 
-  const handeEndTurn = () => {
+  const handleEndTurn = () => {
     console.log("end turn");
     if (myroom) {
       const object_array = myroom.state.players.$items;
@@ -367,7 +391,7 @@ const Game = (props: any) => {
       const timeoutEndTurn = setTimeout(() => {
         dispatch(gameAction.updateWaveGame(waveGame + 1));
         return clearTimeout(timeoutEndTurn);
-      }, 1000);
+      }, 3000);
     }
   };
   useEffect(() => {
@@ -404,7 +428,7 @@ const Game = (props: any) => {
     >
       {/* <TouchableOpacity
         onPress={() => {
-          handeEndTurn();
+          handleEndTurn();
         }}
         style={{
           position: "absolute",
@@ -503,6 +527,7 @@ const Game = (props: any) => {
       <BankerCard ImageCard={bankerCard} />
       {/* User  */}
       <UserReal
+        endTurnEnoughChip={endTurnEnoughChip}
         currentPlayer={current}
         handleAction={handlePlayerAction}
         highestBet={highestBet}

@@ -13,7 +13,7 @@ export const BankerCard2 = ({ ImageCard }) => {
         Animated.sequence([
           Animated.parallel([
             Animated.timing(SizeCard2, {
-              delay: 300,
+              delay: 500,
               useNativeDriver: false,
               toValue: 85,
               duration: 100,
@@ -26,7 +26,7 @@ export const BankerCard2 = ({ ImageCard }) => {
               duration: 100,
             }),
             Animated.timing(PositionHorizontalCard2, {
-              delay: 300,
+              delay: 500,
 
               useNativeDriver: false,
               toValue: 1,
@@ -148,34 +148,29 @@ export const BankerCard2 = ({ ImageCard }) => {
       {/* Close */}
       <Animated.View
         style={{
-          width: SizeCard2,
-          height: SizeCard2,
           position: "absolute",
-
           transform: [{ rotateY: DegCard2 }],
           opacity: OpacityCard2,
         }}
       >
-        <Image
-          resizeMode="contain"
+        <Animated.Image
+          resizeMode="cover"
           source={require("../../../assets/deckofcard/CloseCard.png")}
-          style={{ width: "100%", height: "100%" }}
+          style={{ width: SizeCard2, height: SizeCard2 }}
         />
       </Animated.View>
       {/* Open */}
       <Animated.View
         style={{
           zIndex: 2,
-          width: SizeCard2,
-          height: SizeCard2,
           transform: [{ rotateY: UnDegCard2 }],
           opacity: UnOpacityCard2,
         }}
       >
-        <Image
+        <Animated.Image
           resizeMode="contain"
           source={ImageCard ? ImageCard : ""}
-          style={{ width: "100%", height: "100%" }}
+          style={{ width: SizeCard2, height: SizeCard2 }}
         />
       </Animated.View>
     </Animated.View>

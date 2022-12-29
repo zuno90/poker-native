@@ -16,6 +16,7 @@ export const UserReal = ({
   handleAction,
   highestBet,
   countRaiseInWave,
+  endTurnEnoughChip,
 }) => {
   const {
     authState: { user },
@@ -332,30 +333,33 @@ export const UserReal = ({
   }, [profileUser.betChips]);
   useEffect(() => {
     if (currentPlayer === profileUser.id && waveGame > 0 && waveGame < 5) {
-      if (countdownReal > -1) {
-        var timer = setTimeout(() => {
-          dispatch(gameAction.updateCountdownReal(countdownReal - 1));
-        }, 1000);
+      if (!endTurnEnoughChip) {
+        if (countdownReal > -1) {
+          var timer = setTimeout(() => {
+            dispatch(gameAction.updateCountdownReal(countdownReal - 1));
+          }, 1000);
 
-        if (countdownReal === 0 && waveGame < 6) {
-          profileUser.chips > 0
-            ? handleAction("FOLD", { chips: 0 }, myroom)
-            : handleAction("CALL", { chips: 0 }, myroom);
-          clearTimeout(timer);
+          if (countdownReal === 0 && waveGame < 6) {
+            profileUser.chips > 0
+              ? handleAction("FOLD", { chips: 0 }, myroom)
+              : handleAction("CALL", { chips: 0 }, myroom);
+            clearTimeout(timer);
+            dispatch(gameAction.updateCountdownReal(-2));
+          }
+        } else {
           dispatch(gameAction.updateCountdownReal(-2));
         }
-      } else {
-        dispatch(gameAction.updateCountdownReal(-2));
-      }
 
-      if (currentPlayer === profileUser.id && waveGame < 6) {
-        if (profileUser.chips <= 0 || profileUser.isFold) {
-          setTimeout(() => {
-            handleAction("CALL", { chips: 0 }, myroom);
-          }, 1000);
+        if (currentPlayer === profileUser.id && waveGame < 6) {
+          if (profileUser.chips <= 0 || profileUser.isFold) {
+            setTimeout(() => {
+              handleAction("CALL", { chips: 0 }, myroom);
+            }, 1000);
+          }
         }
+      } else {
+        handleAction("CALL", { chips: 0 }, myroom);
       }
-    } else {
     }
   }, [countdownReal, currentPlayer, waveGame, isRunning]);
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
@@ -467,6 +471,7 @@ export const UserReal = ({
             bottom: -10,
             left: "-60%",
             opacity:
+              !endTurnEnoughChip &&
               profileUser.isFold === false &&
               waveGame > 0 &&
               waveGame < 5 &&
@@ -729,10 +734,11 @@ export const UserReal = ({
         </View>
       </View>
 
-      {profileUser.isFold === false &&
+      {!endTurnEnoughChip &&
+        profileUser.isFold === false &&
         currentPlayer === profileUser.id &&
-        waveGame % 8 < 6 &&
-        waveGame % 8 > 0 &&
+        waveGame % 10 < 6 &&
+        waveGame % 10 > 0 &&
         profileUser.chips > 0 && (
           <View
             style={{
