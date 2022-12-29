@@ -145,7 +145,7 @@ export const BankerCard5 = ({ ImageBanker5 }) => {
       {/* Open */}
       <Animated.View
         style={{
-          zIndex: 2,
+          zIndex: 4,
           width: SizeCard5,
           height: SizeCard5,
           transform: [{ rotateY: UnDegCard5 }],
@@ -153,6 +153,7 @@ export const BankerCard5 = ({ ImageBanker5 }) => {
         }}
       >
         <Animated.Image
+          resizeMethod={"scale"}
           resizeMode="contain"
           source={ImageBanker5 ? ImageBanker5 : ""}
           style={{ width: SizeCard5, height: SizeCard5 }}

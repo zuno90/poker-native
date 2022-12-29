@@ -121,13 +121,14 @@ export const BankerCard4 = ({ ImageBanker4 }) => {
         position: "relative",
         top: topPercentCard4,
         right: rightPercentCard4,
-        zIndex: 4,
+        zIndex: 2,
       }}
     >
       {/* Close */}
       <Animated.View
         style={{
           position: "absolute",
+          zIndex: 2,
           width: SizeCard4,
           height: SizeCard4,
           transform: [{ rotateY: DegCard4 }],
@@ -138,14 +139,13 @@ export const BankerCard4 = ({ ImageBanker4 }) => {
           resizeMethod={"scale"}
           resizeMode="contain"
           source={require("../../../assets/deckofcard/CloseCard.png")}
-          // source={ImageBanker ? ImageBanker[2]?.image : ""}
           style={{ width: SizeCard4, height: SizeCard4 }}
         />
       </Animated.View>
       {/* Open */}
       <Animated.View
         style={{
-          zIndex: 2,
+          zIndex: 4,
           width: SizeCard4,
           height: SizeCard4,
           transform: [{ rotateY: UnDegCard4 }],
@@ -153,6 +153,7 @@ export const BankerCard4 = ({ ImageBanker4 }) => {
         }}
       >
         <Animated.Image
+          resizeMethod={"scale"}
           resizeMode="contain"
           source={ImageBanker4 ? ImageBanker4 : ""}
           style={{ width: SizeCard4, height: SizeCard4 }}
