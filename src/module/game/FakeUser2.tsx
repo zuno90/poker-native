@@ -1,12 +1,13 @@
 import { View } from "native-base";
 
 import { useEffect, useRef, useState, useContext } from "react";
-import { Animated, Image, Text, TouchableOpacity } from "react-native";
+import { Animated, Text, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { GameContext } from "../../context/GameContext";
 import { GetInterpolate } from "../../utils/getInterpolate";
 import { gameAction, selectGame } from "./GameSlice";
 import { getImage } from "./get";
+import { Image } from "native-base";
 
 export const FakeUser2 = ({
   currentPlayer,
@@ -675,6 +676,7 @@ export const FakeUser2 = ({
             }}
           >
             <Image
+              resizeMethod={"scale"}
               resizeMode="contain"
               source={require("../../../assets/deckofcard/CloseCard.png")}
               style={{ width: "100%", height: "100%" }}
@@ -693,6 +695,7 @@ export const FakeUser2 = ({
             }}
           >
             <Image
+              resizeMethod={"scale"}
               resizeMode="contain"
               source={getCard ? getCard[0]?.image : ""}
               style={{ width: "100%", height: "100%" }}
@@ -732,6 +735,7 @@ export const FakeUser2 = ({
             }}
           >
             <Image
+              resizeMethod={"scale"}
               resizeMode="contain"
               source={getCard ? getCard[1]?.image : ""}
               style={{ width: "100%", height: "100%" }}

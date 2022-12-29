@@ -1,12 +1,13 @@
 import { View } from "native-base";
 
 import { useContext, useEffect, useRef, useState } from "react";
-import { Animated, Image, Text, TouchableOpacity } from "react-native";
+import { Animated, Text, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { GameContext } from "../../context/GameContext";
 import { GetInterpolate } from "../../utils/getInterpolate";
 import { gameAction, selectGame } from "./GameSlice";
 import { getImage } from "./get";
+import { Image } from "native-base";
 
 export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
   const { profileFake1 } = useContext(GameContext);
@@ -626,6 +627,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
             }}
           >
             <Image
+              resizeMethod={"scale"}
               resizeMode="contain"
               source={require("../../../assets/deckofcard/CloseCard.png")}
               style={{ width: "100%", height: "100%" }}
@@ -645,6 +647,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
             }}
           >
             <Image
+              resizeMethod={"scale"}
               resizeMode="contain"
               // source={require("../../../assets/deckofcard/A♠.png")}
               source={getCard ? getCard[0]?.image : ""}
@@ -667,6 +670,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
             }}
           >
             <Image
+              resizeMethod={"scale"}
               resizeMode="contain"
               source={require("../../../assets/deckofcard/CloseCard.png")}
               style={{ width: "100%", height: "100%" }}
@@ -685,6 +689,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
             }}
           >
             <Image
+              resizeMethod={"scale"}
               resizeMode="contain"
               // source={require("../../../assets/deckofcard/A♠.png")}
               source={getCard ? getCard[1]?.image : ""}
