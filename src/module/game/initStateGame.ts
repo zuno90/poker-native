@@ -31,9 +31,13 @@ interface init {
   waveChipTotal: number;
   raiseBet: number;
   roundGame: Array<string>;
+  chatGame: Array<string>;
 }
 export const GAME_INIT: init = {
   Total: [],
+  chatGame: [],
+  roundGame: [],
+
   PositionArray: -1,
   profileUser: {},
   profileUser1: {},
@@ -48,7 +52,6 @@ export const GAME_INIT: init = {
   isRunning: true,
   randomCountDown: 2,
   currentPlayer: "",
-  roundGame: [],
   currentBetChips: 100,
   waveChipTotal: 100,
   raiseBet: 100,

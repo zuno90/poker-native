@@ -266,7 +266,7 @@ export const UserReal = ({
       }).start();
     }
   }, [waveGame]);
-
+  // chip show
   useEffect(() => {
     Animated.sequence([
       Animated.timing(OpacityBetChip, {
@@ -331,6 +331,30 @@ export const UserReal = ({
       ]),
     ]).start();
   }, [profileUser.betChips]);
+  // chip move
+  useEffect(() => {
+    if (waveGame % 10 > 0) {
+      Animated.sequence([
+        Animated.timing(OpacityBetChip, {
+          toValue: 1,
+          useNativeDriver: false,
+          duration: 300,
+        }),
+        Animated.parallel([
+          Animated.timing(PositionVerticalChipBet, {
+            toValue: 0,
+            useNativeDriver: false,
+            duration: 300,
+          }),
+          Animated.timing(PositionHorizontalChipBet, {
+            toValue: 0,
+            useNativeDriver: false,
+            duration: 300,
+          }),
+        ]),
+      ]).start();
+    }
+  }, [profileUser.chips]);
   useEffect(() => {
     if (currentPlayer === profileUser.id && waveGame > 0 && waveGame < 5) {
       if (!endTurnEnoughChip) {
@@ -366,12 +390,10 @@ export const UserReal = ({
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;
   const PositionVerticalTotalBet = useRef(new Animated.Value(-1)).current;
-  const PositionVerticalRanking = useRef(new Animated.Value(-1)).current;
   const PositionHorizontalCard1 = useRef(new Animated.Value(0)).current;
   const PositionHorizontalCard2 = useRef(new Animated.Value(0)).current;
   const PositionHorizontalChipBet = useRef(new Animated.Value(0)).current;
   const PositionHorizontalTotalBet = useRef(new Animated.Value(-1)).current;
-  const PositionHorizontalRanking = useRef(new Animated.Value(0)).current;
   const SizeCard1 = useRef(new Animated.Value(35)).current;
   const SizeCard2 = useRef(new Animated.Value(35)).current;
   const RotateCard1 = useRef(new Animated.Value(0)).current;
@@ -383,7 +405,7 @@ export const UserReal = ({
   const OpacityWinLose = useRef(new Animated.Value(0)).current;
   const OpacityBetChip = useRef(new Animated.Value(0)).current;
   const OpacityTotalBetChip = useRef(new Animated.Value(0)).current;
-  const OpacityCountdown = useRef(new Animated.Value(0)).current;
+
   const OpacityRanking = useRef(new Animated.Value(0)).current;
   const UnOpacity1 = useRef(new Animated.Value(0)).current;
   const UnOpacity2 = useRef(new Animated.Value(0)).current;
@@ -406,17 +428,6 @@ export const UserReal = ({
   ]);
 
   const rightPercentCard2 = GetInterpolate(PositionHorizontalCard2, [
-    "5%",
-    "48%",
-    "37%",
-  ]);
-  const bottomPercentRanking = GetInterpolate(PositionVerticalRanking, [
-    "5%",
-    "68%",
-    "8%",
-  ]);
-
-  const rightPercentRanking = GetInterpolate(PositionHorizontalRanking, [
     "5%",
     "48%",
     "37%",
@@ -750,6 +761,7 @@ export const UserReal = ({
               height: "17%",
               maxWidth: 350,
               maxHeight: 70,
+              zIndex: 11,
               flexDirection: "row",
             }}
           >
@@ -766,7 +778,7 @@ export const UserReal = ({
             <View
               style={{
                 marginLeft: 10,
-                zIndex: 7,
+                zIndex: 12,
                 width: "96%",
                 height: "100%",
                 display: "flex",
@@ -774,7 +786,7 @@ export const UserReal = ({
                 justifyContent: "space-around",
               }}
             >
-              {/* Call */}
+              {/* Fold */}
               <Action
                 action={() => {
                   dispatch(gameAction.updateCountdownReal(-2));

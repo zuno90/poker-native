@@ -11,7 +11,14 @@ import { Room } from "colyseus.js";
 import { View } from "native-base";
 import * as Colyseus from "colyseus.js";
 import { GameContext } from "../../context/GameContext";
-import { Animated, TouchableOpacity, Image, Text, Alert } from "react-native";
+import {
+  Animated,
+  TouchableOpacity,
+  Image,
+  Text,
+  Alert,
+  Dimensions,
+} from "react-native";
 import { FakeUser1, FakeUser2, FakeUser3, FakeUser4 } from "./index";
 import { BankerCard } from "./BankerCard";
 
@@ -28,6 +35,7 @@ import {
   POSITION_USER_LEFT,
   POSITION_USER_TOP,
 } from "../../../constant/common";
+import { ModalChat } from "../../components/ModalChat";
 
 interface ROOM_CHAT {
   ROOM_CHAT: "ROOM_CHAT";
@@ -42,6 +50,8 @@ const Game = (props: any) => {
     authState: { user },
     checkAuth,
   } = useAuth();
+  const { height, width } = Dimensions.get("window");
+
   const { profileUser } = useSelector(selectGame);
   const { profileUser1 } = useSelector(selectGame);
   const { profileUser2 } = useSelector(selectGame);
@@ -206,13 +216,13 @@ const Game = (props: any) => {
     }
   }, [room]);
 
-  useEffect(() => {
-    if (isRunning === false) {
-      setTimeout(() => {
-        handleReady();
-      }, 5000);
-    }
-  }, [isRunning]);
+  // useEffect(() => {
+  //   if (isRunning === false) {
+  //     setTimeout(() => {
+  //       handleReady();
+  //     }, 5000);
+  //   }
+  // }, [isRunning]);
   //Animation for totalBet
   useEffect(() => {
     Animated.timing(OpacityTotalBet, {
@@ -295,6 +305,8 @@ const Game = (props: any) => {
     }
   };
   const handleLeaveRoom = () => {
+    dispatch(gameAction.updateChat([]));
+
     myroom.leave();
 
     // profileFake1.leave();
@@ -417,16 +429,17 @@ const Game = (props: any) => {
   // console.log(waveGame, "waveGame");
 
   return (
-    <View
-      style={{
-        position: "relative",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flex: 1,
-      }}
-    >
-      {/* <TouchableOpacity
+    <>
+      <View
+        style={{
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flex: 1,
+        }}
+      >
+        {/* <TouchableOpacity
         onPress={() => {
           handleEndTurn();
         }}
@@ -441,33 +454,34 @@ const Game = (props: any) => {
       >
         <Text style={{ color: "white" }}>End turn</Text>
       </TouchableOpacity> */}
-      {/* Background */}
-      <Image
-        resizeMode="cover"
-        source={require("../../../assets/BackgroundRoom.png")}
-        style={{ width: "101%", height: "101%" }}
-      />
-      {/* QuitRoom */}
-      <TouchableOpacity
-        onPress={handleLeaveRoom}
-        style={{
-          position: "absolute",
-          width: 30,
-          height: 30,
-          top: 20,
-          left: 20,
-        }}
-      >
+        {/* Background */}
         <Image
-          style={{
-            width: "100%",
-            height: "100%",
-          }}
-          resizeMode="contain"
-          source={require("../../../assets/QuitRoom.png")}
+          resizeMode="cover"
+          source={require("../../../assets/BackgroundRoom.png")}
+          style={{ width: width, height: height, zIndex: -3 }}
         />
-      </TouchableOpacity>
-      <TouchableOpacity
+        {/* QuitRoom */}
+        <TouchableOpacity
+          onPress={handleLeaveRoom}
+          style={{
+            position: "absolute",
+            width: 30,
+            height: 30,
+            top: 20,
+            left: 20,
+            zIndex: 5,
+          }}
+        >
+          <Image
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+            resizeMode="contain"
+            source={require("../../../assets/QuitRoom.png")}
+          />
+        </TouchableOpacity>
+        {/* <TouchableOpacity
         style={{
           position: "absolute",
           width: 30,
@@ -484,49 +498,49 @@ const Game = (props: any) => {
           resizeMode="contain"
           source={require("../../../assets/Chat.png")}
         />
-      </TouchableOpacity>
-      {/* Chat */}
-      {/* Table */}
-      <Image
-        resizeMode="contain"
-        source={require("../../../assets/TableRoom.png")}
-        style={{
-          width: "70%",
-          height: "58%",
-          zIndex: 2,
-          position: "absolute",
-        }}
-      />
-      {/* Host */}
-      <View style={{ position: "absolute", bottom: "75%" }}>
+      </TouchableOpacity> */}
+        {/* Chat */}
+        {/* Table */}
         <Image
           resizeMode="contain"
-          source={require("../../../assets/GirlBanker.png")}
-          style={{ width: 100, height: 100 }}
+          source={require("../../../assets/TableRoom.png")}
+          style={{
+            width: "70%",
+            height: "58%",
+            zIndex: -1,
+            position: "absolute",
+          }}
         />
-      </View>
-      {/* TotalBet */}
-      <Animated.Text
-        style={{
-          top: topTotalBet,
-          left: leftTotalBet,
-          color: "white",
-          position: "absolute",
-          fontSize: 16, // 16
-          // backgroundColor: "yellow",
-          zIndex: 6,
-          opacity: OpacityTotalBet,
-        }}
-      >
-        {totalBet > 0 && waveGame > 1
-          ? waveGame === 7
-            ? `+ ${totalBet}`
-            : totalBet
-          : ""}
-      </Animated.Text>
-      <BankerCard ImageCard={bankerCard} />
-      {/* User  */}
-      <UserReal
+        {/* Host */}
+        <View style={{ position: "absolute", bottom: "75%" }}>
+          <Image
+            resizeMode="contain"
+            source={require("../../../assets/GirlBanker.png")}
+            style={{ width: 100, height: 100 }}
+          />
+        </View>
+        {/* TotalBet */}
+        <Animated.Text
+          style={{
+            top: topTotalBet,
+            left: leftTotalBet,
+            color: "white",
+            position: "absolute",
+            fontSize: 16, // 16
+            // backgroundColor: "yellow",
+            zIndex: 6,
+            opacity: OpacityTotalBet,
+          }}
+        >
+          {totalBet > 0 && waveGame > 1
+            ? waveGame === 7
+              ? `+ ${totalBet}`
+              : totalBet
+            : ""}
+        </Animated.Text>
+        {/* <BankerCard ImageCard={bankerCard} /> */}
+        {/* User  */}
+        {/* <UserReal
         endTurnEnoughChip={endTurnEnoughChip}
         currentPlayer={current}
         handleAction={handlePlayerAction}
@@ -543,11 +557,13 @@ const Game = (props: any) => {
         currentPlayer={current}
         handleAction={handlePlayerAction}
         currentChips={currentBetChips}
-      />
-      {/* <FakeUser3 handleAction={handlePlayerAction} />
+      /> */}
+        {/* <FakeUser3 handleAction={handlePlayerAction} />
       <FakeUser4 handleAction={handlePlayerAction} /> */}
-      {/* Bet */}
-    </View>
+        {/* Bet */}
+      </View>
+      <ModalChat />
+    </>
   );
 };
 

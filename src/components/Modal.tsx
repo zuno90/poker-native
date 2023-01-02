@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button, FormControl, HStack, Input, Modal } from "native-base";
+import { Button, Modal } from "native-base";
 
 interface IModal {
   state: boolean;
@@ -34,7 +34,11 @@ const CustomModal = (props: IModal) => {
           </Modal.Body>
           <Modal.Footer>
             <Button.Group space={2}>
-              <Button variant="ghost" colorScheme="blueGray" onPress={props.handleClose}>
+              <Button
+                variant="ghost"
+                colorScheme="blueGray"
+                onPress={props.handleClose}
+              >
                 Cancel
               </Button>
               {/* <Button onPress={() =>{props.handleSubmit}}>Save</Button> */}

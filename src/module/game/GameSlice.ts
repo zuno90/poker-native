@@ -4,6 +4,11 @@ const gameSlice = createSlice({
   name: "game",
   initialState: GAME_INIT,
   reducers: {
+    //Chat
+    updateChat(state, action: PayloadAction<any>) {
+      console.log(action.payload, "check store");
+      state.chatGame.push(action.payload);
+    },
     updateTotal(state, action: PayloadAction<any>) {
       // console.log(state.Total, "store");
       if (typeof action.payload === "object") {
@@ -47,6 +52,7 @@ const gameSlice = createSlice({
     updatePositionArray(state, action: PayloadAction<any>) {
       state.PositionArray = action.payload;
     },
+    //Profile
     updateProfileUser(state, action: PayloadAction<any>) {
       if (action.payload) {
         state.profileUser = action.payload;
