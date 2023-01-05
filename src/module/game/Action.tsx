@@ -1,9 +1,9 @@
-import { Alert, TouchableOpacity, Image, Text } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
-import { Box, Slider, Stack } from "native-base";
-import { GameContext } from "../../context/GameContext";
 import { Room } from "colyseus.js";
+import { Image, Box, Slider, Stack } from "native-base";
+import React, { useContext, useState } from "react";
+import { Text, TouchableOpacity } from "react-native";
 import { useDispatch } from "react-redux";
+import { GameContext } from "../../context/GameContext";
 import { gameAction } from "./GameSlice";
 
 export const Action = ({
@@ -40,6 +40,7 @@ export const Action = ({
         }}
       >
         <Image
+          alt="sad"
           resizeMode="cover"
           source={ImageAction}
           style={{

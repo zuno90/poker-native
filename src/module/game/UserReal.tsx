@@ -1,8 +1,8 @@
 import { Room } from "colyseus.js";
-import { Box, Slider, Stack, View } from "native-base";
+import { Box, Slider, Stack, View, Image } from "native-base";
 
 import { useContext, useEffect, useRef, useState } from "react";
-import { Animated, Image, Text } from "react-native";
+import { Animated, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../../context/AuthContext";
 import { GameContext } from "../../context/GameContext";
@@ -30,8 +30,7 @@ export const UserReal = ({
   const { highBetWave } = useSelector(selectGame);
   const { isRunning } = useSelector(selectGame);
 
-  const { room } = useContext(GameContext);
-  const myroom = room as Room;
+  const { myProfile } = useContext(GameContext);
   const [getCard, setGetCard] = useState([
     { image: require("../../../assets/deckofcard/5♠.png") },
     { image: require("../../../assets/deckofcard/5♠.png") },
@@ -41,6 +40,8 @@ export const UserReal = ({
       setGetCard(getImage(profileUser.cards));
     }
   }, [waveGame, isRunning, currentPlayer]);
+  // console.log(myProfile, "ProfileUser Real");
+
   useEffect(() => {
     if (waveGame % 10 > 1) {
       Animated.sequence([
@@ -365,8 +366,8 @@ export const UserReal = ({
 
           if (countdownReal === 0 && waveGame < 6) {
             profileUser.chips > 0
-              ? handleAction("FOLD", { chips: 0 }, myroom)
-              : handleAction("CALL", { chips: 0 }, myroom);
+              ? handleAction("FOLD", { chips: 0 }, myProfile)
+              : handleAction("CALL", { chips: 0 }, myProfile);
             clearTimeout(timer);
             dispatch(gameAction.updateCountdownReal(-2));
           }
@@ -377,12 +378,12 @@ export const UserReal = ({
         if (currentPlayer === profileUser.id && waveGame < 6) {
           if (profileUser.chips <= 0 || profileUser.isFold) {
             setTimeout(() => {
-              handleAction("CALL", { chips: 0 }, myroom);
+              handleAction("CALL", { chips: 0 }, myProfile);
             }, 1000);
           }
         }
       } else {
-        handleAction("CALL", { chips: 0 }, myroom);
+        handleAction("CALL", { chips: 0 }, myProfile);
       }
     }
   }, [countdownReal, currentPlayer, waveGame, isRunning]);
@@ -512,6 +513,7 @@ export const UserReal = ({
           }}
         >
           <Image
+            alt="sad"
             resizeMode="contain"
             source={require("../../../assets/deckofcard/CloseCard.png")}
             style={{ width: "100%", height: "100%" }}
@@ -531,6 +533,7 @@ export const UserReal = ({
           }}
         >
           <Image
+            alt="sad"
             resizeMode="contain"
             source={getCard ? getCard[1]?.image : ""}
             style={{ width: "100%", height: "100%" }}
@@ -553,6 +556,7 @@ export const UserReal = ({
           }}
         >
           <Image
+            alt="sad"
             resizeMode="contain"
             source={require("../../../assets/deckofcard/CloseCard.png")}
             style={{ width: "100%", height: "100%" }}
@@ -572,6 +576,7 @@ export const UserReal = ({
           }}
         >
           <Image
+            alt="sad"
             resizeMode="contain"
             source={getCard ? getCard[0]?.image : ""}
             style={{ width: "100%", height: "100%" }}
@@ -606,6 +611,7 @@ export const UserReal = ({
           }}
         >
           <Image
+            alt="sad"
             resizeMode="contain"
             source={
               profileUser.isWinner === false
@@ -647,6 +653,7 @@ export const UserReal = ({
           )}
           {/* {profileUser.id === currentPlayer ? (
             <Image
+              alt="sad"
               resizeMode="contain"
               source={require("../../../assets/Frame.png")}
               style={{
@@ -665,6 +672,7 @@ export const UserReal = ({
           )} */}
 
           <Image
+            alt="sad"
             source={require("../../../assets/AvatarExample.png")}
             style={{
               width: 60,
@@ -712,6 +720,7 @@ export const UserReal = ({
             }}
           >
             <Image
+              alt="sad"
               resizeMode="contain"
               source={require("../../../assets/Coins.png")}
               style={{
@@ -766,6 +775,7 @@ export const UserReal = ({
             }}
           >
             <Image
+              alt="sad"
               resizeMode="contain"
               source={require("../../../assets/betFrame.png")}
               style={{
@@ -791,7 +801,7 @@ export const UserReal = ({
                 action={() => {
                   dispatch(gameAction.updateCountdownReal(-2));
 
-                  handleAction("FOLD", {}, myroom);
+                  handleAction("FOLD", {}, myProfile);
                 }}
                 ImageAction={require("../../../assets/Fold.png")}
                 title="FOLD"
@@ -801,7 +811,7 @@ export const UserReal = ({
                 action={() => {
                   dispatch(gameAction.updateCountdownReal(-2));
 
-                  handleAction("CHECK", { chips: 0 }, myroom);
+                  handleAction("CHECK", { chips: 0 }, myProfile);
                 }}
                 ImageAction={require("../../../assets/Check.png")}
                 title="CHECK"
@@ -821,7 +831,7 @@ export const UserReal = ({
                           ? profileUser.betChips - highBetWave + highestBet
                           : profileUser.betChips - highBetWave,
                     },
-                    myroom
+                    myProfile
                   );
                 }}
                 ImageAction={require("../../../assets/Raise.png")}
@@ -838,10 +848,10 @@ export const UserReal = ({
                     {
                       chips: profileUser.chips,
                     },
-                    myroom
+                    myProfile
                   );
                 }}
-                profile={myroom}
+                profile={myProfile}
                 ImageAction={require("../../../assets/Allin.png")}
                 title="ALL IN"
               />

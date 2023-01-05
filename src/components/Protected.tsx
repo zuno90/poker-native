@@ -34,13 +34,13 @@ const Protected: React.FC = () => {
       ) : (
         <>
           <Stack.Screen
-            name="GAME"
-            component={Game}
+            name="HOME"
+            component={Home}
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="HOME"
-            component={Home}
+            name="GAME"
+            component={Game}
             options={{ headerShown: false }}
           />
         </>

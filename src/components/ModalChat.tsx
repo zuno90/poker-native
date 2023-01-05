@@ -1,26 +1,23 @@
+import { MaterialIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { debounce } from "lodash";
 import {
   Box,
-  IconButton,
-  Stagger,
+  Icon,
   Image,
-  Text,
-  VStack,
-  PresenceTransition,
-  View,
   Input,
   Pressable,
-  Icon,
+  Stagger,
+  Text,
+  View,
+  VStack,
 } from "native-base";
 import React, { useContext, useEffect, useState } from "react";
-import { TouchableOpacity, Dimensions, ScrollView } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { Room } from "colyseus.js";
-import { debounce } from "lodash";
-import { GameContext } from "../context/GameContext";
-import { gameAction, selectGame } from "../module/game/GameSlice";
+import { Dimensions, ScrollView, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../context/AuthContext";
-import { MaterialIcons } from "@expo/vector-icons";
+import { GameContext } from "../context/GameContext";
+import { gameAction, selectGame } from "../module/game/GameSlice";
 export const ModalChat = () => {
   const { height, width } = Dimensions.get("window");
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -38,17 +35,18 @@ export const ModalChat = () => {
   // });
 
   useEffect(() => {
-    room?.onMessage("ROOM_CHAT", (data: any) => {
-      console.log(data, "check data back");
-      dispatch(gameAction.updateChat(data));
-    });
-  }, [chatGame]);
-  // console.log(chatGame, "chatGame");
+    try {
+      room?.onMessage("ROOM_CHAT", (data: any) => {
+        dispatch(gameAction.updateChat(data));
+      });
+    } catch (error) {
+      console.log("error chat modal");
+    }
+  }, []);
+
   const handleChat = (value: string) => {
-    console.log(value, "check Text Chat");
     setTextChat(value);
   };
-  console.log(textChat, "check Text Chaasdt");
 
   return (
     <>
@@ -70,13 +68,13 @@ export const ModalChat = () => {
         }}
       >
         <Image
+          alt="asd"
           style={{
             width: "100%",
             height: "100%",
           }}
           resizeMode="contain"
           source={require("../../assets/Chat.png")}
-          alt="sad"
         />
       </TouchableOpacity>
 

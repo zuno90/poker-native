@@ -4,17 +4,21 @@ import * as Colyseus from "colyseus.js"; // not necessary if included via <scrip
 
 import { Alert, TouchableOpacity, View } from "react-native";
 import { Text, Image } from "native-base";
-
+import { LogBox } from "react-native";
+LogBox.ignoreAllLogs(); //Ignore all log notifications
 import { useAuth } from "../context/AuthContext";
 import { GameContext } from "../context/GameContext";
 import { gameAction } from "../module/game/GameSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import { VALUE } from "../../constant/common";
+import { homeAction, selectHome } from "../module/home/HomeSlice";
 interface InfoUser {
   id?: string;
   isHost?: false;
   chips?: number;
   betChips?: number;
+  seat?: number;
   turn?: number;
   role?: "Bot" | "Player";
   cards?: [];
@@ -25,63 +29,87 @@ const Home: React.FC = (props: any) => {
     checkAuth,
     signOut,
   } = useAuth();
-  const navigation = useNavigation();
-  const isFocused = useMemo(() => navigation.isFocused(), []);
   const roomContext = useContext(GameContext);
+  const { room } = useContext(GameContext);
+  const { profileFake1 } = useContext(GameContext);
+  const { profileFake2 } = useContext(GameContext);
+  const { myProfile } = useContext(GameContext);
+  const isFocused = useMemo(() => props.navigation.isFocused(), []);
   const dispatch = useDispatch();
   const client = new Colyseus.Client("ws://175.41.154.239");
+  let arrSeatRoom = [];
+  useEffect(() => {
+    console.log(myProfile);
+  }, [myProfile]);
+  useEffect(() => {
+    let arrSeat = [1, 2, 3, 4, 5];
+
+    try {
+      myProfile.onStateChange((state) => {
+        console.log(myProfile, "home file");
+        for (let i of state.players.$items) {
+          if (!arrSeatRoom.includes(i[1].seat)) arrSeatRoom.push(i[1].seat);
+          const Seat = arrSeat.filter((item) => !arrSeatRoom.includes(item));
+          if (
+            arrSeatRoom.length === state.players.$items.size &&
+            i[1].turn === -6
+          ) {
+            myProfile.send("RESERVE_SEAT", { seat: Seat[0] });
+          }
+        }
+      });
+      arrSeatRoom = [];
+    } catch (error) {}
+  }, [myProfile]);
   const getAvailableRooms = async (infoUser?: InfoUser) => {
-    const room = await client.getAvailableRooms("desk");
+    const room = await client.getAvailableRooms("noob");
     if (room.length !== 0) {
       const { clients, roomId } = room[0];
+
       if (clients <= 4 && clients > 1) {
         const params = {
           id: user.id,
           chips: user.chips,
-          isHost: true,
-          turn: clients + 1,
+          isHost: false,
+          seat: -6,
+          turn: -6,
           cards: [],
         };
         try {
-          const room = await client.joinById(roomId, params);
-
-          if (room) {
-            roomContext.handleRoom(room);
-            room && props.navigation.navigate("GAME");
-          }
-        } catch (error) {
-          console.log("adsf", error);
-        }
+          await client
+            .joinById(roomId, params)
+            .then((value) => {
+              roomContext.handleMyProfile(value);
+            })
+            .then(() => {
+              props.navigation.navigate("GAME");
+            });
+        } catch (error) {}
       } else if (clients === 1) {
         try {
-          const profileFake1 = await client.joinById(roomId, infoUser);
-          const profileFake2 = await client.joinById(roomId, {
-            betChips: 0,
-            id: "zuno-bot22",
-            isHost: false,
-            chips: 10000,
-            turn: 3,
-            role: "Bot",
-            cards: [],
+          await client.joinById(roomId, infoUser).then((value) => {
+            roomContext.handleProfileFake1(value);
           });
-
-          if (room) {
-            roomContext.handleProfileFake1(profileFake1);
-            roomContext.handleProfileFake2(profileFake2);
-            room && props.navigation.navigate("GAME");
-          }
-        } catch (error) {
-          console.log("adsf", error);
-        }
+          await client
+            .joinById(roomId, {
+              betChips: 0,
+              id: "zuno-bot22",
+              isHost: false,
+              chips: 10000,
+              seat: 3,
+              role: "Bot",
+              cards: [],
+            })
+            .then((value2) => {
+              roomContext.handleProfileFake2(value2);
+            });
+        } catch (error) {}
       }
     } else {
       createRoom();
     }
     return room;
   };
-  useEffect(() => {
-    checkAuth();
-  }, []);
   useEffect(() => {
     if (isFocused) {
       checkAuth();
@@ -92,27 +120,36 @@ const Home: React.FC = (props: any) => {
       id: user.id,
       chips: user.chips,
       isHost: true,
+      seat: 1,
       turn: 1,
       cards: [],
       betChips: 0,
       role: "Player",
     };
+    const myProfile = await client
+      .joinOrCreate("noob", params)
+      .then((value) => {
+        roomContext.handleMyProfile(value);
+        // roomContext.handleRoom({name:value.name,
+        //   onStateChange:value.onStateChange,
+        //   serialize:value.serializer,
 
-    const room = await client.joinOrCreate("desk", params);
+        // });
+        return value;
+      });
 
-    if (room) {
+    if (myProfile) {
+      myProfile && props.navigation.navigate("GAME");
       getAvailableRooms({
         betChips: 0,
         id: "zuno-bot",
         isHost: false,
         chips: 10000,
+        seat: 2,
         turn: 2,
         role: "Bot",
         cards: [],
       });
-      roomContext.handleRoom(room);
-
-      room && props.navigation.navigate("GAME");
     }
   };
 
@@ -171,11 +208,13 @@ const Home: React.FC = (props: any) => {
               id: "zuno-bot",
               isHost: false,
               chips: 10000,
-              turn: 2,
+              seat: 2,
               role: "Bot",
               cards: [],
               betChips: 0,
             }).then(() => {
+              dispatch(gameAction.updateWaveGame(-2));
+
               dispatch(gameAction.updateIsRunning(false));
             });
           } else {

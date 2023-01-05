@@ -1,26 +1,32 @@
-import { Room } from "colyseus.js";
+import { Client, Room } from "colyseus.js";
 import { createContext, useState } from "react";
 
 export const GameContext = createContext<any>({});
 
 const GameContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [room, setRoom] = useState<Room>(null);
-  const [profileFake1, setProfileFake1] = useState<Room>(null);
-  const [profileFake2, setProfileFake2] = useState<Room>(null);
-  const handleRoom = (value: Room) => {
-    setRoom(value);
+  const [myProfile, setMyProfile] = useState<Client>(null);
+  const [profileFake1, setProfileFake1] = useState<Client>(null);
+  const [profileFake2, setProfileFake2] = useState<Client>(null);
+  const handleRoom = (valueRoom: Room) => {
+    // console.log(valueRoom, "value room");
+    setRoom(valueRoom);
   };
-  const handleProfileFake1 = (value: Room) => {
-    setProfileFake1(value);
+  const handleMyProfile = (valueMyProfile: Client) => {
+    // console.log(valueMyProfile, "myprofile");
+    setMyProfile(valueMyProfile);
   };
-  const handleProfileFake2 = (value: Room) => {
-    setProfileFake2(value);
+  const handleProfileFake1 = (valueProfileFake1: Client) => {
+    setProfileFake1(valueProfileFake1);
+  };
+  const handleProfileFake2 = (valueProfileFake2: Client) => {
+    setProfileFake2(valueProfileFake2);
   };
   return (
     <GameContext.Provider
       value={{
-        room,
-        handleRoom,
+        myProfile,
+        handleMyProfile,
         profileFake1,
         handleProfileFake1,
         profileFake2,

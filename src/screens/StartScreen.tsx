@@ -1,17 +1,18 @@
 import {
   StyleSheet,
-  Image,
   ImageBackground,
   TouchableOpacity,
   View,
 } from "react-native";
+import { Image } from "native-base";
 export default function StartScreen({ navigation }: any) {
   return (
     <ImageBackground
       source={require("../../assets/BackgroundGame.png")}
       style={{ width: "105%", height: "102%" }}
     >
-      <Image
+      {/* <Image
+        alt="sad"
         source={require("../../assets/GirlScreenStart.png")}
         style={{
           position: "absolute",
@@ -21,7 +22,7 @@ export default function StartScreen({ navigation }: any) {
           bottom: 0,
           left: -10,
         }}
-      />
+      /> */}
       <View
         style={{
           flex: 1,
@@ -41,6 +42,7 @@ export default function StartScreen({ navigation }: any) {
           }}
         >
           <Image
+            alt="Login"
             source={require("../../assets/LoginButton.png")}
             style={{ width: 280, height: 78, top: 20 }}
           />
@@ -51,6 +53,7 @@ export default function StartScreen({ navigation }: any) {
           }}
         >
           <Image
+            alt="Signup"
             source={require("../../assets/SignupButton.png")}
             style={{ width: 280, height: 72, top: 20 }}
           />

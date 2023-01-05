@@ -1,51 +1,32 @@
-import React, {
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-  useMemo,
-  useRef,
-} from "react";
 import { Room } from "colyseus.js";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
-import { View } from "native-base";
 import * as Colyseus from "colyseus.js";
+import { View, Image } from "native-base";
+import { Animated, Dimensions, Text, TouchableOpacity } from "react-native";
 import { GameContext } from "../../context/GameContext";
-import {
-  Animated,
-  TouchableOpacity,
-  Image,
-  Text,
-  Alert,
-  Dimensions,
-} from "react-native";
 import { FakeUser1, FakeUser2, FakeUser3, FakeUser4 } from "./index";
-import { BankerCard } from "./BankerCard";
 
-import { Action } from "./Action";
 import { useDispatch, useSelector } from "react-redux";
-import { gameAction, selectGame } from "./GameSlice";
-import { useAuth } from "../../context/AuthContext";
-import { UserReal } from "./UserReal";
-import {
-  GetInterpolate,
-  GetInterpolatePosition,
-} from "../../utils/getInterpolate";
 import {
   POSITION_USER_LEFT,
   POSITION_USER_TOP,
 } from "../../../constant/common";
 import { ModalChat } from "../../components/ModalChat";
+import { useAuth } from "../../context/AuthContext";
+import { GetInterpolatePosition } from "../../utils/getInterpolate";
+import { gameAction, selectGame } from "./GameSlice";
+import { UserReal } from "./UserReal";
+import { BankerCard } from "./BankerCard";
 
 interface ROOM_CHAT {
   ROOM_CHAT: "ROOM_CHAT";
   message: string;
 }
 const Game = (props: any) => {
-  const { room } = useContext(GameContext);
-
-  const { profileFake1 } = useSelector(selectGame);
-  const { profileFake2 } = useSelector(selectGame);
+  const { myProfile } = useContext(GameContext);
+  const { profileFake1 } = useContext(GameContext);
+  const { profileFake2 } = useContext(GameContext);
   const {
     authState: { user },
     checkAuth,
@@ -55,10 +36,10 @@ const Game = (props: any) => {
   const { profileUser } = useSelector(selectGame);
   const { profileUser1 } = useSelector(selectGame);
   const { profileUser2 } = useSelector(selectGame);
+  const { SSIDstartgame } = useSelector(selectGame);
   const { currentBetChips } = useSelector(selectGame);
   const { highBetWave } = useSelector(selectGame);
   const { roundGame } = useSelector(selectGame);
-  const myroom = room as Room;
   const [totalCard, setTotalCard] = useState<any>([]);
   const [totalBet, setTotalBet] = useState<number>(0);
   const [highestBet, setHighestBet] = useState<number>(100);
@@ -90,16 +71,35 @@ const Game = (props: any) => {
     positionLeft
   );
   useEffect(() => {
-    dispatch(gameAction.updateProfileUser(a.Total[a.PositionArray % 5]));
-    dispatch(gameAction.updateProfileUser1(a.Total[(a.PositionArray + 1) % 5]));
-    dispatch(gameAction.updateProfileUser2(a.Total[(a.PositionArray + 2) % 5]));
-    dispatch(gameAction.updateProfileUser3(a.Total[(a.PositionArray + 3) % 5]));
-    dispatch(gameAction.updateProfileUser4(a.Total[(a.PositionArray + 4) % 5]));
-  }, [a]);
+    try {
+      a.Total.forEach((item) => {
+        switch (item.seat) {
+          case a.PositionArray:
+            dispatch(gameAction.updateProfileUser(item));
+            break;
+          case (a.PositionArray + 1) % 5 !== 0 ? (a.PositionArray + 1) % 5 : 5:
+            dispatch(gameAction.updateProfileUser1(item));
+            break;
+          case (a.PositionArray + 2) % 5 !== 0 ? (a.PositionArray + 2) % 5 : 5:
+            dispatch(gameAction.updateProfileUser2(item));
+            break;
 
+          case (a.PositionArray + 3) % 5 !== 0 ? (a.PositionArray + 3) % 5 : 5:
+            dispatch(gameAction.updateProfileUser3(item));
+            break;
+
+          case (a.PositionArray + 4) % 5 !== 0 ? (a.PositionArray + 4) % 5 : 5:
+            dispatch(gameAction.updateProfileUser4(item));
+            break;
+        }
+      });
+    } catch (error) {
+      console.log("error get profile for user");
+    }
+  }, [a.Total]);
   useEffect(() => {
     try {
-      if (waveGame > 0) setTotalBet(myroom.state.totalBet);
+      if (waveGame > 0) setTotalBet(myProfile.state.totalBet);
       if (waveGame < 2) {
         setPositionTop(["24%", "23%", "24%"]);
 
@@ -146,14 +146,14 @@ const Game = (props: any) => {
 
         break;
       case 7:
-        myroom.send("FINISH_GAME", "");
+        myProfile.send("FINISH_GAME", "");
         setTimeout(() => {
           dispatch(gameAction.updateWaveGame(9));
         }, 3000);
         break;
 
       case 9:
-        myroom.send("RESET_GAME", "");
+        myProfile.send("RESET_GAME", "");
         setTotalBet(0);
         setTimeout(() => {
           dispatch(gameAction.updateIsRunning(false));
@@ -166,56 +166,47 @@ const Game = (props: any) => {
   }, [waveGame]);
   useEffect(() => {
     try {
-      if (room && room !== null) {
-        let countPositionArray = -1;
-        room.onStateChange((state) => {
-          for (let i of state.players.$items) {
-            countPositionArray++;
-            if (i[1].id === user.id) {
-              dispatch(gameAction.updatePositionArray(countPositionArray));
-            }
+      myProfile.onStateChange((state) => {
+        console.log(myProfile, "gamefile");
+        for (let i of state.players.$items) {
+          if (i[1].isHost) dispatch(gameAction.updateSSIDStartGame(i[0]));
+          if (i[1].id === user.id) {
+            dispatch(gameAction.updatePositionArray(i[1].seat));
           }
-          countPositionArray = -1;
-          let Arr = Array.from(
-            state.players.$items,
-            ([sessionId, Value]) => Value
-          );
-          dispatch(gameAction.updateTotal(Arr));
+        }
+        let Arr = Array.from(
+          state.players.$items,
+          ([sessionId, Value]) => Value
+        );
+        dispatch(gameAction.updateTotal(Arr));
 
-          for (let i of state.players.values()) {
-            if (i.cards.length !== 0) {
-              setTotalCard([...totalCard, i.cards]);
-            }
+        for (let i of state.players.values()) {
+          if (i.cards.length !== 0) {
+            setTotalCard([...totalCard, i.cards]);
           }
-          if (state.banker5Cards) {
-            setBankerCard(state.banker5Cards);
-          }
-        });
-        myroom.onLeave((code) => {
-          console.log("we left you idiot");
-          props.navigation.navigate("HOME");
-          dispatch(gameAction.updateWaveGame(-2));
-          setRoundGame([]);
-          setCurrent([]);
-          setPlayerWait([]);
-          dispatch(gameAction.updateHighBetWave(0));
-        });
-        profileFake1.onLeave((code) => {});
-        profileFake2.onLeave((code) => {});
-
-        return () => {
-          myroom.removeAllListeners();
-          profileFake1.removeAllListeners();
-          profileFake2.removeAllListeners();
-        };
-      } else {
+        }
+        if (state.banker5Cards) {
+          setBankerCard(state.banker5Cards);
+        }
+      });
+      myProfile.onLeave((code) => {
+        console.log("we left you idiot");
         props.navigation.navigate("HOME");
-      }
+      });
+      profileFake1.onLeave((code) => {});
+      profileFake2.onLeave((code) => {});
+
+      return () => {
+        myProfile.removeAllListeners();
+        profileFake1.removeAllListeners();
+        profileFake2.removeAllListeners();
+      };
     } catch {
       console.log("Error");
     }
-  }, [room]);
-
+  }, [myProfile]);
+  // console.log(a.Total);
+  // console.log(myProfile);
   // useEffect(() => {
   //   if (isRunning === false) {
   //     setTimeout(() => {
@@ -223,7 +214,7 @@ const Game = (props: any) => {
   //     }, 5000);
   //   }
   // }, [isRunning]);
-  //Animation for totalBet
+
   useEffect(() => {
     Animated.timing(OpacityTotalBet, {
       useNativeDriver: false,
@@ -232,7 +223,7 @@ const Game = (props: any) => {
     }).start();
     if (waveGame === 6) {
       try {
-        const Winner = myroom.state.players.$items;
+        const Winner = myProfile.state.players.$items;
         const arr2 = Array.from(Winner, ([_, value]) => {
           return value;
         });
@@ -244,8 +235,6 @@ const Game = (props: any) => {
         const positionTurnPlayerWinner = arr2.filter((value) => {
           if (value.id === filterWiner[0]) return value;
         });
-        // console.log(POSITION_USER_TOP, "posiCONSTANT");
-        // console.log(positionTurnPlayerWinner, "posiCONSTANT");
         setPositionLeft(POSITION_USER_LEFT[positionTurnPlayerWinner[0].turn]);
         setPositionTop(POSITION_USER_TOP[positionTurnPlayerWinner[0].turn]);
 
@@ -287,30 +276,41 @@ const Game = (props: any) => {
       }
     }
   }, [waveGame]);
-
-  const handleReady = () => {
-    if (myroom && myroom !== null) {
+  const handleReady = (profileStart = "asd") => {
+    try {
+      // if (profileStart.sessionId === SSIDstartgame) {
       console.log("STart game");
-      myroom.send("START_GAME");
+      myProfile.send("START_GAME");
 
-      const object_array = myroom.state.players.$items;
+      const object_array = myProfile.state.players.$items;
       const arr = Array.from(object_array, ([_, value]) => {
         return value.id;
       });
       dispatch(gameAction.updateRoundGame(arr));
       dispatch(gameAction.updateWaveGame(-1));
       dispatch(gameAction.updateCountdownReal(9));
-
       dispatch(gameAction.updateIsRunning(true));
+      // }
+    } catch (error) {
+      console.log("error handle ready");
     }
   };
   const handleLeaveRoom = () => {
-    dispatch(gameAction.updateChat([]));
-
-    myroom.leave();
-
+    // dispatch(gameAction.updateChat([]));
+    myProfile.leave();
+    // console.log(room, "room");
+    // props.navigation.navigate("HOME");
     // profileFake1.leave();
-    // profileFake2.leave();
+    dispatch(gameAction.updateWaveGame(-2));
+    setRoundGame([]);
+    setCurrent([]);
+    setPlayerWait([]);
+    dispatch(gameAction.updateHighBetWave(0));
+    dispatch(gameAction.updateProfileUser({}));
+    dispatch(gameAction.updateProfileUser1({}));
+    dispatch(gameAction.updateProfileUser2({}));
+    dispatch(gameAction.updateProfileUser3({}));
+    dispatch(gameAction.updateProfileUser4({}));
   };
   // myroom.onMessage("CONGRATULATION", (message) => {
   //   console.log(message, "mess back");
@@ -370,14 +370,17 @@ const Game = (props: any) => {
   };
   useEffect(() => {
     if (waveGame > 0) {
-      const arrFull = Array.from(myroom.state.players.$items, ([_, value]) => {
-        return value;
-      });
+      const arrFull = Array.from(
+        myProfile.state.players.$items,
+        ([_, value]) => {
+          return value;
+        }
+      );
       arrFull.map((value, index) => {
         if (value.chips === 0) {
           setCountEnoughChip((countEnoughChip) => countEnoughChip + 1);
         }
-        if (countEnoughChip === myroom.state.players.$items.size - 1)
+        if (countEnoughChip === myProfile.state.players.$items.size - 1)
           setEndTurnEnoughChip(true);
       });
     }
@@ -385,8 +388,8 @@ const Game = (props: any) => {
 
   const handleEndTurn = () => {
     console.log("end turn");
-    if (myroom) {
-      const object_array = myroom.state.players.$items;
+    if (myProfile) {
+      const object_array = myProfile.state.players.$items;
       const arr = Array.from(object_array, ([_, value]) => {
         return value.id;
       });
@@ -408,18 +411,17 @@ const Game = (props: any) => {
   };
   useEffect(() => {
     try {
-      myroom.onMessage("FINISH_GAME", (message) => {
+      myProfile.onMessage("FINISH_GAME", (message) => {
         console.log(message, "mess back  finish game");
       });
-      myroom.onMessage("RESET_GAME", (message) => {
+      myProfile.onMessage("RESET_GAME", (message) => {
         console.log(message, "mess back  RESET_GAME game");
       });
     } catch (error) {
       console.log("error Finish game");
     }
-  }, [myroom]);
+  }, [myProfile]);
 
-  // console.log(myroom);
   // console.log(isRunning, "isRunning");
   // console.log(highestBet, "highestBet");
   // console.log(roundGame, "check roundGame");
@@ -439,23 +441,24 @@ const Game = (props: any) => {
           flex: 1,
         }}
       >
-        {/* <TouchableOpacity
-        onPress={() => {
-          handleEndTurn();
-        }}
-        style={{
-          position: "absolute",
-          top: "30%",
-          width: 50,
-          height: 50,
-
-          zIndex: 20,
-        }}
-      >
-        <Text style={{ color: "white" }}>End turn</Text>
-      </TouchableOpacity> */}
+        <TouchableOpacity
+          onPress={() => {
+            handleReady();
+          }}
+          style={{
+            position: "absolute",
+            top: "30%",
+            width: 50,
+            height: 50,
+            backgroundColor: "red",
+            zIndex: 20,
+          }}
+        >
+          <Text style={{ color: "white" }}>End turn</Text>
+        </TouchableOpacity>
         {/* Background */}
         <Image
+          alt="sad"
           resizeMode="cover"
           source={require("../../../assets/BackgroundRoom.png")}
           style={{ width: width, height: height, zIndex: -3 }}
@@ -469,10 +472,11 @@ const Game = (props: any) => {
             height: 30,
             top: 20,
             left: 20,
-            zIndex: 5,
+            zIndex: 8,
           }}
         >
           <Image
+            alt="sad"
             style={{
               width: "100%",
               height: "100%",
@@ -491,6 +495,7 @@ const Game = (props: any) => {
         }}
       >
         <Image
+        alt='sad'
           style={{
             width: "100%",
             height: "100%",
@@ -502,6 +507,7 @@ const Game = (props: any) => {
         {/* Chat */}
         {/* Table */}
         <Image
+          alt="sad"
           resizeMode="contain"
           source={require("../../../assets/TableRoom.png")}
           style={{
@@ -514,6 +520,7 @@ const Game = (props: any) => {
         {/* Host */}
         <View style={{ position: "absolute", bottom: "75%" }}>
           <Image
+            alt="sad"
             resizeMode="contain"
             source={require("../../../assets/GirlBanker.png")}
             style={{ width: 100, height: 100 }}
@@ -538,28 +545,28 @@ const Game = (props: any) => {
               : totalBet
             : ""}
         </Animated.Text>
-        {/* <BankerCard ImageCard={bankerCard} /> */}
+        <BankerCard ImageCard={bankerCard} />
         {/* User  */}
-        {/* <UserReal
-        endTurnEnoughChip={endTurnEnoughChip}
-        currentPlayer={current}
-        handleAction={handlePlayerAction}
-        highestBet={highestBet}
-        countRaiseInWave={countRaiseInWave}
-      />
-      <FakeUser1
-        currentPlayer={current}
-        handleAction={handlePlayerAction}
-        currentChips={currentBetChips}
-      />
-      <FakeUser2
-        highestBet={highestBet}
-        currentPlayer={current}
-        handleAction={handlePlayerAction}
-        currentChips={currentBetChips}
-      /> */}
-        {/* <FakeUser3 handleAction={handlePlayerAction} />
-      <FakeUser4 handleAction={handlePlayerAction} /> */}
+        <UserReal
+          endTurnEnoughChip={endTurnEnoughChip}
+          currentPlayer={current}
+          handleAction={handlePlayerAction}
+          highestBet={highestBet}
+          countRaiseInWave={countRaiseInWave}
+        />
+        <FakeUser1
+          currentPlayer={current}
+          handleAction={handlePlayerAction}
+          currentChips={currentBetChips}
+        />
+        <FakeUser2
+          highestBet={highestBet}
+          currentPlayer={current}
+          handleAction={handlePlayerAction}
+          currentChips={currentBetChips}
+        />
+        <FakeUser3 handleAction={handlePlayerAction} />
+        <FakeUser4 handleAction={handlePlayerAction} />
         {/* Bet */}
       </View>
       <ModalChat />

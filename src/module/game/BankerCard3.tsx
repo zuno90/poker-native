@@ -7,7 +7,6 @@ import { Image } from "native-base";
 
 export const BankerCard3 = ({ ImageCard }) => {
   const { waveGame } = useSelector(selectGame);
-  console.log(ImageCard, "check");
   useEffect(() => {
     if (waveGame % 10 === 2) {
       Animated.sequence([

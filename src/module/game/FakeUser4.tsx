@@ -1,7 +1,7 @@
-import { View } from "native-base";
+import { View, Image } from "native-base";
 
-import { useContext, useEffect, useRef, useState } from "react";
-import { Animated, Image, Text, TouchableOpacity } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Animated, Text } from "react-native";
 import { useSelector } from "react-redux";
 import { GetInterpolate } from "../../utils/getInterpolate";
 import { selectGame } from "./GameSlice";
@@ -9,17 +9,18 @@ import { getImage } from "./get";
 
 export const FakeUser4 = ({ handleAction }) => {
   const [count, setCount] = useState(0);
-  const { profileUser1 } = useSelector(selectGame);
+  const { profileUser4 } = useSelector(selectGame);
   const { waveGame } = useSelector(selectGame);
   const [getCard, setGetCard] = useState([
     { image: require("../../../assets/deckofcard/5♠.png") },
     { image: require("../../../assets/deckofcard/5♠.png") },
   ]);
   useEffect(() => {
-    if (profileUser1.cards) {
-      setGetCard(getImage(profileUser1.cards));
+    if (profileUser4.cards) {
+      setGetCard(getImage(profileUser4.cards));
     }
   }, [waveGame]);
+  // console.log(profileUser4, "ProfileUser4");
   useEffect(() => {
     if (waveGame % 8 == 1) {
       Animated.sequence([
@@ -469,7 +470,8 @@ export const FakeUser4 = ({ handleAction }) => {
     "150%",
     "350%",
   ]);
-  return (
+
+  return Object.keys(profileUser4).length !== 0 ? (
     <View style={{ position: "absolute", bottom: "20%", right: "15%" }}>
       <View
         style={{
@@ -481,6 +483,7 @@ export const FakeUser4 = ({ handleAction }) => {
         }}
       >
         <Image
+          alt="sad"
           source={require("../../../assets/AvatarExample.png")}
           style={{
             width: 60,
@@ -504,6 +507,7 @@ export const FakeUser4 = ({ handleAction }) => {
             }}
           >
             <Image
+              alt="sad"
               resizeMode="contain"
               source={require("../../../assets/deckofcard/CloseCard.png")}
               style={{ width: "100%", height: "100%" }}
@@ -522,6 +526,7 @@ export const FakeUser4 = ({ handleAction }) => {
             }}
           >
             <Image
+              alt="sad"
               resizeMode="contain"
               source={getCard ? getCard[0]?.image : ""}
               style={{ width: "100%", height: "100%" }}
@@ -543,6 +548,7 @@ export const FakeUser4 = ({ handleAction }) => {
             }}
           >
             <Image
+              alt="sad"
               resizeMode="contain"
               source={require("../../../assets/deckofcard/CloseCard.png")}
               style={{ width: "100%", height: "100%" }}
@@ -561,6 +567,7 @@ export const FakeUser4 = ({ handleAction }) => {
             }}
           >
             <Image
+              alt="sad"
               resizeMode="contain"
               source={getCard ? getCard[1]?.image : ""}
               style={{ width: "100%", height: "100%" }}
@@ -580,7 +587,7 @@ export const FakeUser4 = ({ handleAction }) => {
           opacity: OpacityRanking,
         }}
       >
-        {profileUser1.cardRank}
+        {profileUser4.cardRank}
       </Animated.Text>
       {/* Win | Lose */}
 
@@ -596,9 +603,10 @@ export const FakeUser4 = ({ handleAction }) => {
         }}
       >
         <Image
+          alt="sad"
           resizeMode="contain"
           source={
-            profileUser1[1]?.isWinner === false
+            profileUser4?.isWinner === false
               ? require("../../../assets/Lose.png")
               : require("../../../assets/Win.png")
           }
@@ -618,7 +626,7 @@ export const FakeUser4 = ({ handleAction }) => {
           zIndex: 5,
         }}
       >
-        {profileUser1[1]?.id ? profileUser1[1]?.id + "4" : ""}
+        {profileUser4?.username ? profileUser4?.username : profileUser4?.id}
       </Text>
       <Text
         style={{
@@ -631,9 +639,9 @@ export const FakeUser4 = ({ handleAction }) => {
           zIndex: 10,
         }}
       >
-        {profileUser1[1]?.chips > 1000
-          ? profileUser1[1]?.chips / 1000 + " 4k"
-          : profileUser1[1]?.chips}
+        {profileUser4?.chips > 1000
+          ? profileUser4?.chips / 1000 + " 4k"
+          : profileUser4?.chips}
       </Text>
       <Animated.Text
         style={{
@@ -645,8 +653,10 @@ export const FakeUser4 = ({ handleAction }) => {
           opacity: OpacityBetChip,
         }}
       >
-        {profileUser1[1]?.betChips > 0 ? profileUser1[1]?.betChips : "222k"}
+        {profileUser4?.betChips > 0 ? profileUser4?.betChips : ""}
       </Animated.Text>
     </View>
+  ) : (
+    <></>
   );
 };

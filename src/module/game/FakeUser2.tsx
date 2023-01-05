@@ -36,6 +36,8 @@ export const FakeUser2 = ({
       setGetCard(getImage(profileUser2.cards));
     }
   }, [waveGame]);
+  // console.log(profileUser2, "ProfileUser2");
+
   //auto bet
   useEffect(() => {
     if (countDown > -1 && currentPlayer === profileUser2.id && waveGame < 6) {
@@ -596,7 +598,7 @@ export const FakeUser2 = ({
     "380%",
     "0%", //none
   ]);
-  return (
+  return Object.keys(profileUser2).length !== 0 ? (
     <View
       style={{
         position: "absolute",
@@ -716,11 +718,11 @@ export const FakeUser2 = ({
               right: rightPercentCard2,
             }}
           >
-            <Animated.Image
+            {/* <Animated.Image
               resizeMode="contain"
               source={require("../../../assets/deckofcard/CloseCard.png")}
               style={{ width: "100%", height: "100%" }}
-            />
+            /> */}
           </Animated.View>
           {/* OpenCard2 */}
           <Animated.View
@@ -873,5 +875,7 @@ export const FakeUser2 = ({
         </Animated.Text>
       </View>
     </View>
+  ) : (
+    <></>
   );
 };

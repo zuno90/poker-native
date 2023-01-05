@@ -20,6 +20,7 @@ interface init {
   PositionArray: number;
   waveGame: number;
   currentPlayer?: string;
+  SSIDstartgame?: string;
   countDown: number;
   countdownReal: number;
   countDownStartGame: number;
@@ -52,6 +53,7 @@ export const GAME_INIT: init = {
   isRunning: true,
   randomCountDown: 2,
   currentPlayer: "",
+  SSIDstartgame: "",
   currentBetChips: 100,
   waveChipTotal: 100,
   raiseBet: 100,

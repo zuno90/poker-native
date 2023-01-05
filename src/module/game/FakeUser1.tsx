@@ -1,13 +1,11 @@
-import { View } from "native-base";
-
+import { View, Image } from "native-base";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Animated, Text, TouchableOpacity } from "react-native";
+import { Animated, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { GameContext } from "../../context/GameContext";
 import { GetInterpolate } from "../../utils/getInterpolate";
 import { gameAction, selectGame } from "./GameSlice";
 import { getImage } from "./get";
-import { Image } from "native-base";
 
 export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
   const { profileFake1 } = useContext(GameContext);
@@ -33,6 +31,8 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
       setGetCard(getImage(profileUser1.cards));
     }
   }, [waveGame]);
+  // console.log(profileUser1, "ProfileUser1");
+
   // Auto bet
   useEffect(() => {
     if (profileUser1.chips > 100 && waveGame < 6) {
@@ -550,7 +550,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
     "-450%",
     "0%", //none
   ]);
-  return (
+  return Object.keys(profileUser1).length !== 0 ? (
     <View
       style={{
         position: "absolute",
@@ -689,6 +689,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
             }}
           >
             <Image
+              alt="sad"
               resizeMethod={"scale"}
               resizeMode="contain"
               // source={require("../../../assets/deckofcard/A♠.png")}
@@ -748,6 +749,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
         }}
       >
         <Image
+          alt="sad"
           source={require("../../../assets/AvatarExample.png")}
           style={{
             width: 60,
@@ -827,5 +829,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
         </Animated.Text>
       </View>
     </View>
+  ) : (
+    <></>
   );
 };

@@ -54,29 +54,23 @@ const gameSlice = createSlice({
     },
     //Profile
     updateProfileUser(state, action: PayloadAction<any>) {
-      if (action.payload) {
-        state.profileUser = action.payload;
-      }
+      state.profileUser = action.payload;
     },
     updateProfileUser1(state, action: PayloadAction<any>) {
-      if (action.payload) {
-        state.profileUser1 = action.payload;
-      }
+      state.profileUser1 = action.payload;
     },
     updateProfileUser2(state, action: PayloadAction<any>) {
-      if (action.payload) {
-        state.profileUser2 = action.payload;
-      }
+      state.profileUser2 = action.payload;
     },
     updateProfileUser3(state, action: PayloadAction<any>) {
-      if (action.payload) {
-        state.profileUser3 = action.payload;
-      }
+      state.profileUser3 = action.payload;
     },
     updateProfileUser4(state, action: PayloadAction<any>) {
-      if (action.payload) {
-        state.profileUser4 = action.payload;
-      }
+      state.profileUser4 = action.payload;
+    },
+    //Player startGame
+    updateSSIDStartGame(state, action: PayloadAction<string>) {
+      state.SSIDstartgame = action.payload;
     },
   },
 });

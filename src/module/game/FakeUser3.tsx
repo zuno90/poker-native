@@ -1,7 +1,7 @@
-import { View } from "native-base";
+import { Image, View } from "native-base";
 
 import { useContext, useEffect, useRef, useState } from "react";
-import { Animated, Image, Text, TouchableOpacity } from "react-native";
+import { Animated, Text } from "react-native";
 import { useSelector } from "react-redux";
 import { GameContext } from "../../context/GameContext";
 import { GetInterpolate } from "../../utils/getInterpolate";
@@ -41,6 +41,8 @@ export const FakeUser3 = ({ handleAction }) => {
       setGetCard(getImage(profileUser3.cards));
     }
   }, [waveGame]);
+  // console.log(profileUser3, "ProfileUser3");
+
   useEffect(() => {
     if (waveGame % 8 == 1) {
       Animated.sequence([
@@ -471,7 +473,7 @@ export const FakeUser3 = ({ handleAction }) => {
     "400%",
   ]);
 
-  return (
+  return Object.keys(profileUser3).length !== 0 ? (
     <View style={{ position: "absolute", bottom: "55%", right: "4%" }}>
       <View
         style={{
@@ -500,6 +502,7 @@ export const FakeUser3 = ({ handleAction }) => {
           <Text style={{ color: "white" }}>asdasdasd</Text>
         </TouchableOpacity> */}
         <Image
+          alt="sad"
           source={require("../../../assets/AvatarExample.png")}
           style={{
             width: 60,
@@ -523,6 +526,7 @@ export const FakeUser3 = ({ handleAction }) => {
             }}
           >
             <Image
+              alt="sad"
               resizeMode="contain"
               source={require("../../../assets/deckofcard/CloseCard.png")}
               style={{ width: "100%", height: "100%" }}
@@ -541,6 +545,7 @@ export const FakeUser3 = ({ handleAction }) => {
             }}
           >
             <Image
+              alt="sad"
               resizeMode="contain"
               source={getCard ? getCard[0]?.image : ""}
               style={{ width: "100%", height: "100%" }}
@@ -562,6 +567,7 @@ export const FakeUser3 = ({ handleAction }) => {
             }}
           >
             <Image
+              alt="sad"
               resizeMode="contain"
               source={require("../../../assets/deckofcard/CloseCard.png")}
               style={{ width: "100%", height: "100%" }}
@@ -580,6 +586,7 @@ export const FakeUser3 = ({ handleAction }) => {
             }}
           >
             <Image
+              alt="sad"
               resizeMode="contain"
               source={getCard ? getCard[1]?.image : ""}
               style={{ width: "100%", height: "100%" }}
@@ -615,6 +622,7 @@ export const FakeUser3 = ({ handleAction }) => {
         }}
       >
         <Image
+          alt="sad"
           resizeMode="contain"
           source={
             profileUser3?.isWinner === false
@@ -637,7 +645,7 @@ export const FakeUser3 = ({ handleAction }) => {
           zIndex: 5,
         }}
       >
-        {profileUser3?.id ? profileUser3?.id : ""}
+        {profileUser3?.username ? profileUser3?.username : profileUser3?.id}
       </Text>
       <Text
         style={{
@@ -663,8 +671,10 @@ export const FakeUser3 = ({ handleAction }) => {
           opacity: OpacityBetChip,
         }}
       >
-        {profileUser3?.betChips > 0 ? profileUser3?.betChips : "22k"}
+        {profileUser3?.betChips > 0 ? profileUser3?.betChips : ""}
       </Animated.Text>
     </View>
+  ) : (
+    <></>
   );
 };
