@@ -12,7 +12,6 @@ import { gameAction, selectGame } from "./GameSlice";
 import { getImage } from "./get";
 
 export const UserReal = ({
-  currentPlayer,
   handleAction,
   highestBet,
   countRaiseInWave,
@@ -25,6 +24,8 @@ export const UserReal = ({
   const { profileUser } = useSelector(selectGame);
   const { waveGame } = useSelector(selectGame);
   const { raiseBet } = useSelector(selectGame);
+  const { currentPlayer } = useSelector(selectGame);
+  const { arrSeatPlayer } = useSelector(selectGame);
 
   const { countdownReal } = useSelector(selectGame);
   const { highBetWave } = useSelector(selectGame);
@@ -35,12 +36,14 @@ export const UserReal = ({
     { image: require("../../../assets/deckofcard/5♠.png") },
     { image: require("../../../assets/deckofcard/5♠.png") },
   ]);
+
   useEffect(() => {
     if (profileUser.cards) {
       setGetCard(getImage(profileUser.cards));
     }
   }, [waveGame, isRunning, currentPlayer]);
-  // console.log(myProfile, "ProfileUser Real");
+  // console.log(profileUser, "ProfileUser Real");
+  // console.log(currentPlayer, "ProfileUser Real");
 
   useEffect(() => {
     if (waveGame % 10 > 1) {
@@ -356,35 +359,55 @@ export const UserReal = ({
       ]).start();
     }
   }, [profileUser.chips]);
-  useEffect(() => {
-    if (currentPlayer === profileUser.id && waveGame > 0 && waveGame < 5) {
-      if (!endTurnEnoughChip) {
-        if (countdownReal > -1) {
-          var timer = setTimeout(() => {
-            dispatch(gameAction.updateCountdownReal(countdownReal - 1));
-          }, 1000);
 
-          if (countdownReal === 0 && waveGame < 6) {
-            profileUser.chips > 0
-              ? handleAction("FOLD", { chips: 0 }, myProfile)
-              : handleAction("CALL", { chips: 0 }, myProfile);
-            clearTimeout(timer);
+  //Auto Fold
+
+  useEffect(() => {
+    try {
+      if (
+        arrSeatPlayer.arrSeat[
+          (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
+            arrSeatPlayer.arrSeat.length
+        ] === profileUser.seat &&
+        waveGame > 0 &&
+        waveGame < 5
+      ) {
+        if (!endTurnEnoughChip) {
+          if (countdownReal > -1) {
+            var timer = setTimeout(() => {
+              dispatch(gameAction.updateCountdownReal(countdownReal - 1));
+            }, 1000);
+
+            if (countdownReal === 0 && waveGame < 6) {
+              profileUser.chips > 0
+                ? handleAction("FOLD", { chips: 0 }, myProfile, profileUser)
+                : handleAction("CALL", { chips: 0 }, myProfile, profileUser);
+              clearTimeout(timer);
+              dispatch(gameAction.updateCountdownReal(-2));
+            }
+          } else {
             dispatch(gameAction.updateCountdownReal(-2));
           }
-        } else {
-          dispatch(gameAction.updateCountdownReal(-2));
-        }
 
-        if (currentPlayer === profileUser.id && waveGame < 6) {
-          if (profileUser.chips <= 0 || profileUser.isFold) {
-            setTimeout(() => {
-              handleAction("CALL", { chips: 0 }, myProfile);
-            }, 1000);
+          if (
+            arrSeatPlayer.arrSeat[
+              (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
+                arrSeatPlayer.arrSeat.length
+            ] === profileUser.seat &&
+            waveGame < 6
+          ) {
+            if (profileUser.chips <= 0 || profileUser.isFold) {
+              setTimeout(() => {
+                handleAction("CALL", { chips: 0 }, myProfile, profileUser);
+              }, 1000);
+            }
           }
+        } else {
+          handleAction("CALL", { chips: 0 }, myProfile, profileUser);
         }
-      } else {
-        handleAction("CALL", { chips: 0 }, myProfile);
       }
+    } catch (error) {
+      console.log();
     }
   }, [countdownReal, currentPlayer, waveGame, isRunning]);
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
@@ -464,7 +487,7 @@ export const UserReal = ({
     "-220%",
     "-220%",
   ]);
-
+  // console.log(arrSeatPlayer, "arr arrSeatPlayer");
   return (
     <>
       <View
@@ -483,12 +506,16 @@ export const UserReal = ({
             bottom: -10,
             left: "-60%",
             opacity:
+              countdownReal > 0 &&
               !endTurnEnoughChip &&
               profileUser.isFold === false &&
               waveGame > 0 &&
               waveGame < 5 &&
               profileUser.chips > 0 &&
-              currentPlayer === profileUser.id
+              arrSeatPlayer.arrSeat[
+                (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
+                  arrSeatPlayer.arrSeat.length
+              ] === profileUser.seat
                 ? 1
                 : 0,
 
@@ -532,8 +559,7 @@ export const UserReal = ({
             right: rightPercentCard1,
           }}
         >
-          <Image
-            alt="sad"
+          <Animated.Image
             resizeMode="contain"
             source={getCard ? getCard[1]?.image : ""}
             style={{ width: "100%", height: "100%" }}
@@ -575,8 +601,7 @@ export const UserReal = ({
             right: rightPercentCard2,
           }}
         >
-          <Image
-            alt="sad"
+          <Animated.Image
             resizeMode="contain"
             source={getCard ? getCard[0]?.image : ""}
             style={{ width: "100%", height: "100%" }}
@@ -756,7 +781,10 @@ export const UserReal = ({
 
       {!endTurnEnoughChip &&
         profileUser.isFold === false &&
-        currentPlayer === profileUser.id &&
+        arrSeatPlayer.arrSeat[
+          (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
+            arrSeatPlayer.arrSeat.length
+        ] === profileUser.seat &&
         waveGame % 10 < 6 &&
         waveGame % 10 > 0 &&
         profileUser.chips > 0 && (
@@ -801,7 +829,7 @@ export const UserReal = ({
                 action={() => {
                   dispatch(gameAction.updateCountdownReal(-2));
 
-                  handleAction("FOLD", {}, myProfile);
+                  handleAction("FOLD", {}, myProfile, profileUser);
                 }}
                 ImageAction={require("../../../assets/Fold.png")}
                 title="FOLD"
@@ -811,7 +839,7 @@ export const UserReal = ({
                 action={() => {
                   dispatch(gameAction.updateCountdownReal(-2));
 
-                  handleAction("CHECK", { chips: 0 }, myProfile);
+                  handleAction("CHECK", { chips: 0 }, myProfile, profileUser);
                 }}
                 ImageAction={require("../../../assets/Check.png")}
                 title="CHECK"
@@ -831,7 +859,8 @@ export const UserReal = ({
                           ? profileUser.betChips - highBetWave + highestBet
                           : profileUser.betChips - highBetWave,
                     },
-                    myProfile
+                    myProfile,
+                    profileUser
                   );
                 }}
                 ImageAction={require("../../../assets/Raise.png")}
@@ -848,7 +877,8 @@ export const UserReal = ({
                     {
                       chips: profileUser.chips,
                     },
-                    myProfile
+                    myProfile,
+                    profileUser
                   );
                 }}
                 profile={myProfile}

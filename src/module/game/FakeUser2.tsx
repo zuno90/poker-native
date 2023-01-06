@@ -9,21 +9,20 @@ import { gameAction, selectGame } from "./GameSlice";
 import { getImage } from "./get";
 import { Image } from "native-base";
 
-export const FakeUser2 = ({
-  currentPlayer,
-  handleAction,
-  currentChips,
-  highestBet,
-}) => {
+export const FakeUser2 = ({ handleAction, currentChips, handleReady }) => {
   const { highBetWave } = useSelector(selectGame);
 
   const { waveGame } = useSelector(selectGame);
   const { profileUser2 } = useSelector(selectGame);
+  const { currentPlayer } = useSelector(selectGame);
   const { profileFake2 } = useContext(GameContext);
   const { currentBetChips } = useSelector(selectGame);
+  const { arrSeatPlayer } = useSelector(selectGame);
   const { countDown } = useSelector(selectGame);
   const { raiseBet } = useSelector(selectGame);
   const { randomCountDown } = useSelector(selectGame);
+  const { isRunning } = useSelector(selectGame);
+
   const dispatch = useDispatch();
   const [getCard, setGetCard] = useState([
     { image: require("../../../assets/deckofcard/5♠.png") },
@@ -36,45 +35,56 @@ export const FakeUser2 = ({
       setGetCard(getImage(profileUser2.cards));
     }
   }, [waveGame]);
-  // console.log(profileUser2, "ProfileUser2");
-
+  // console.log(profileFake2, "ProfileUser2");
+  useEffect(() => {
+    try {
+      if (isRunning === false && profileFake2 !== null) {
+        setTimeout(() => {
+          handleReady(profileFake2);
+        }, 5000);
+      }
+    } catch (error) {
+      console.log(error, "user2");
+    }
+  }, [isRunning]);
   //auto bet
   useEffect(() => {
-    if (countDown > -1 && currentPlayer === profileUser2.id && waveGame < 6) {
-      const timer = setTimeout(
-        () => {
+    try {
+      if (
+        countDown > -1 &&
+        arrSeatPlayer.arrSeat[
+          (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
+            arrSeatPlayer.arrSeat.length
+        ] === profileUser2.seat &&
+        waveGame < 6
+      ) {
+        const timer = setTimeout(() => {
           dispatch(gameAction.updateCountdown(countDown - 1));
-        },
-        countDown === 8 ? 1000 : 1000
-      );
-      if (countDown === randomCountDown) {
-        // console.log(Math.floor(Math.random() * 9), "Random");
-        // handleAction(
-        //   "CALL",
-        //   { chips: currentBetChips - (profileUser2.betChips - highBetWave) },
-
-        //   profileFake2,
-        //   profileUser2
-        // );
-        profileUser2.chips === 0
-          ? handleAction("CALL", { chips: 0 }, profileFake2)
-          : handleAction(
-              "CALL",
-              {
-                chips:
-                  raiseBet > profileUser2.chips
-                    ? profileUser2.chips
-                    : currentBetChips - profileUser2.betChips + highBetWave,
-              },
-              profileFake2
-            );
+        }, 1000);
+        if (countDown === randomCountDown) {
+          profileUser2.chips === 0
+            ? handleAction("CALL", { chips: 0 }, profileFake2, profileUser2)
+            : handleAction(
+                "CALL",
+                {
+                  chips:
+                    raiseBet > profileUser2.chips
+                      ? profileUser2.chips
+                      : currentBetChips - profileUser2.betChips + highBetWave,
+                },
+                profileFake2,
+                profileUser2
+              );
+        }
+      } else {
+        Animated.timing(OpacityCountdown, {
+          toValue: 0,
+          useNativeDriver: false,
+          duration: 200,
+        });
       }
-    } else {
-      Animated.timing(OpacityCountdown, {
-        toValue: 0,
-        useNativeDriver: false,
-        duration: 200,
-      });
+    } catch (error) {
+      console.log();
     }
   }, [countDown, currentPlayer]);
 
@@ -609,11 +619,11 @@ export const FakeUser2 = ({
       }}
     >
       {/* {currentPlayer === profileUser2.id && ( */}
-      {/* <TouchableOpacity
+      <TouchableOpacity
         onPress={() => {
           // profileFake2.send("CALL", { chip: 5000 });
           handleAction(
-            "RAISE",
+            "CALL",
             { chips: currentBetChips - profileUser2.betChips },
             profileFake2,
             profileUser2
@@ -624,12 +634,12 @@ export const FakeUser2 = ({
           top: "20%",
           width: 50,
           height: 50,
-          backgroundColor: "black",
+          backgroundColor: "transparent",
           zIndex: 20,
         }}
       >
         <Text style={{ color: "white" }}>acTion</Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
       {/* )} */}
 
       {/* countdown */}
@@ -646,7 +656,10 @@ export const FakeUser2 = ({
             profileUser2.chips > 0 &&
             waveGame > 0 &&
             countDown > -1 &&
-            currentPlayer === profileUser2.id
+            arrSeatPlayer.arrSeat[
+              (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
+                arrSeatPlayer.arrSeat.length
+            ] === profileUser2.seat
               ? 1
               : 0,
         }}

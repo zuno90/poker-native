@@ -10,6 +10,8 @@ import { getImage } from "./get";
 export const FakeUser4 = ({ handleAction }) => {
   const [count, setCount] = useState(0);
   const { profileUser4 } = useSelector(selectGame);
+  const { currentPlayer } = useSelector(selectGame);
+
   const { waveGame } = useSelector(selectGame);
   const [getCard, setGetCard] = useState([
     { image: require("../../../assets/deckofcard/5♠.png") },
@@ -20,7 +22,7 @@ export const FakeUser4 = ({ handleAction }) => {
       setGetCard(getImage(profileUser4.cards));
     }
   }, [waveGame]);
-  // console.log(profileUser4, "ProfileUser4");
+  console.log(profileUser4, "ProfileUser4");
   useEffect(() => {
     if (waveGame % 8 == 1) {
       Animated.sequence([

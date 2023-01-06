@@ -11,6 +11,8 @@ export const FakeUser3 = ({ handleAction }) => {
   const [count, setCount] = useState(0);
   const { profileFake3 } = useContext(GameContext);
   const { profileUser3 } = useSelector(selectGame);
+  const { currentPlayer } = useSelector(selectGame);
+
   const { waveGame } = useSelector(selectGame);
   const [getCard, setGetCard] = useState([
     { image: require("../../../assets/deckofcard/5♠.png") },

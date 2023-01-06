@@ -19,7 +19,7 @@ interface init {
   profileUser4?: any;
   PositionArray: number;
   waveGame: number;
-  currentPlayer?: string;
+  currentPlayer?: any;
   SSIDstartgame?: string;
   countDown: number;
   countdownReal: number;
@@ -33,6 +33,7 @@ interface init {
   raiseBet: number;
   roundGame: Array<string>;
   chatGame: Array<string>;
+  arrSeatPlayer?: any;
 }
 export const GAME_INIT: init = {
   Total: [],
@@ -52,7 +53,14 @@ export const GAME_INIT: init = {
   stateClearTimeout: true,
   isRunning: true,
   randomCountDown: 2,
-  currentPlayer: "",
+  currentPlayer: {
+    action: [],
+    seat: 0,
+  },
+  arrSeatPlayer: {
+    seat: 0,
+    arrSeat: [0, 0, 0, 0, 0],
+  },
   SSIDstartgame: "",
   currentBetChips: 100,
   waveChipTotal: 100,

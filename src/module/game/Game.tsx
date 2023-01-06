@@ -38,6 +38,8 @@ const Game = (props: any) => {
   const { profileUser2 } = useSelector(selectGame);
   const { SSIDstartgame } = useSelector(selectGame);
   const { currentBetChips } = useSelector(selectGame);
+  const { arrSeatPlayer } = useSelector(selectGame);
+  const { currentPlayer } = useSelector(selectGame);
   const { highBetWave } = useSelector(selectGame);
   const { roundGame } = useSelector(selectGame);
   const [totalCard, setTotalCard] = useState<any>([]);
@@ -50,7 +52,6 @@ const Game = (props: any) => {
   const [countRaiseInWave, setCountRaiseInWave] = useState<number>(0);
   const { waveGame } = useSelector(selectGame);
   const [roundgame, setRoundGame] = useState([]);
-  const [current, setCurrent] = useState<any>(null);
   const [positionTop, setPositionTop] = useState<any>([0, 30, 0]);
   const [positionLeft, setPositionLeft] = useState<any>([0, 200, 0]);
   const [playerWait, setPlayerWait] = useState([]);
@@ -70,6 +71,20 @@ const Game = (props: any) => {
     PositionHorizontalTotalBet,
     positionLeft
   );
+  useEffect(() => {
+    try {
+      myProfile.onMessage("CURRENT_PLAYER", (data) => {
+        if (data.action !== "END_TURN")
+          dispatch(gameAction.updateCurrentPlayer(data));
+        else {
+          dispatch(gameAction.updateCurrentPlayerEndWave());
+        }
+      });
+    } catch (error) {
+      console.log(" error catch current in userReal");
+    }
+  }, []);
+  // console.log(currentPlayer, "currentPlayer");
   useEffect(() => {
     try {
       a.Total.forEach((item) => {
@@ -111,7 +126,6 @@ const Game = (props: any) => {
     dispatch(gameAction.updateRaiseBet(100));
     setCountEnoughChip(0);
     setRoundGame(roundGame);
-    setCurrent(roundGame[0]);
     setPlayerWait([]);
     setHighestBet(100);
     switch (waveGame) {
@@ -167,7 +181,7 @@ const Game = (props: any) => {
   useEffect(() => {
     try {
       myProfile.onStateChange((state) => {
-        console.log(myProfile, "gamefile");
+        // console.log(myProfile, "gamefile");
         for (let i of state.players.$items) {
           if (i[1].isHost) dispatch(gameAction.updateSSIDStartGame(i[0]));
           if (i[1].id === user.id) {
@@ -205,16 +219,13 @@ const Game = (props: any) => {
       console.log("Error");
     }
   }, [myProfile]);
-  // console.log(a.Total);
-  // console.log(myProfile);
-  // useEffect(() => {
-  //   if (isRunning === false) {
-  //     setTimeout(() => {
-  //       handleReady();
-  //     }, 5000);
-  //   }
-  // }, [isRunning]);
-
+  useEffect(() => {
+    if (isRunning === false && myProfile !== null) {
+      setTimeout(() => {
+        handleReady(myProfile);
+      }, 5000);
+    }
+  }, [isRunning]);
   useEffect(() => {
     Animated.timing(OpacityTotalBet, {
       useNativeDriver: false,
@@ -276,23 +287,29 @@ const Game = (props: any) => {
       }
     }
   }, [waveGame]);
-  const handleReady = (profileStart = "asd") => {
+  const handleReady = (profileStart) => {
     try {
-      // if (profileStart.sessionId === SSIDstartgame) {
-      console.log("STart game");
-      myProfile.send("START_GAME");
+      console.log(profileStart.sessionId, "ssession ID");
+      console.log(SSIDstartgame, "SSIDstartgame");
 
-      const object_array = myProfile.state.players.$items;
-      const arr = Array.from(object_array, ([_, value]) => {
-        return value.id;
-      });
-      dispatch(gameAction.updateRoundGame(arr));
-      dispatch(gameAction.updateWaveGame(-1));
-      dispatch(gameAction.updateCountdownReal(9));
-      dispatch(gameAction.updateIsRunning(true));
-      // }
+      if (profileStart.sessionId === SSIDstartgame) {
+        console.log("STart game");
+        myProfile.send("START_GAME");
+
+        const object_array = myProfile.state.players.$items;
+        const arr = Array.from(object_array, ([_, value]) => {
+          return value.id;
+        });
+        dispatch(gameAction.updateRoundGame(arr));
+        dispatch(gameAction.updateWaveGame(-1));
+        dispatch(gameAction.updateCountdownReal(9));
+        dispatch(gameAction.updateCountdown(9));
+        dispatch(gameAction.updateIsRunning(true));
+      }
     } catch (error) {
       console.log("error handle ready");
+      console.log(SSIDstartgame, "SSIDstartgame");
+      console.log(profileStart.sessionId, "profileStart.sessionId");
     }
   };
   const handleLeaveRoom = () => {
@@ -301,38 +318,38 @@ const Game = (props: any) => {
     // console.log(room, "room");
     // props.navigation.navigate("HOME");
     // profileFake1.leave();
-    dispatch(gameAction.updateWaveGame(-2));
+    dispatch(gameAction.updateInit());
     setRoundGame([]);
-    setCurrent([]);
     setPlayerWait([]);
-    dispatch(gameAction.updateHighBetWave(0));
-    dispatch(gameAction.updateProfileUser({}));
-    dispatch(gameAction.updateProfileUser1({}));
-    dispatch(gameAction.updateProfileUser2({}));
-    dispatch(gameAction.updateProfileUser3({}));
-    dispatch(gameAction.updateProfileUser4({}));
+    // dispatch(gameAction.updateHighBetWave(0));
+    // dispatch(gameAction.updateProfileUser({}));
+    // dispatch(gameAction.updateProfileUser1({}));
+    // dispatch(gameAction.updateProfileUser2({}));
+    // dispatch(gameAction.updateProfileUser3({}));
+    // dispatch(gameAction.updateProfileUser4({}));
   };
   // myroom.onMessage("CONGRATULATION", (message) => {
   //   console.log(message, "mess back");
   // });
   // console.log(room.onMessageHandlers.events.CONGRATULATION, "muyrom");
+  console.log(currentPlayer);
 
   const handlePlayerAction = (
     actionType: "CALL" | "FOLD" | "RAISE" | "CHECK" | "ALLIN" | "",
     Chip,
-    profile
+    profileSend,
+    profileUser
   ) => {
-    // console.log(Chip, "chip bet");
-    if (profile && profile !== null && waveGame > 0 && waveGame < 6) {
-      if (endTurnEnoughChip) handleEndTurn();
+    if (profileSend && profileSend !== null && waveGame > 0 && waveGame < 6) {
+      if (endTurnEnoughChip) handleEndTurn(profileSend);
       else {
-        profile.send(actionType, Chip);
+        profileSend.send(actionType, Chip);
         const newarr = roundgame.filter((item) => item !== roundgame[0]);
         if (
           newarr.length === 0 &&
           (actionType === "CHECK" || actionType === "CALL")
         ) {
-          handleEndTurn();
+          handleEndTurn(profileSend);
         }
         if (actionType === "FOLD") {
           dispatch(gameAction.updateRoundGame(newarr));
@@ -364,7 +381,9 @@ const Game = (props: any) => {
         dispatch(
           gameAction.updateRandomCountdown(Math.floor(Math.random() * 3) + 4)
         );
-        setCurrent(newarr[0]);
+        profileSend.send("CURRENT_PLAYER", {
+          action: actionType,
+        });
       }
     }
   };
@@ -384,16 +403,18 @@ const Game = (props: any) => {
           setEndTurnEnoughChip(true);
       });
     }
-  }, [profileUser1.chips, profileUser2.chips, profileUser.chips, current]);
+  }, [profileUser1.chips, profileUser2.chips, profileUser.chips]);
 
-  const handleEndTurn = () => {
-    console.log("end turn");
+  const handleEndTurn = (profileSend) => {
+    profileSend.send("CURRENT_PLAYER", {
+      action: "END_TURN",
+    });
+    dispatch(gameAction.updateCurrentPlayerEndWave());
     if (myProfile) {
       const object_array = myProfile.state.players.$items;
       const arr = Array.from(object_array, ([_, value]) => {
         return value.id;
       });
-      setCurrent(arr[0]);
       setPlayerWait([]);
 
       setCountRaiseInWave(0);
@@ -443,7 +464,7 @@ const Game = (props: any) => {
       >
         <TouchableOpacity
           onPress={() => {
-            handleReady();
+            dispatch(gameAction.updateIsRunning(false));
           }}
           style={{
             position: "absolute",
@@ -549,27 +570,25 @@ const Game = (props: any) => {
         {/* User  */}
         <UserReal
           endTurnEnoughChip={endTurnEnoughChip}
-          currentPlayer={current}
           handleAction={handlePlayerAction}
           highestBet={highestBet}
           countRaiseInWave={countRaiseInWave}
         />
         <FakeUser1
-          currentPlayer={current}
           handleAction={handlePlayerAction}
           currentChips={currentBetChips}
+          handleReady={handleReady}
         />
         <FakeUser2
-          highestBet={highestBet}
-          currentPlayer={current}
           handleAction={handlePlayerAction}
+          handleReady={handleReady}
           currentChips={currentBetChips}
         />
         <FakeUser3 handleAction={handlePlayerAction} />
         <FakeUser4 handleAction={handlePlayerAction} />
         {/* Bet */}
       </View>
-      <ModalChat />
+      {/* <ModalChat /> */}
     </>
   );
 };

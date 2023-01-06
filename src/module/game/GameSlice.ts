@@ -4,6 +4,10 @@ const gameSlice = createSlice({
   name: "game",
   initialState: GAME_INIT,
   reducers: {
+    // reset INIT
+    updateInit(state) {
+      state = GAME_INIT;
+    },
     //Chat
     updateChat(state, action: PayloadAction<any>) {
       console.log(action.payload, "check store");
@@ -67,6 +71,25 @@ const gameSlice = createSlice({
     },
     updateProfileUser4(state, action: PayloadAction<any>) {
       state.profileUser4 = action.payload;
+    },
+    //Current
+    updateCurrentPlayer(state, action: PayloadAction<any>) {
+      state.currentPlayer.seat = action.payload.seat;
+      state.currentPlayer.action.push(action.payload.action);
+    },
+    updateCurrentPlayerEndWave(state) {
+      state.currentPlayer.action = [];
+    },
+    updateArrSeatPlayer(state, action: PayloadAction<any>) {
+      state.arrSeatPlayer.arrSeat[action.payload.seat - 1] =
+        action.payload.seat;
+    },
+    updateArrSeatFiler(state) {
+      state.arrSeatPlayer.arrSeat = state.arrSeatPlayer.arrSeat.filter(
+        (item) => {
+          return item !== 0;
+        }
+      );
     },
     //Player startGame
     updateSSIDStartGame(state, action: PayloadAction<string>) {

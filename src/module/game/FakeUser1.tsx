@@ -1,13 +1,13 @@
 import { View, Image } from "native-base";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Animated, Text } from "react-native";
+import { Animated, Text, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { GameContext } from "../../context/GameContext";
 import { GetInterpolate } from "../../utils/getInterpolate";
 import { gameAction, selectGame } from "./GameSlice";
 import { getImage } from "./get";
 
-export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
+export const FakeUser1 = ({ handleAction, currentChips, handleReady }) => {
   const { profileFake1 } = useContext(GameContext);
 
   const dispatch = useDispatch();
@@ -15,8 +15,11 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
   const { profileUser1 } = useSelector(selectGame);
   const { currentBetChips } = useSelector(selectGame);
   const { randomCountDown } = useSelector(selectGame);
+  const { arrSeatPlayer } = useSelector(selectGame);
   const { highBetWave } = useSelector(selectGame);
   const { raiseBet } = useSelector(selectGame);
+  const { currentPlayer } = useSelector(selectGame);
+  const { isRunning } = useSelector(selectGame);
 
   const { countDown } = useSelector(selectGame);
   const { waveGame } = useSelector(selectGame);
@@ -24,6 +27,16 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
     { image: require("../../../assets/deckofcard/5♠.png") },
     { image: require("../../../assets/deckofcard/5♠.png") },
   ]);
+
+  useEffect(() => {
+    try {
+      if (isRunning === false && profileFake1 !== null) {
+        setTimeout(() => {
+          handleReady(profileFake1);
+        }, 5000);
+      }
+    } catch (error) {}
+  }, [isRunning]);
 
   //get Card
   useEffect(() => {
@@ -35,35 +48,42 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
 
   // Auto bet
   useEffect(() => {
-    if (profileUser1.chips > 100 && waveGame < 6) {
-      if (countDown > -1 && currentPlayer === profileUser1.id) {
-        const timer = setTimeout(
-          () => {
+    try {
+      if (profileUser1.chips > 100 && waveGame < 6) {
+        if (
+          countDown > -1 &&
+          arrSeatPlayer.arrSeat[
+            (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
+              arrSeatPlayer.arrSeat.length
+          ] === profileUser1.seat
+        ) {
+          const timer = setTimeout(() => {
             dispatch(gameAction.updateCountdown(countDown - 1));
-          },
-          countDown === 8 ? 1000 : 1000
-        );
-        if (countDown === randomCountDown) {
-          // console.log(Math.floor(Math.random() * 9), "Random");
-          profileUser1.chips === 0
-            ? handleAction("CALL", { chips: 0 }, profileFake1)
-            : handleAction(
-                "CALL",
-                {
-                  chips:
-                    raiseBet > profileUser1.chips
-                      ? profileUser1.chips
-                      : currentBetChips - profileUser1.betChips + highBetWave,
-                },
-                profileFake1
-              );
-          clearTimeout(timer);
+          }, 1000);
+          if (countDown === randomCountDown) {
+            profileUser1.chips === 0
+              ? handleAction("CALL", { chips: 0 }, profileFake1, profileUser1)
+              : handleAction(
+                  "CALL",
+                  {
+                    chips:
+                      raiseBet > profileUser1.chips
+                        ? profileUser1.chips
+                        : currentBetChips - profileUser1.betChips + highBetWave,
+                  },
+                  profileFake1,
+                  profileUser1
+                );
+            clearTimeout(timer);
+          }
         }
+      } else if (currentPlayer === profileUser1.id) {
+        setTimeout(() => {
+          handleAction("CALL", { chips: 0 }, profileFake1, profileUser1);
+        }, 2000);
       }
-    } else if (currentPlayer === profileUser1.id) {
-      setTimeout(() => {
-        handleAction("CALL", { chips: 0 }, profileFake1);
-      }, 2000);
+    } catch (error) {
+      console.log();
     }
   }, [countDown, currentPlayer]);
   // chip move end turn
@@ -550,6 +570,7 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
     "-450%",
     "0%", //none
   ]);
+
   return Object.keys(profileUser1).length !== 0 ? (
     <View
       style={{
@@ -561,10 +582,10 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
       }}
     >
       {/* {currentPlayer === profileUser1.id && ( */}
-      {/* <TouchableOpacity
+      <TouchableOpacity
         onPress={() => {
           handleAction(
-            "FOLD",
+            "CALL",
             { chips: currentBetChips - profileUser1.betChips },
             profileFake1,
             profileUser1
@@ -573,14 +594,15 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
         style={{
           position: "absolute",
           top: "20%",
+          right: "50%",
           width: 50,
           height: 50,
           backgroundColor: "transparent",
-          zIndex: 20,
+          zIndex: 100,
         }}
       >
         <Text style={{ color: "white" }}>acTion</Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
       {/* )} */}
       {/* countdown */}
       <Animated.Text
@@ -596,7 +618,10 @@ export const FakeUser1 = ({ currentPlayer, handleAction, currentChips }) => {
             profileUser1.chips > 0 &&
             waveGame > 0 &&
             countDown > -1 &&
-            currentPlayer === profileUser1.id
+            arrSeatPlayer.arrSeat[
+              (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
+                arrSeatPlayer.arrSeat.length
+            ] === profileUser1.seat
               ? 1
               : 0,
         }}
