@@ -69,13 +69,13 @@ const Home: React.FC = (props: any) => {
     if (room.length !== 0) {
       const { clients, roomId } = room[0];
 
-      if (clients <= 4 && clients > 1) {
+      if (clients <= 4 && clients === 1) {
         const params = {
           id: user.id,
           chips: user.chips,
           isHost: false,
-          seat: -6,
-          turn: -6,
+          seat: 2,
+          turn: 2,
           cards: [],
         };
         try {

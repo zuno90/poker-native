@@ -76,7 +76,9 @@ const Game = (props: any) => {
       myProfile.onMessage("CURRENT_PLAYER", (data) => {
         if (data.action !== "END_TURN")
           dispatch(gameAction.updateCurrentPlayer(data));
-        else {
+        else if (data.action !== "START_GAME") {
+          handleReady(myProfile);
+        } else {
           dispatch(gameAction.updateCurrentPlayerEndWave());
         }
       });
@@ -84,7 +86,7 @@ const Game = (props: any) => {
       console.log(" error catch current in userReal");
     }
   }, []);
-  // console.log(currentPlayer, "currentPlayer");
+  console.log(myProfile, "currentPlayer");
   useEffect(() => {
     try {
       a.Total.forEach((item) => {
@@ -220,11 +222,11 @@ const Game = (props: any) => {
     }
   }, [myProfile]);
   useEffect(() => {
-    if (isRunning === false && myProfile !== null) {
-      setTimeout(() => {
-        handleReady(myProfile);
-      }, 5000);
-    }
+    setTimeout(() => {
+      myProfile.send("CURRENT_PLAYER", {
+        action: "START_GAME",
+      });
+    }, 5000);
   }, [isRunning]);
   useEffect(() => {
     Animated.timing(OpacityTotalBet, {
@@ -332,7 +334,7 @@ const Game = (props: any) => {
   //   console.log(message, "mess back");
   // });
   // console.log(room.onMessageHandlers.events.CONGRATULATION, "muyrom");
-  console.log(currentPlayer);
+  // console.log(myProfile, "sad");
 
   const handlePlayerAction = (
     actionType: "CALL" | "FOLD" | "RAISE" | "CHECK" | "ALLIN" | "",
@@ -443,7 +445,7 @@ const Game = (props: any) => {
     }
   }, [myProfile]);
 
-  // console.log(isRunning, "isRunning");
+  console.log(isRunning, "isRunning");
   // console.log(highestBet, "highestBet");
   // console.log(roundGame, "check roundGame");
   // console.log(playerWait, "playerWait");
@@ -464,7 +466,8 @@ const Game = (props: any) => {
       >
         <TouchableOpacity
           onPress={() => {
-            dispatch(gameAction.updateIsRunning(false));
+            // dispatch(gameAction.updateIsRunning(!isRunning));
+            handleReady(profileFake1);
           }}
           style={{
             position: "absolute",
