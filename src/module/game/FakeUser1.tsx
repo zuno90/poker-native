@@ -570,7 +570,13 @@ export const FakeUser1 = ({ handleAction, currentChips, handleReady }) => {
     "-450%",
     "0%", //none
   ]);
-
+  // console.log(
+  //   arrSeatPlayer.arrSeat[
+  //     (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
+  //       arrSeatPlayer.arrSeat.length
+  //   ] === profileUser1.seat,
+  //   "arr arrSeatPlayer"
+  // );
   return Object.keys(profileUser1).length !== 0 ? (
     <View
       style={{

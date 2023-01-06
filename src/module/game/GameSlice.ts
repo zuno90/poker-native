@@ -10,7 +10,6 @@ const gameSlice = createSlice({
     },
     //Chat
     updateChat(state, action: PayloadAction<any>) {
-      console.log(action.payload, "check store");
       state.chatGame.push(action.payload);
     },
     updateTotal(state, action: PayloadAction<any>) {

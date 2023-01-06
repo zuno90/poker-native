@@ -37,39 +37,13 @@ const Home: React.FC = (props: any) => {
   const isFocused = useMemo(() => props.navigation.isFocused(), []);
   const dispatch = useDispatch();
   const client = new Colyseus.Client("ws://175.41.154.239");
-  let arrSeatRoom = [];
-  useEffect(() => {}, [myProfile]);
-  useEffect(() => {
-    let arrSeat = [1, 2, 3, 4, 5];
 
-    try {
-      myProfile.onStateChange((state) => {
-        for (let i of state.players.$items) {
-          if (!arrSeatRoom.includes(i[1].seat)) {
-            arrSeatRoom.push(i[1].seat);
-            dispatch(
-              gameAction.updateArrSeatPlayer({
-                seat: i[1].seat,
-              })
-            );
-          }
-          const Seat = arrSeat.filter((item) => !arrSeatRoom.includes(item));
-          if (arrSeatRoom.length === state.players.$items.size) {
-            if (i[1].turn === -6)
-              myProfile.send("RESERVE_SEAT", { seat: Seat[0] });
-          }
-        }
-      });
-      dispatch(gameAction.updateArrSeatFiler());
-      arrSeatRoom = [];
-    } catch (error) {}
-  }, [myProfile]);
   const getAvailableRooms = async (infoUser?: InfoUser) => {
     const room = await client.getAvailableRooms("noob");
     if (room.length !== 0) {
       const { clients, roomId } = room[0];
 
-      if (clients <= 4 && clients === 1) {
+      if (clients <= 4 && clients > 1) {
         const params = {
           id: user.id,
           chips: user.chips,
@@ -83,28 +57,27 @@ const Home: React.FC = (props: any) => {
             roomContext.handleMyProfile(value);
           });
         } catch (error) {}
+      } else if (clients === 1) {
+        try {
+          await client.joinById(roomId, infoUser).then((value) => {
+            roomContext.handleProfileFake1(value);
+          });
+          // await client
+          //   .joinById(roomId, {
+          //     betChips: 0,
+          //     id: "zuno-bot22",
+          //     isHost: false,
+          //     chips: 10000,
+          //     seat: 3,
+          //     turn: 3,
+          //     role: "Bot",
+          //     cards: [],
+          //   })
+          //   .then((value2) => {
+          //     roomContext.handleProfileFake2(value2);
+          //   });
+        } catch (error) {}
       }
-      // else if (clients === 1) {
-      //   try {
-      //     await client.joinById(roomId, infoUser).then((value) => {
-      //       roomContext.handleProfileFake1(value);
-      //     });
-      //     await client
-      //       .joinById(roomId, {
-      //         betChips: 0,
-      //         id: "zuno-bot22",
-      //         isHost: false,
-      //         chips: 10000,
-      //         seat: 3,
-      //         turn: 3,
-      //         role: "Bot",
-      //         cards: [],
-      //       })
-      //       .then((value2) => {
-      //         roomContext.handleProfileFake2(value2);
-      //       });
-      //   } catch (error) {}
-      // }
     } else {
       createRoom();
     }
@@ -135,19 +108,19 @@ const Home: React.FC = (props: any) => {
         return value;
       });
 
-    // if (myProfile) {
-    //   myProfile && props.navigation.navigate("GAME");
-    //   getAvailableRooms({
-    //     betChips: 0,
-    //     id: "zuno-bot",
-    //     isHost: false,
-    //     chips: 10000,
-    //     seat: 2,
-    //     turn: 2,
-    //     role: "Bot",
-    //     cards: [],
-    //   });
-    // }
+    if (myProfile) {
+      myProfile && props.navigation.navigate("GAME");
+      getAvailableRooms({
+        betChips: 0,
+        id: "zuno-bot",
+        isHost: false,
+        chips: 10000,
+        seat: 2,
+        turn: 2,
+        role: "Bot",
+        cards: [],
+      });
+    }
   };
 
   return (

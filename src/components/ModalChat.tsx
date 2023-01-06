@@ -23,7 +23,7 @@ export const ModalChat = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [textChat, setTextChat] = useState<string>("");
   const { chatGame } = useSelector(selectGame);
-  const { room } = useContext(GameContext);
+  const { myProfile } = useContext(GameContext);
   const dispatch = useDispatch();
   const {
     authState: { user },
@@ -36,7 +36,8 @@ export const ModalChat = () => {
 
   useEffect(() => {
     try {
-      room?.onMessage("ROOM_CHAT", (data: any) => {
+      myProfile?.onMessage("ROOM_CHAT", (data: any) => {
+        console.log(data, "data");
         dispatch(gameAction.updateChat(data));
       });
     } catch (error) {
@@ -61,10 +62,6 @@ export const ModalChat = () => {
         }}
         onPress={() => {
           setIsOpen(true);
-          // room.send("ROOM_CHAT", {
-          //   profile: "asdasd",
-          //   message: "hello bro232223!",
-          // });
         }}
       >
         <Image
@@ -80,8 +77,8 @@ export const ModalChat = () => {
 
       <LinearGradient
         style={{
-          zIndex: 5,
-          opacity: isOpen ? 0.9 : 0.02,
+          zIndex: 200,
+          opacity: isOpen ? 0.9 : 1,
           position: "absolute",
           height: height,
           width: width / 2.2,
@@ -93,7 +90,7 @@ export const ModalChat = () => {
         end={{ x: 1, y: 0 }}
       >
         <Stagger
-          visible={isOpen}
+          visible={true}
           initial={{
             opacity: 0,
             scale: 0,
@@ -353,7 +350,14 @@ export const ModalChat = () => {
                     //
                     // }}
                     InputRightElement={
-                      <Pressable onPress={() => {}}>
+                      <Pressable
+                        onPress={() => {
+                          myProfile.send("ROOM_CHAT", {
+                            profile: "asdasd",
+                            message: "Tri_Dep_Trai",
+                          });
+                        }}
+                      >
                         <Icon
                           as={<MaterialIcons name="send" />}
                           size={6}

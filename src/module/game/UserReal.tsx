@@ -42,8 +42,6 @@ export const UserReal = ({
       setGetCard(getImage(profileUser.cards));
     }
   }, [waveGame, isRunning, currentPlayer]);
-  // console.log(profileUser, "ProfileUser Real");
-  // console.log(currentPlayer, "ProfileUser Real");
 
   useEffect(() => {
     if (waveGame % 10 > 1) {
@@ -487,7 +485,13 @@ export const UserReal = ({
     "-220%",
     "-220%",
   ]);
-  // console.log(arrSeatPlayer, "arr arrSeatPlayer");
+  console.log(
+    arrSeatPlayer.arrSeat[
+      (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
+        arrSeatPlayer.arrSeat.length
+    ] === profileUser.seat,
+    "REalll"
+  );
   return (
     <>
       <View
@@ -779,7 +783,7 @@ export const UserReal = ({
         </View>
       </View>
 
-      {!endTurnEnoughChip &&
+      {/* {!endTurnEnoughChip &&
         profileUser.isFold === false &&
         arrSeatPlayer.arrSeat[
           (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
@@ -787,107 +791,107 @@ export const UserReal = ({
         ] === profileUser.seat &&
         waveGame % 10 < 6 &&
         waveGame % 10 > 0 &&
-        profileUser.chips > 0 && (
-          <View
-            style={{
-              position: "absolute",
-              right: 0,
-              bottom: "-1%",
-              display: "flex",
-              width: "40%",
-              height: "17%",
-              maxWidth: 350,
-              maxHeight: 70,
-              zIndex: 11,
-              flexDirection: "row",
+        profileUser.chips > 0 && ( */}
+      <View
+        style={{
+          position: "absolute",
+          right: 0,
+          bottom: "-1%",
+          display: "flex",
+          width: "40%",
+          height: "17%",
+          maxWidth: 350,
+          maxHeight: 70,
+          zIndex: 11,
+          flexDirection: "row",
+        }}
+      >
+        <Image
+          alt="sad"
+          resizeMode="contain"
+          source={require("../../../assets/betFrame.png")}
+          style={{
+            width: "100%",
+            height: "100%",
+            zIndex: 6,
+            position: "absolute",
+          }}
+        />
+        <View
+          style={{
+            marginLeft: 10,
+            zIndex: 12,
+            width: "96%",
+            height: "100%",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-around",
+          }}
+        >
+          {/* Fold */}
+          <Action
+            action={() => {
+              dispatch(gameAction.updateCountdownReal(-2));
+
+              handleAction("FOLD", {}, myProfile, profileUser);
             }}
-          >
-            <Image
-              alt="sad"
-              resizeMode="contain"
-              source={require("../../../assets/betFrame.png")}
-              style={{
-                width: "100%",
-                height: "100%",
-                zIndex: 6,
-                position: "absolute",
-              }}
-            />
-            <View
-              style={{
-                marginLeft: 10,
-                zIndex: 12,
-                width: "96%",
-                height: "100%",
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-around",
-              }}
-            >
-              {/* Fold */}
-              <Action
-                action={() => {
-                  dispatch(gameAction.updateCountdownReal(-2));
+            ImageAction={require("../../../assets/Fold.png")}
+            title="FOLD"
+          />
+          {/* Check */}
+          <Action
+            action={() => {
+              dispatch(gameAction.updateCountdownReal(-2));
 
-                  handleAction("FOLD", {}, myProfile, profileUser);
-                }}
-                ImageAction={require("../../../assets/Fold.png")}
-                title="FOLD"
-              />
-              {/* Check */}
-              <Action
-                action={() => {
-                  dispatch(gameAction.updateCountdownReal(-2));
+              handleAction("CHECK", { chips: 0 }, myProfile, profileUser);
+            }}
+            ImageAction={require("../../../assets/Check.png")}
+            title="CHECK"
+          />
+          {/* Raise */}
+          <Action
+            action={() => {
+              dispatch(gameAction.updateCountdownReal(-2));
 
-                  handleAction("CHECK", { chips: 0 }, myProfile, profileUser);
-                }}
-                ImageAction={require("../../../assets/Check.png")}
-                title="CHECK"
-              />
-              {/* Raise */}
-              <Action
-                action={() => {
-                  dispatch(gameAction.updateCountdownReal(-2));
+              handleAction(
+                "RAISE",
+                {
+                  chips:
+                    raiseBet >= 100
+                      ? raiseBet
+                      : waveGame > 1 || countRaiseInWave > 0
+                      ? profileUser.betChips - highBetWave + highestBet
+                      : profileUser.betChips - highBetWave,
+                },
+                myProfile,
+                profileUser
+              );
+            }}
+            ImageAction={require("../../../assets/Raise.png")}
+            title="Raise"
+            chips={profileUser.chips}
+          />
+          {/* ALL In */}
+          <Action
+            action={() => {
+              dispatch(gameAction.updateCountdownReal(-2));
 
-                  handleAction(
-                    "RAISE",
-                    {
-                      chips:
-                        raiseBet >= 100
-                          ? raiseBet
-                          : waveGame > 1 || countRaiseInWave > 0
-                          ? profileUser.betChips - highBetWave + highestBet
-                          : profileUser.betChips - highBetWave,
-                    },
-                    myProfile,
-                    profileUser
-                  );
-                }}
-                ImageAction={require("../../../assets/Raise.png")}
-                title="Raise"
-                chips={profileUser.chips}
-              />
-              {/* ALL In */}
-              <Action
-                action={() => {
-                  dispatch(gameAction.updateCountdownReal(-2));
-
-                  handleAction(
-                    "ALLIN",
-                    {
-                      chips: profileUser.chips,
-                    },
-                    myProfile,
-                    profileUser
-                  );
-                }}
-                profile={myProfile}
-                ImageAction={require("../../../assets/Allin.png")}
-                title="ALL IN"
-              />
-            </View>
-          </View>
-        )}
+              handleAction(
+                "ALLIN",
+                {
+                  chips: profileUser.chips,
+                },
+                myProfile,
+                profileUser
+              );
+            }}
+            profile={myProfile}
+            ImageAction={require("../../../assets/Allin.png")}
+            title="ALL IN"
+          />
+        </View>
+      </View>
+      {/* )} */}
     </>
   );
 };

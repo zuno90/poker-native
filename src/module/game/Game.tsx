@@ -1,5 +1,5 @@
 import { Room } from "colyseus.js";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState, useMemo } from "react";
 
 import * as Colyseus from "colyseus.js";
 import { View, Image } from "native-base";
@@ -17,16 +17,15 @@ import { useAuth } from "../../context/AuthContext";
 import { GetInterpolatePosition } from "../../utils/getInterpolate";
 import { gameAction, selectGame } from "./GameSlice";
 import { UserReal } from "./UserReal";
+import { debounce } from "lodash";
 import { BankerCard } from "./BankerCard";
 
-interface ROOM_CHAT {
-  ROOM_CHAT: "ROOM_CHAT";
-  message: string;
-}
 const Game = (props: any) => {
   const { myProfile } = useContext(GameContext);
   const { profileFake1 } = useContext(GameContext);
   const { profileFake2 } = useContext(GameContext);
+  const { profileFake3 } = useContext(GameContext);
+  const { profileFake4 } = useContext(GameContext);
   const {
     authState: { user },
     checkAuth,
@@ -61,6 +60,7 @@ const Game = (props: any) => {
   const PositionVerticalTotalBet = useRef(new Animated.Value(0)).current;
   const PositionHorizontalTotalBet = useRef(new Animated.Value(0)).current;
   const OpacityTotalBet = useRef(new Animated.Value(1)).current;
+  let arrSeatRoom = [];
 
   const topTotalBet = GetInterpolatePosition(
     PositionVerticalTotalBet,
@@ -72,13 +72,37 @@ const Game = (props: any) => {
     positionLeft
   );
   useEffect(() => {
+    let arrSeat = [1, 2, 3, 4, 5];
+    try {
+      myProfile.onStateChange((state) => {
+        for (let i of state.players.$items) {
+          if (!arrSeatRoom.includes(i[1].seat)) {
+            arrSeatRoom.push(i[1].seat);
+            dispatch(
+              gameAction.updateArrSeatPlayer({
+                seat: i[1].seat,
+              })
+            );
+          }
+          const Seat = arrSeat.filter((item) => !arrSeatRoom.includes(item));
+          if (arrSeatRoom.length === state.players.$items.size) {
+            if (i[1].turn === -6)
+              myProfile.send("RESERVE_SEAT", { seat: Seat[0] });
+          }
+        }
+      });
+      dispatch(gameAction.updateArrSeatFiler());
+      arrSeatRoom = [];
+    } catch (error) {
+      console.log(error, "onChange in Home");
+    }
+  }, [myProfile]);
+  useEffect(() => {
     try {
       myProfile.onMessage("CURRENT_PLAYER", (data) => {
         if (data.action !== "END_TURN")
           dispatch(gameAction.updateCurrentPlayer(data));
         else if (data.action !== "START_GAME") {
-          handleReady(myProfile);
-        } else {
           dispatch(gameAction.updateCurrentPlayerEndWave());
         }
       });
@@ -86,7 +110,17 @@ const Game = (props: any) => {
       console.log(" error catch current in userReal");
     }
   }, []);
-  console.log(myProfile, "currentPlayer");
+  useEffect(() => {
+    try {
+      myProfile.onMessage("ROOM_CHAT", (data) => {
+        if (data.message === "Tri_Dep_Trai") {
+          setTimeout(() => {
+            handleReady(myProfile);
+          }, 5000);
+        }
+      });
+    } catch (error) {}
+  }, [SSIDstartgame]);
   useEffect(() => {
     try {
       a.Total.forEach((item) => {
@@ -183,7 +217,6 @@ const Game = (props: any) => {
   useEffect(() => {
     try {
       myProfile.onStateChange((state) => {
-        // console.log(myProfile, "gamefile");
         for (let i of state.players.$items) {
           if (i[1].isHost) dispatch(gameAction.updateSSIDStartGame(i[0]));
           if (i[1].id === user.id) {
@@ -205,29 +238,20 @@ const Game = (props: any) => {
           setBankerCard(state.banker5Cards);
         }
       });
+
       myProfile.onLeave((code) => {
         console.log("we left you idiot");
         props.navigation.navigate("HOME");
+        dispatch(gameAction.updateSSIDStartGame(""));
       });
-      profileFake1.onLeave((code) => {});
-      profileFake2.onLeave((code) => {});
-
       return () => {
         myProfile.removeAllListeners();
-        profileFake1.removeAllListeners();
-        profileFake2.removeAllListeners();
       };
-    } catch {
-      console.log("Error");
+    } catch (error) {
+      console.log(error, "Error on State Change");
     }
   }, [myProfile]);
-  useEffect(() => {
-    setTimeout(() => {
-      myProfile.send("CURRENT_PLAYER", {
-        action: "START_GAME",
-      });
-    }, 5000);
-  }, [isRunning]);
+
   useEffect(() => {
     Animated.timing(OpacityTotalBet, {
       useNativeDriver: false,
@@ -291,13 +315,17 @@ const Game = (props: any) => {
   }, [waveGame]);
   const handleReady = (profileStart) => {
     try {
-      console.log(profileStart.sessionId, "ssession ID");
+      console.log(profileStart.sessionId, "profileStart.sessionId");
       console.log(SSIDstartgame, "SSIDstartgame");
 
-      if (profileStart.sessionId === SSIDstartgame) {
+      if (
+        profileStart.sessionId === SSIDstartgame &&
+        myProfile.state.onReady === false
+      ) {
         console.log("STart game");
-        myProfile.send("START_GAME");
-
+        debounce(myProfile.send("START_GAME"), 500);
+      }
+      setTimeout(() => {
         const object_array = myProfile.state.players.$items;
         const arr = Array.from(object_array, ([_, value]) => {
           return value.id;
@@ -307,11 +335,9 @@ const Game = (props: any) => {
         dispatch(gameAction.updateCountdownReal(9));
         dispatch(gameAction.updateCountdown(9));
         dispatch(gameAction.updateIsRunning(true));
-      }
+      }, 1000);
     } catch (error) {
       console.log("error handle ready");
-      console.log(SSIDstartgame, "SSIDstartgame");
-      console.log(profileStart.sessionId, "profileStart.sessionId");
     }
   };
   const handleLeaveRoom = () => {
@@ -324,12 +350,14 @@ const Game = (props: any) => {
     setRoundGame([]);
     setPlayerWait([]);
     // dispatch(gameAction.updateHighBetWave(0));
-    // dispatch(gameAction.updateProfileUser({}));
-    // dispatch(gameAction.updateProfileUser1({}));
-    // dispatch(gameAction.updateProfileUser2({}));
-    // dispatch(gameAction.updateProfileUser3({}));
-    // dispatch(gameAction.updateProfileUser4({}));
+    dispatch(gameAction.updateProfileUser({}));
+    dispatch(gameAction.updateProfileUser1({}));
+    dispatch(gameAction.updateProfileUser2({}));
+    dispatch(gameAction.updateProfileUser3({}));
+    dispatch(gameAction.updateProfileUser4({}));
   };
+  console.log(currentPlayer);
+
   // myroom.onMessage("CONGRATULATION", (message) => {
   //   console.log(message, "mess back");
   // });
@@ -434,7 +462,12 @@ const Game = (props: any) => {
   };
   useEffect(() => {
     try {
-      myProfile.onMessage("FINISH_GAME", (message) => {
+      myProfile.send("ROOM_CHAT", {
+        profile: "asdasd",
+        message: "Tri_Dep_Trai",
+      });
+
+      myProfile.onMessage("FINISH_GAME", async (message) => {
         console.log(message, "mess back  finish game");
       });
       myProfile.onMessage("RESET_GAME", (message) => {
@@ -445,7 +478,6 @@ const Game = (props: any) => {
     }
   }, [myProfile]);
 
-  console.log(isRunning, "isRunning");
   // console.log(highestBet, "highestBet");
   // console.log(roundGame, "check roundGame");
   // console.log(playerWait, "playerWait");
@@ -466,8 +498,14 @@ const Game = (props: any) => {
       >
         <TouchableOpacity
           onPress={() => {
+            // myProfile.send("START_GAME");
             // dispatch(gameAction.updateIsRunning(!isRunning));
-            handleReady(profileFake1);
+            handleReady(myProfile);
+            // myProfile.send("CURRENT_PLAYER", {
+            //   action: "CALL",
+            //   seat: 9,
+            // });
+            // profileFake2.send("START_GAME");
           }}
           style={{
             position: "absolute",
