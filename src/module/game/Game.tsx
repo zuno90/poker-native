@@ -1,24 +1,22 @@
-import { Room } from "colyseus.js";
-import React, { useContext, useEffect, useRef, useState, useMemo } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 import * as Colyseus from "colyseus.js";
-import { View, Image } from "native-base";
+import { Image, View } from "native-base";
 import { Animated, Dimensions, Text, TouchableOpacity } from "react-native";
 import { GameContext } from "../../context/GameContext";
 import { FakeUser1, FakeUser2, FakeUser3, FakeUser4 } from "./index";
 
+import { debounce } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import {
   POSITION_USER_LEFT,
   POSITION_USER_TOP,
 } from "../../../constant/common";
-import { ModalChat } from "../../components/ModalChat";
 import { useAuth } from "../../context/AuthContext";
 import { GetInterpolatePosition } from "../../utils/getInterpolate";
+import { BankerCard } from "./BankerCard";
 import { gameAction, selectGame } from "./GameSlice";
 import { UserReal } from "./UserReal";
-import { debounce } from "lodash";
-import { BankerCard } from "./BankerCard";
 
 const Game = (props: any) => {
   const { myProfile } = useContext(GameContext);
@@ -71,6 +69,7 @@ const Game = (props: any) => {
     PositionHorizontalTotalBet,
     positionLeft
   );
+  // REVERSE_SEAT
   useEffect(() => {
     let arrSeat = [1, 2, 3, 4, 5];
     try {
@@ -97,19 +96,21 @@ const Game = (props: any) => {
       console.log(error, "onChange in Home");
     }
   }, [myProfile]);
+  console.log(currentPlayer);
   useEffect(() => {
     try {
       myProfile.onMessage("CURRENT_PLAYER", (data) => {
+        console.log("onMEss current player", data);
         if (data.action !== "END_TURN")
           dispatch(gameAction.updateCurrentPlayer(data));
-        else if (data.action !== "START_GAME") {
-          dispatch(gameAction.updateCurrentPlayerEndWave());
-        }
+      });
+      myProfile.onMessage("START_GAME", (data) => {
+        console.log(data, "START_GAME");
       });
     } catch (error) {
       console.log(" error catch current in userReal");
     }
-  }, []);
+  }, [myProfile]);
   useEffect(() => {
     try {
       myProfile.onMessage("ROOM_CHAT", (data) => {
@@ -119,7 +120,9 @@ const Game = (props: any) => {
           }, 5000);
         }
       });
-    } catch (error) {}
+    } catch (error) {
+      console.log(error, " SSID first");
+    }
   }, [SSIDstartgame]);
   useEffect(() => {
     try {
@@ -325,21 +328,27 @@ const Game = (props: any) => {
         console.log("STart game");
         debounce(myProfile.send("START_GAME"), 500);
       }
-      setTimeout(() => {
-        const object_array = myProfile.state.players.$items;
-        const arr = Array.from(object_array, ([_, value]) => {
-          return value.id;
-        });
-        dispatch(gameAction.updateRoundGame(arr));
-        dispatch(gameAction.updateWaveGame(-1));
-        dispatch(gameAction.updateCountdownReal(9));
-        dispatch(gameAction.updateCountdown(9));
-        dispatch(gameAction.updateIsRunning(true));
-      }, 1000);
+
+      const object_array = myProfile.state.players.$items;
+      const arr = Array.from(object_array, ([_, value]) => {
+        return value.id;
+      });
+      dispatch(gameAction.updateRoundGame(arr));
+      dispatch(gameAction.updateCountdownReal(9));
+      dispatch(gameAction.updateCountdown(9));
+      dispatch(gameAction.updateIsRunning(true));
     } catch (error) {
       console.log("error handle ready");
     }
   };
+
+  useEffect(() => {
+    try {
+      if (myProfile.state.onReady) dispatch(gameAction.updateWaveGame(-1));
+    } catch (error) {
+      console.log(error, "error ready");
+    }
+  }, [myProfile.state.onReady]);
   const handleLeaveRoom = () => {
     // dispatch(gameAction.updateChat([]));
     myProfile.leave();
@@ -350,13 +359,13 @@ const Game = (props: any) => {
     setRoundGame([]);
     setPlayerWait([]);
     // dispatch(gameAction.updateHighBetWave(0));
+    dispatch(gameAction.updateWaveGame(-2));
     dispatch(gameAction.updateProfileUser({}));
     dispatch(gameAction.updateProfileUser1({}));
     dispatch(gameAction.updateProfileUser2({}));
     dispatch(gameAction.updateProfileUser3({}));
     dispatch(gameAction.updateProfileUser4({}));
   };
-  console.log(currentPlayer);
 
   // myroom.onMessage("CONGRATULATION", (message) => {
   //   console.log(message, "mess back");
@@ -418,20 +427,24 @@ const Game = (props: any) => {
     }
   };
   useEffect(() => {
-    if (waveGame > 0) {
-      const arrFull = Array.from(
-        myProfile.state.players.$items,
-        ([_, value]) => {
-          return value;
-        }
-      );
-      arrFull.map((value, index) => {
-        if (value.chips === 0) {
-          setCountEnoughChip((countEnoughChip) => countEnoughChip + 1);
-        }
-        if (countEnoughChip === myProfile.state.players.$items.size - 1)
-          setEndTurnEnoughChip(true);
-      });
+    try {
+      if (waveGame > 0) {
+        const arrFull = Array.from(
+          myProfile.state.players.$items,
+          ([_, value]) => {
+            return value;
+          }
+        );
+        arrFull.map((value, index) => {
+          if (value.chips === 0) {
+            setCountEnoughChip((countEnoughChip) => countEnoughChip + 1);
+          }
+          if (countEnoughChip === myProfile.state.players.$items.size - 1)
+            setEndTurnEnoughChip(true);
+        });
+      }
+    } catch (error) {
+      console.log(error, "error chips");
     }
   }, [profileUser1.chips, profileUser2.chips, profileUser.chips]);
 

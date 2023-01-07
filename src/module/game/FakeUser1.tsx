@@ -47,45 +47,45 @@ export const FakeUser1 = ({ handleAction, currentChips, handleReady }) => {
   // console.log(profileUser1, "ProfileUser1");
 
   // Auto bet
-  useEffect(() => {
-    try {
-      if (profileUser1.chips > 100 && waveGame < 6) {
-        if (
-          countDown > -1 &&
-          arrSeatPlayer.arrSeat[
-            (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
-              arrSeatPlayer.arrSeat.length
-          ] === profileUser1.seat
-        ) {
-          const timer = setTimeout(() => {
-            dispatch(gameAction.updateCountdown(countDown - 1));
-          }, 1000);
-          if (countDown === randomCountDown) {
-            profileUser1.chips === 0
-              ? handleAction("CALL", { chips: 0 }, profileFake1, profileUser1)
-              : handleAction(
-                  "CALL",
-                  {
-                    chips:
-                      raiseBet > profileUser1.chips
-                        ? profileUser1.chips
-                        : currentBetChips - profileUser1.betChips + highBetWave,
-                  },
-                  profileFake1,
-                  profileUser1
-                );
-            clearTimeout(timer);
-          }
-        }
-      } else if (currentPlayer === profileUser1.id) {
-        setTimeout(() => {
-          handleAction("CALL", { chips: 0 }, profileFake1, profileUser1);
-        }, 2000);
-      }
-    } catch (error) {
-      console.log();
-    }
-  }, [countDown, currentPlayer]);
+  // useEffect(() => {
+  //   try {
+  //     if (profileUser1.chips > 100 && waveGame < 6) {
+  //       if (
+  //         countDown > -1 &&
+  //         arrSeatPlayer.arrSeat[
+  //           (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
+  //             arrSeatPlayer.arrSeat.length
+  //         ] === profileUser1.seat
+  //       ) {
+  //         const timer = setTimeout(() => {
+  //           dispatch(gameAction.updateCountdown(countDown - 1));
+  //         }, 1000);
+  //         if (countDown === randomCountDown) {
+  //           profileUser1.chips === 0
+  //             ? handleAction("CALL", { chips: 0 }, profileFake1, profileUser1)
+  //             : handleAction(
+  //                 "CALL",
+  //                 {
+  //                   chips:
+  //                     raiseBet > profileUser1.chips
+  //                       ? profileUser1.chips
+  //                       : currentBetChips - profileUser1.betChips + highBetWave,
+  //                 },
+  //                 profileFake1,
+  //                 profileUser1
+  //               );
+  //           clearTimeout(timer);
+  //         }
+  //       }
+  //     } else if (currentPlayer === profileUser1.id) {
+  //       setTimeout(() => {
+  //         handleAction("CALL", { chips: 0 }, profileFake1, profileUser1);
+  //       }, 2000);
+  //     }
+  //   } catch (error) {
+  //     console.log();
+  //   }
+  // }, [countDown, currentPlayer]);
   // chip move end turn
 
   useEffect(() => {

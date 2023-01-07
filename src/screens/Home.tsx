@@ -57,27 +57,28 @@ const Home: React.FC = (props: any) => {
             roomContext.handleMyProfile(value);
           });
         } catch (error) {}
-      } else if (clients === 1) {
-        try {
-          await client.joinById(roomId, infoUser).then((value) => {
-            roomContext.handleProfileFake1(value);
-          });
-          // await client
-          //   .joinById(roomId, {
-          //     betChips: 0,
-          //     id: "zuno-bot22",
-          //     isHost: false,
-          //     chips: 10000,
-          //     seat: 3,
-          //     turn: 3,
-          //     role: "Bot",
-          //     cards: [],
-          //   })
-          //   .then((value2) => {
-          //     roomContext.handleProfileFake2(value2);
-          //   });
-        } catch (error) {}
       }
+      // else if (clients === 1) {
+      //   try {
+      //     await client.joinById(roomId, infoUser).then((value) => {
+      //       roomContext.handleProfileFake1(value);
+      //     });
+      //     await client
+      //       .joinById(roomId, {
+      //         betChips: 0,
+      //         id: "zuno-bot22",
+      //         isHost: false,
+      //         chips: 10000,
+      //         seat: 3,
+      //         turn: 3,
+      //         role: "Bot",
+      //         cards: [],
+      //       })
+      //       .then((value2) => {
+      //         roomContext.handleProfileFake2(value2);
+      //       });
+      //   } catch (error) {}
+      // }
     } else {
       createRoom();
     }
@@ -122,7 +123,6 @@ const Home: React.FC = (props: any) => {
       });
     }
   };
-
   return (
     <View style={{ position: "relative" }}>
       <Image

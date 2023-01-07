@@ -48,45 +48,45 @@ export const FakeUser2 = ({ handleAction, currentChips, handleReady }) => {
     }
   }, [isRunning]);
   //auto bet
-  useEffect(() => {
-    try {
-      if (
-        countDown > -1 &&
-        arrSeatPlayer.arrSeat[
-          (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
-            arrSeatPlayer.arrSeat.length
-        ] === profileUser2.seat &&
-        waveGame < 6
-      ) {
-        const timer = setTimeout(() => {
-          dispatch(gameAction.updateCountdown(countDown - 1));
-        }, 1000);
-        if (countDown === randomCountDown) {
-          profileUser2.chips === 0
-            ? handleAction("CALL", { chips: 0 }, profileFake2, profileUser2)
-            : handleAction(
-                "CALL",
-                {
-                  chips:
-                    raiseBet > profileUser2.chips
-                      ? profileUser2.chips
-                      : currentBetChips - profileUser2.betChips + highBetWave,
-                },
-                profileFake2,
-                profileUser2
-              );
-        }
-      } else {
-        Animated.timing(OpacityCountdown, {
-          toValue: 0,
-          useNativeDriver: false,
-          duration: 200,
-        });
-      }
-    } catch (error) {
-      console.log();
-    }
-  }, [countDown, currentPlayer]);
+  // useEffect(() => {
+  //   try {
+  //     if (
+  //       countDown > -1 &&
+  //       arrSeatPlayer.arrSeat[
+  //         (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
+  //           arrSeatPlayer.arrSeat.length
+  //       ] === profileUser2.seat &&
+  //       waveGame < 6
+  //     ) {
+  //       const timer = setTimeout(() => {
+  //         dispatch(gameAction.updateCountdown(countDown - 1));
+  //       }, 1000);
+  //       if (countDown === randomCountDown) {
+  //         profileUser2.chips === 0
+  //           ? handleAction("CALL", { chips: 0 }, profileFake2, profileUser2)
+  //           : handleAction(
+  //               "CALL",
+  //               {
+  //                 chips:
+  //                   raiseBet > profileUser2.chips
+  //                     ? profileUser2.chips
+  //                     : currentBetChips - profileUser2.betChips + highBetWave,
+  //               },
+  //               profileFake2,
+  //               profileUser2
+  //             );
+  //       }
+  //     } else {
+  //       Animated.timing(OpacityCountdown, {
+  //         toValue: 0,
+  //         useNativeDriver: false,
+  //         duration: 200,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.log();
+  //   }
+  // }, [countDown, currentPlayer]);
 
   // chip move end turn
   useEffect(() => {
