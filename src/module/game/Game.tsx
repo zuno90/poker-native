@@ -480,6 +480,12 @@ const Game = (props: any) => {
       });
       myProfile.onMessage("RESET_GAME", (message) => {
         console.log(message, "mess back  RESET_GAME game");
+        setTimeout(() => {
+          myProfile.send("ROOM_CHAT", {
+            profile: "asdasd",
+            message: "Tri_Dep_Trai",
+          });
+        }, 1000);
       });
     } catch (error) {
       console.log("error Finish game");

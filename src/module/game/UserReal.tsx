@@ -360,54 +360,54 @@ export const UserReal = ({
 
   //Auto Fold
 
-  useEffect(() => {
-    try {
-      if (
-        arrSeatPlayer.arrSeat[
-          (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
-            arrSeatPlayer.arrSeat.length
-        ] === profileUser.seat &&
-        waveGame > 0 &&
-        waveGame < 5
-      ) {
-        if (!endTurnEnoughChip) {
-          if (countdownReal > -1) {
-            var timer = setTimeout(() => {
-              dispatch(gameAction.updateCountdownReal(countdownReal - 1));
-            }, 1000);
+  // useEffect(() => {
+  //   try {
+  //     if (
+  //       arrSeatPlayer.arrSeat[
+  //         (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
+  //           arrSeatPlayer.arrSeat.length
+  //       ] === profileUser.seat &&
+  //       waveGame > 0 &&
+  //       waveGame < 5
+  //     ) {
+  //       if (!endTurnEnoughChip) {
+  //         if (countdownReal > -1) {
+  //           var timer = setTimeout(() => {
+  //             dispatch(gameAction.updateCountdownReal(countdownReal - 1));
+  //           }, 1000);
 
-            if (countdownReal === 0 && waveGame < 6) {
-              profileUser.chips > 0
-                ? handleAction("FOLD", { chips: 0 }, myProfile, profileUser)
-                : handleAction("CALL", { chips: 0 }, myProfile, profileUser);
-              clearTimeout(timer);
-              dispatch(gameAction.updateCountdownReal(-2));
-            }
-          } else {
-            dispatch(gameAction.updateCountdownReal(-2));
-          }
+  //           if (countdownReal === 0 && waveGame < 6) {
+  //             profileUser.chips > 0
+  //               ? handleAction("FOLD", { chips: 0 }, myProfile, profileUser)
+  //               : handleAction("CALL", { chips: 0 }, myProfile, profileUser);
+  //             clearTimeout(timer);
+  //             dispatch(gameAction.updateCountdownReal(-2));
+  //           }
+  //         } else {
+  //           dispatch(gameAction.updateCountdownReal(-2));
+  //         }
 
-          if (
-            arrSeatPlayer.arrSeat[
-              (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
-                arrSeatPlayer.arrSeat.length
-            ] === profileUser.seat &&
-            waveGame < 6
-          ) {
-            if (profileUser.chips <= 0 || profileUser.isFold) {
-              setTimeout(() => {
-                handleAction("CALL", { chips: 0 }, myProfile, profileUser);
-              }, 1000);
-            }
-          }
-        } else {
-          handleAction("CALL", { chips: 0 }, myProfile, profileUser);
-        }
-      }
-    } catch (error) {
-      console.log();
-    }
-  }, [countdownReal, currentPlayer, waveGame, isRunning]);
+  //         if (
+  //           arrSeatPlayer.arrSeat[
+  //             (arrSeatPlayer.arrSeat.indexOf(currentPlayer.seat) + 1) %
+  //               arrSeatPlayer.arrSeat.length
+  //           ] === profileUser.seat &&
+  //           waveGame < 6
+  //         ) {
+  //           if (profileUser.chips <= 0 || profileUser.isFold) {
+  //             setTimeout(() => {
+  //               handleAction("CALL", { chips: 0 }, myProfile, profileUser);
+  //             }, 1000);
+  //           }
+  //         }
+  //       } else {
+  //         handleAction("CALL", { chips: 0 }, myProfile, profileUser);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log();
+  //   }
+  // }, [countdownReal, currentPlayer, waveGame, isRunning]);
   const PositionVerticalCard1 = useRef(new Animated.Value(0)).current;
   const PositionVerticalCard2 = useRef(new Animated.Value(0)).current;
   const PositionVerticalChipBet = useRef(new Animated.Value(-1)).current;
