@@ -96,21 +96,21 @@ const Game = (props: any) => {
       console.log(error, "onChange in Home");
     }
   }, [myProfile]);
-  console.log(currentPlayer);
   useEffect(() => {
     try {
       myProfile.onMessage("CURRENT_PLAYER", (data) => {
-        console.log("onMEss current player", data);
+        console.log(data, "CURRENT_PLAYER");
+        if (data.action === "START_GAME") {
+          dispatch(gameAction.updateWaveGame(-1));
+        }
         if (data.action !== "END_TURN")
           dispatch(gameAction.updateCurrentPlayer(data));
-      });
-      myProfile.onMessage("START_GAME", (data) => {
-        console.log(data, "START_GAME");
       });
     } catch (error) {
       console.log(" error catch current in userReal");
     }
   }, [myProfile]);
+
   useEffect(() => {
     try {
       myProfile.onMessage("ROOM_CHAT", (data) => {
@@ -323,10 +323,11 @@ const Game = (props: any) => {
 
       if (
         profileStart.sessionId === SSIDstartgame &&
-        myProfile.state.onReady === false
+        myProfile.state.onReady === false &&
+        myProfile.state.players.size > 1
       ) {
-        console.log("STart game");
-        debounce(myProfile.send("START_GAME"), 500);
+        myProfile.send("START_GAME");
+        // debounce(myProfile.send("START_GAME"), 500);
       }
 
       const object_array = myProfile.state.players.$items;
@@ -338,17 +339,9 @@ const Game = (props: any) => {
       dispatch(gameAction.updateCountdown(9));
       dispatch(gameAction.updateIsRunning(true));
     } catch (error) {
-      console.log("error handle ready");
+      console.log(error, "error handle ready");
     }
   };
-
-  useEffect(() => {
-    try {
-      if (myProfile.state.onReady) dispatch(gameAction.updateWaveGame(-1));
-    } catch (error) {
-      console.log(error, "error ready");
-    }
-  }, [myProfile.state.onReady]);
   const handleLeaveRoom = () => {
     // dispatch(gameAction.updateChat([]));
     myProfile.leave();
@@ -366,13 +359,6 @@ const Game = (props: any) => {
     dispatch(gameAction.updateProfileUser3({}));
     dispatch(gameAction.updateProfileUser4({}));
   };
-
-  // myroom.onMessage("CONGRATULATION", (message) => {
-  //   console.log(message, "mess back");
-  // });
-  // console.log(room.onMessageHandlers.events.CONGRATULATION, "muyrom");
-  // console.log(myProfile, "sad");
-
   const handlePlayerAction = (
     actionType: "CALL" | "FOLD" | "RAISE" | "CHECK" | "ALLIN" | "",
     Chip,
@@ -393,6 +379,9 @@ const Game = (props: any) => {
         if (actionType === "FOLD") {
           dispatch(gameAction.updateRoundGame(newarr));
           setRoundGame(newarr);
+          profileSend.send("CURRENT_PLAYER", {
+            action: actionType,
+          });
         }
         if (actionType === "RAISE") {
           if (countRaiseInWave > 0) {
@@ -404,15 +393,24 @@ const Game = (props: any) => {
           dispatch(
             gameAction.updateCurrentBetChips(currentBetChips + Chip.chips)
           );
+          profileSend.send("CURRENT_PLAYER", {
+            action: actionType,
+          });
         }
         if (actionType === "ALLIN") {
           setRoundGame([...newarr, ...playerWait, roundgame[0]]);
           setPlayerWait(newarr);
           dispatch(gameAction.updateCurrentBetChips(Chip.chips));
+          profileSend.send("CURRENT_PLAYER", {
+            action: actionType,
+          });
         }
         if (actionType === "CALL" || "CHECK") {
           setPlayerWait([...playerWait, roundgame[0]]);
           setRoundGame(newarr);
+          profileSend.send("CURRENT_PLAYER", {
+            action: actionType,
+          });
         }
 
         dispatch(gameAction.updateCountdown(9));
@@ -420,9 +418,6 @@ const Game = (props: any) => {
         dispatch(
           gameAction.updateRandomCountdown(Math.floor(Math.random() * 3) + 4)
         );
-        profileSend.send("CURRENT_PLAYER", {
-          action: actionType,
-        });
       }
     }
   };
