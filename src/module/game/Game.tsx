@@ -2,7 +2,13 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 
 import * as Colyseus from "colyseus.js";
 import { Image, View } from "native-base";
-import { Animated, Dimensions, Text, TouchableOpacity } from "react-native";
+import {
+  Alert,
+  Animated,
+  Dimensions,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import { GameContext } from "../../context/GameContext";
 import { FakeUser1, FakeUser2, FakeUser3, FakeUser4 } from "./index";
 
@@ -69,6 +75,31 @@ const Game = (props: any) => {
     PositionHorizontalTotalBet,
     positionLeft
   );
+
+  // GLOBAL_PERFECT_ROOM_CHAT
+  useEffect(() => {
+    try {
+      myProfile.onMessage("ROOM_CHAT", (data) => {
+        console.log(data);
+        if (data.message === "Tri_Dep_Trai") {
+          setTimeout(() => {
+            handleReady(myProfile);
+          }, 5000);
+        }
+        if (data.message !== "END_TURN") {
+          Alert.alert("End turn ma'");
+          debounce(() => {
+            dispatch(gameAction.updateWaveGame(waveGame + 1));
+          }, 500);
+          setTimeout(() => {
+            dispatch(gameAction.updateCurrentPlayer(data));
+          }, 1000);
+        }
+      });
+    } catch (error) {
+      console.log(error, " SSID first");
+    }
+  }, [SSIDstartgame, myProfile]);
   // REVERSE_SEAT
   useEffect(() => {
     let arrSeat = [1, 2, 3, 4, 5];
@@ -96,34 +127,23 @@ const Game = (props: any) => {
       console.log(error, "onChange in Home");
     }
   }, [myProfile]);
+
+  //START_GAME
   useEffect(() => {
     try {
       myProfile.onMessage("CURRENT_PLAYER", (data) => {
-        console.log(data, "CURRENT_PLAYER");
+        // console.log(data, "CURRENT_PLAYER");
         if (data.action === "START_GAME") {
           dispatch(gameAction.updateWaveGame(-1));
-        }
-        if (data.action !== "END_TURN")
+        } else {
           dispatch(gameAction.updateCurrentPlayer(data));
+        }
       });
     } catch (error) {
       console.log(" error catch current in userReal");
     }
   }, [myProfile]);
 
-  useEffect(() => {
-    try {
-      myProfile.onMessage("ROOM_CHAT", (data) => {
-        if (data.message === "Tri_Dep_Trai") {
-          setTimeout(() => {
-            handleReady(myProfile);
-          }, 5000);
-        }
-      });
-    } catch (error) {
-      console.log(error, " SSID first");
-    }
-  }, [SSIDstartgame]);
   useEffect(() => {
     try {
       a.Total.forEach((item) => {
@@ -444,8 +464,8 @@ const Game = (props: any) => {
   }, [profileUser1.chips, profileUser2.chips, profileUser.chips]);
 
   const handleEndTurn = (profileSend) => {
-    profileSend.send("CURRENT_PLAYER", {
-      action: "END_TURN",
+    profileSend.send("ROOM_CHAT", {
+      message: "END_TURN",
     });
     dispatch(gameAction.updateCurrentPlayerEndWave());
     if (myProfile) {

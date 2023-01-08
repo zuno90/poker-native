@@ -48,8 +48,8 @@ const Home: React.FC = (props: any) => {
           id: user.id,
           chips: user.chips,
           isHost: false,
-          seat: 2,
-          turn: 2,
+          seat: -6,
+          turn: -6,
           cards: [],
         };
         try {
